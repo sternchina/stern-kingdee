@@ -197,10 +197,29 @@ Web 服务基于 Flask，提供以下接口：
 |------|------|------|
 | `/` | GET | 返回操作面板页面 |
 | `/api/forms` | GET | 获取表单类型和语言选项列表 |
-| `/api/run` | POST | 启动主程序，参数：`{"forms": ["ENG_BOM"], "langs": ["CN"]}` |
+| `/api/run` | POST | 启动主程序，参数：`{"forms": ["ENG_BOM"], "langs": ["CN"], "network_output": "\\\\server\\share\\path"}` |
 | `/api/progress` | GET | 获取运行进度，返回进度百分比和当前步骤 |
 | `/api/output` | GET | 获取输出目录路径和文件列表 |
 | `/api/stop` | POST | 停止当前运行中的任务 |
+| `/api/clear-output` | POST | 清空本地和网络输出目录，参数：`{"network_output": "\\\\server\\share\\path"}` |
+| `/api/open-output` | POST | 打开输出目录 |
+| `/api/open-log` | GET | 打开日志目录 |
+| `/api/clear-log` | POST | 清空日志目录 |
+
+#### 网络路径同步
+
+Web 界面支持将输出文件同步到 SMB 网络共享路径：
+
+1. **设置网络路径**：在"输出位置"输入框中填写 UNC 路径（如 `\\192.168.1.181\99_Share\04_IT\KingdeeExport`）
+2. **自动同步**：运行完成后自动将本地 output 目录中的 xlsx 文件复制到网络路径
+3. **域认证**：系统自动使用域账号进行 SMB 认证（配置于 `server.py` 中）
+
+#### 日志功能
+
+每次运行完成后自动生成日志文件，保存在 `workspace/BOM_API/log/` 目录：
+
+- 日志文件命名：`run_YYYYMMDD_HHMMSS.log`
+- 日志内容：运行步骤、查询耗时、同步结果、错误信息
 
 **命令行**：
 
