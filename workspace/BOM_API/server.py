@@ -139,7 +139,9 @@ def _sync_to_network(network_path: str) -> dict | None:
     # 生成临时批处理脚本：映射驱动器 → 复制 → 断开驱动器
     import tempfile
     bat_lines = [
-        f'net use Z: /delete /yes 2>nul',
+        # 先断开所有与该服务器的连接（解决错误 1219）
+        f'net use * /delete /yes 2>nul',
+        f'timeout /t 1 /nobreak >nul',
         f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
     ]
     for f in xlsx_files:
@@ -474,7 +476,9 @@ def clear_output():
             sub_path = str(Path(network_path)).replace(share_root, "").strip("\\")
             pattern = sub_path + "\\*.xlsx" if sub_path else "*.xlsx"
             bat_lines = [
-                f'net use Z: /delete /yes 2>nul',
+                # 先断开所有与该服务器的连接（解决错误 1219）
+                f'net use * /delete /yes 2>nul',
+                f'timeout /t 1 /nobreak >nul',
                 f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
                 f'del /Q /F "Z:\\{pattern}"',
                 f'net use Z: /delete /yes',
