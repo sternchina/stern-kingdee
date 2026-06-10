@@ -443,9 +443,12 @@ def get_output():
 @app.route("/api/clear-output", methods=["POST"])
 def clear_output():
     body = request.get_json(silent=True) or {}
-    network_path = body.get("network_output", _current_network_output).strip()
+    network_path = body.get("network_output", _current_network_output)
+    if network_path:
+        network_path = network_path.strip()
 
     deleted = 0
+    errors = []
 
     # 清空本地 output
     if OUTPUT_DIR.exists():
@@ -454,8 +457,10 @@ def clear_output():
                 try:
                     f.unlink()
                     deleted += 1
-                except OSError:
-                    pass
+                except OSError as e:
+                    error_msg = f"无法删除本地文件 {f.name}: {e}"
+                    errors.append(error_msg)
+                    print(f"[清空] {error_msg}")
 
     # 清空网络输出（批处理：映射驱动器 + del + 断开驱动器）
     if network_path:
@@ -496,7 +501,10 @@ def clear_output():
                 if net_dir.exists():
                     remaining = len(list(net_dir.glob("*.xlsx")))
                     print(f"[清空] 网络输出清空完成，剩余 {remaining} 个文件")
+                    if remaining > 0:
+                        errors.append(f"网络目录清空后仍有 {remaining} 个文件")
                 else:
+                    errors.append(f"网络目录不存在或无法访问: {network_path}")
                     print(f"[清空] 网络目录不存在: {network_path}")
             finally:
                 try:
@@ -504,24 +512,28 @@ def clear_output():
                 except OSError:
                     pass
         except Exception as e:
-            print(f"[清空] 网络输出清空失败: {e}")
-            logging.error(f"[清空] 网络输出清空失败: {e}", exc_info=True)
+            error_msg = f"网络输出清空失败: {e}"
+            errors.append(error_msg)
+            print(f"[清空] {error_msg}")
+            logging.error(f"[清空] {error_msg}", exc_info=True)
 
-    return jsonify({"success": True, "deleted": deleted})
+    return jsonify({"success": len(errors) == 0, "deleted": deleted, "errors": errors})
 
 
 @app.route("/api/open-output", methods=["POST"])
 def open_output():
-    target = Path(_current_network_output)
+    target = Path(_current_network_output) if _current_network_output else OUTPUT_DIR
     if not target.exists():
         target = OUTPUT_DIR
     if not target.exists():
         target.mkdir(parents=True, exist_ok=True)
     try:
-        subprocess.Popen(["explorer", str(target)])
-        return jsonify({"success": True})
+        # 使用 start 命令替代 explorer，更兼容服务器环境
+        subprocess.Popen(["cmd", "/c", "start", str(target)], shell=True)
+        return jsonify({"success": True, "path": str(target)})
     except Exception as exc:
-        return jsonify({"success": False, "error": str(exc)}), 500
+        # 如果无法打开，至少返回路径供用户手动访问
+        return jsonify({"success": False, "error": str(exc), "path": str(target)})
 
 
 @app.route("/api/stop", methods=["POST"])
@@ -540,10 +552,12 @@ def open_log():
     if not LOG_DIR.exists():
         LOG_DIR.mkdir(parents=True, exist_ok=True)
     try:
-        subprocess.Popen(["explorer", str(LOG_DIR)])
-        return jsonify({"success": True})
+        # 使用 start 命令替代 explorer，更兼容服务器环境
+        subprocess.Popen(["cmd", "/c", "start", str(LOG_DIR)], shell=True)
+        return jsonify({"success": True, "path": str(LOG_DIR)})
     except Exception as exc:
-        return jsonify({"success": False, "error": str(exc)}), 500
+        # 如果无法打开，至少返回路径供用户手动访问
+        return jsonify({"success": False, "error": str(exc), "path": str(LOG_DIR)})
 
 
 @app.route("/api/clear-log", methods=["POST"])
