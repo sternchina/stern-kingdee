@@ -1,0 +1,19 @@
+=== Starting test ===
+Current working directory: C:\Users\shenjj\Desktop\stern-kingdee-main
+WORKSPACE: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API
+WORKSPACE exists: True
+OUTPUT_DIR: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\output
+OUTPUT_DIR exists: True
+Output directory ensured
+Template files found: 1
+Template path: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\template\ENG_BOM_物料清单_2026042910472139_209999.xlsx
+Sheets: ['物料清单#单据头(FBillHead)']
+Data files found: 1
+Data path: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\data\ENG_BOM_20260429_173306.csv
+Data shape: (5283, 44)
+Output path: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\output\物料清单_20260429_173445_导入.xlsx
+Output path absolute: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\output\物料清单_20260429_173445_导入.xlsx
+File saved successfully
+File exists: True
+File size: 4861 bytes
+=== Done ===

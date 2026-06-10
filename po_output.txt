@@ -1,0 +1,62 @@
+﻿python : C:\Users\shenjj\AppData\Local\Programs\Python\Python314\Lib\site-packa
+ges\openpyxl\styles\stylesheet.py:237: UserWarning: Workbook contains no defaul
+t style, apply openpyxl's default
+所在位置 行:1 字符: 5
++ & { python workspace/BOM_API/sync_and_generate.py --form PUR_Purchase ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\shenjj...npyxl's default 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  warn("Workbook contains no default style, apply openpyxl's default")
+鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+ENG_BOM & PLN_FORECAST & PLN_PLANORDER & PRD_MO & PUR_PurchaseOrder 鏁版嵁鍚屾涓庡鍏?Excel 鐢熸垚宸ュ叿
+鏃堕棿: 2026-06-04 16:27:16
+琛ㄥ崟: PUR_PurchaseOrder  璇█: CN
+鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+[璺宠繃] 浠庨噾铦舵媺鍙栨暟鎹?
+[寮€濮媇 鐢熸垚閲囪喘璁㈠崟 Excel (涓枃)
+  [妯℃澘] PUR_PurchaseOrder_閲囪喘璁㈠崟_涓枃妯℃澘.xlsx
+  [琛ㄥご] 27 鍒?
+  [鏁版嵁] PUR_PurchaseOrder_20260604_162310.csv
+  [鏁版嵁] 5703 琛? 215 鍒?
+  [鏄犲皠] 鎵惧埌 22 涓瓧娈垫槧灏?
+  [瑙ｆ瀽] 寮€濮嬭В鏋愰噰璐鍗旾D瀛楁...
+    闇€瑕佽В鏋?565 涓墿鏂橧D
+  [鐗╂枡] 姝ｅ湪鑾峰彇鐗╂枡ID鏄犲皠...
+    [缂撳瓨] 宸插姞杞?11577 涓墿鏂欑紪鐮佹槧灏?
+    [缂撳瓨] 宸插姞杞?4949 涓墿鏂欏悕绉版槧灏?
+    [缂撳瓨] 鎵€鏈?565 涓墿鏂橧D閮藉凡鍦ㄧ紦瀛樹腑
+    闇€瑕佽В鏋?2815 涓墿鏂欑紪鐮佺殑涓枃鍚?
+    [缂撳瓨] 宸插姞杞?7764 涓?material_spec_map 鏄犲皠
+    闇€瑕佽В鏋?5 涓崟浣岻D
+    [缂撳瓨] 宸插姞杞?115 涓?unit_code_map 鏄犲皠
+    [缂撳瓨] 鎵€鏈?5 涓狪D閮藉凡鍦?unit_code_map 缂撳瓨涓?
+    [缂撳瓨] 宸插姞杞?115 涓?unit_name_map 鏄犲皠
+    闇€瑕佽В鏋?217 涓緵搴斿晢ID
+    [缂撳瓨] 宸插姞杞?2680 涓?supplier_code_map 鏄犲皠
+    [缂撳瓨] 鎵€鏈?217 涓狪D閮藉凡鍦?supplier_code_map 缂撳瓨涓?
+    [缂撳瓨] 宸插姞杞?1454 涓?supplier_name_map 鏄犲皠
+    闇€瑕佽В鏋?2 涓粍缁嘔D
+    [缂撳瓨] 宸插姞杞?3 涓?org_code_map 鏄犲皠
+    [缂撳瓨] 鎵€鏈?2 涓狪D閮藉凡鍦?org_code_map 缂撳瓨涓?
+    [缂撳瓨] 宸插姞杞?3 涓?org_name_map 鏄犲皠
+    闇€瑕佽В鏋?6 涓噰璐儴闂↖D
+    [缂撳瓨] 宸插姞杞?21 涓?dept_code_map 鏄犲皠
+    [缂撳瓨] 鎵€鏈?6 涓狪D閮藉凡鍦?dept_code_map 缂撳瓨涓?
+    [缂撳瓨] 宸插姞杞?11 涓?dept_name_map 鏄犲皠
+    闇€瑕佽В鏋?3 涓崟鎹被鍨婭D(GUID)
+    [缂撳瓨] 宸插姞杞?7 涓?bill_type_map 鏄犲皠
+    [缂撳瓨] 鎵€鏈?3 涓狪D閮藉凡鍦?bill_type_map 缂撳瓨涓?
+    [缂撳瓨] 宸插姞杞?7 涓?bill_type_name_map_guid 鏄犲皠
+    [缂撳瓨] 鎵€鏈?3 涓狪D閮藉凡鍦?bill_type_name_map_guid 缂撳瓨涓?
+    [缂撳瓨] 宸插姞杞?1 涓?bill_type_name_map 鏄犲皠
+    闇€瑕佽В鏋?13 涓垱寤轰汉ID
+    [缂撳瓨] 宸插姞杞?17 涓?user_name_map 鏄犲皠
+    闇€瑕佽В鏋?49 涓緟鍔╁睘鎬D
+  [杈撳嚭] PUR_PurchaseOrder_閲囪喘璁㈠崟.xlsx
+  [瀹屾垚] 鏂囦欢澶у皬: 0.65 MB
+[瀹屾垚] 鐢熸垚閲囪喘璁㈠崟 Excel (涓枃)
+鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+瀹屾垚!
+鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲

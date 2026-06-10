@@ -1,0 +1,9 @@
+找到 2 个模板文件
+  - ENG_BOM_物料清单_2026042910472139_209999.xlsx
+  - ~$ENG_BOM_物料清单_2026042910472139_209999.xlsx
+
+尝试加载: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\template\ENG_BOM_物料清单_2026042910472139_209999.xlsx
+成功加载！工作表: ['物料清单#单据头(FBillHead)']
+工作表 物料清单#单据头(FBillHead) 有 34820 行, 182 列
+表头行1: 182 列
+表头行2: 182 列

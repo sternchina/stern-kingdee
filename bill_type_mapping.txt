@@ -1,0 +1,3190 @@
+ID: 000ffecf2c6f97f311e32b0998d51004
+  FNumber: FYBXD001_SYS
+  FName: 费用报销单
+  FBillFormID: ER_ExpReimbursement
+
+ID: 000ffecf861ca11611e31159493e8417
+  FNumber: PSD01_SYS
+  FName: 标准配送单
+  FBillFormID: DRP_DistributeOfBill
+
+ID: 001f29d2c9af844211e342cad266ac71
+  FNumber: GXJH01_SYS
+  FName: 标准工序计划
+  FBillFormID: SFC_OperationPlanning
+
+ID: 001f29d2c9af844211e342cba3aaa38c
+  FNumber: GXHB01_SYS
+  FName: 工序汇报
+  FBillFormID: SFC_OperationReport
+
+ID: 001f29d2c9af844211e342cbb8c2240c
+  FNumber: GXHB02_SYS
+  FName: 工序生产汇报(已作废)
+  FBillFormID: SFC_OperationReport
+
+ID: 0023240234df807511e308990e04cf6a
+  FNumber: CGDD07_SYS
+  FName: VMI采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: 0023240234df807511e3089ad113642a
+  FNumber: SLD06_SYS
+  FName: VMI收料单
+  FBillFormID: PUR_ReceiveBill
+
+ID: 0023240234df807511e3089bc912a28a
+  FNumber: RKD07_SYS
+  FName: VMI入库单
+  FBillFormID: STK_InStock
+
+ID: 0023240234df807511e3089d56422b7a
+  FNumber: TLD06_SYS
+  FName: VMI退料单
+  FBillFormID: PUR_MRB
+
+ID: 00232405fc58a68311e33257e9e17076
+  FNumber: SCDD05_SYS
+  FName: 工序汇报入库-普通生产
+  FBillFormID: PRD_MO
+
+ID: 005056941128814b11e31b9d2979ed35
+  FNumber: QTCKD03_SYS
+  FName: VMI出库
+  FBillFormID: STK_MisDelivery
+
+ID: 005056941128823c11e323525db18103
+  FNumber: ZJDB05_SYS
+  FName: VMI直接调拨单
+  FBillFormID: STK_TransferDirect
+
+ID: 005056941128986d11e32982afbc3f6d
+  FNumber: WQZY001_SYS
+  FName: VMI物权转移
+  FBillFormID: PUR_PropertyConvert
+
+ID: 005056941128bfb811e324e5af9b2b4b
+  FNumber: PK02_SYS
+  FName: VMI盘亏单
+  FBillFormID: STK_StockCountLoss
+
+ID: 005056941d729cf711e3d4ef32bbcaf8
+  FNumber: LSD-XSD
+  FName: 销售开单-销售单
+  FBillFormID: CMK_LS_SimplePos
+
+ID: 005056941d729cf711e3d4efc743a92c
+  FNumber: LSD-THD
+  FName: 销售开单-退货单
+  FBillFormID: CMK_LS_SimplePos
+
+ID: 0050569440d094c111e32b11bda21497
+  FNumber: FYLSJK_SYS
+  FName: 历史借款单
+  FBillFormID: ER_HisBorrow
+
+ID: 0050569440d094c111e32b23ca5ac5fc
+  FNumber: FYSQ001_SYS
+  FName: 费用申请单
+  FBillFormID: ER_ExpenseRequest
+
+ID: 0050569440d094c111e32b23fe311b1c
+  FNumber: FYZY_SYS
+  FName: 费用移转单
+  FBillFormID: ER_ExpenseTransfer
+
+ID: 0050569440d0b2e211e330ae3ecc47a8
+  FNumber: FYHXD
+  FName: 费用核销单
+  FBillFormID: ER_MatchBill
+
+ID: 0050569440d0b9d111e346b1c24d3fe1
+  FNumber: CCSQ001_SYS
+  FName: 出差申请单
+  FBillFormID: ER_ExpenseRequest_Travel
+
+ID: 0050569440d0b9d111e346dc2d05234a
+  FNumber: CLFBX001_SYS
+  FName: 差旅费报销单
+  FBillFormID: ER_ExpReimbursement_Travel
+
+ID: 0050569448a4966511e336d026c93cba
+  FNumber: QTCKD04_SYS
+  FName: 费用物料出库
+  FBillFormID: STK_MisDelivery
+
+ID: 00505694499eb16411e3cd16dc62e287
+  FNumber: SCDD06_SYS
+  FName: 组织委托加工-直接入库
+  FBillFormID: PRD_MO
+
+ID: 005056945db184ed11e3af2d604e4dba
+  FNumber: JYD003_SYS
+  FName: 库存检验单
+  FBillFormID: QM_InspectBill
+
+ID: 005056945db184ed11e3af2dcda7ee49
+  FNumber: JYD004_SYS
+  FName: 自制工序检验单
+  FBillFormID: QM_InspectBill
+
+ID: 005056945db184ed11e3af3d4cfc520d
+  FNumber: JYD005_SYS
+  FName: 委外工序检验单
+  FBillFormID: QM_InspectBill
+
+ID: 005056945db1ae8311e3ba1347429bab
+  FNumber: KCQJD001_SYS
+  FName: 库存请检单
+  FBillFormID: QM_STKAPPInspect
+
+ID: 005056945fca85e511e42420f363da25
+  FNumber: SCDD07_SYS
+  FName: 组织委托加工-汇报入库
+  FBillFormID: PRD_MO
+
+ID: 0050569463e5b88611e39459894134ae
+  FNumber: XSTHD05_SYS
+  FName: VMI销售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 00505694799c836111e33d159520efd3
+  FNumber: SC_INNERACTINIT
+  FName: 资金内部账户期初
+  FBillFormID: SC_INNERACTINIT
+
+ID: 00505694799c955111e325bc9e6eb056
+  FNumber: YSD02_SYS
+  FName: 费用应收单
+  FBillFormID: AR_receivable
+
+ID: 00505694799c955111e325bcd36fe8c2
+  FNumber: YSD03_SYS
+  FName: 资产调拨应收
+  FBillFormID: AR_receivable
+
+ID: 00505694799c955111e327183a40bee1
+  FNumber: YFD03_SYS
+  FName: 资产调拨应付
+  FBillFormID: AP_Payable
+
+ID: 00505694799c955111e327524dd878be
+  FNumber: FKSQ005_SYS
+  FName: 费用报销申请
+  FBillFormID: CN_PAYAPPLY
+
+ID: 00505694799c955111e32755b2a799d8
+  FNumber: FKDLX04_SYS
+  FName: 费用报销付款单
+  FBillFormID: AP_PAYBILL
+
+ID: 00505694799c955111e327567f7bac7a
+  FNumber: FKTKDLX03_SYS
+  FName: 费用报销付款退款单
+  FBillFormID: AP_REFUNDBILL
+
+ID: 00505694799c9a1111e327684fe24f72
+  FNumber: QTYFD02_SYS
+  FName: 费用报销其他应付单
+  FBillFormID: AP_OtherPayable
+
+ID: 00505694799ca95211e34095069002e4
+  FNumber: SKDLX04_SYS
+  FName: 内部利息收款单
+  FBillFormID: AR_RECEIVEBILL
+
+ID: 00505694799ca95211e340960f6efe11
+  FNumber: FKDLX06_SYS
+  FName: 内部利息付款单
+  FBillFormID: AP_PAYBILL
+
+ID: 00505694799cb1fb11e3353a0b27480a
+  FNumber: FKDLX05_SYS
+  FName: 资金上划付款单
+  FBillFormID: AP_PAYBILL
+
+ID: 00505694799cb1fb11e3353ab8d4fcbe
+  FNumber: SKDLX03_SYS
+  FName: 资金下拨收款单
+  FBillFormID: AR_RECEIVEBILL
+
+ID: 005056a0066b9d1811e3670215b3ee84
+  FNumber: GXBLP01_SYS
+  FName: 工序不良品明细
+  FBillFormID: SFC_OperationRejects
+
+ID: 005056a02337943b11e413a568bd7319
+  FNumber: SCXZZCKDB01_SYS
+  FName: 在制仓库调拨单
+  FBillFormID: REM_TransferDirect
+
+ID: 005056a02337af3111e3f5c4803e6c61
+  FNumber: SCXCPRKD01_SYS
+  FName: 生产线入库
+  FBillFormID: REM_INSTOCK
+
+ID: 005056a02337af3111e3f5cd1af8047d
+  FNumber: SCXCPTKD01_SYS
+  FName: 生产线退库
+  FBillFormID: REM_OUTSTOCK
+
+ID: 005056a02337af3111e3f5ceb286cd4d
+  FNumber: SCXLLD01_SYS
+  FName: 生产线领料
+  FBillFormID: REM_PickMtrl
+
+ID: 005056a02337af3111e3f5ced3487453
+  FNumber: SCXTLD01_SYS
+  FName: 生产线退料
+  FBillFormID: REM_ReturnMtrl
+
+ID: 005056a02ada930511e3b721790e4f4d
+  FNumber: GXJGJSD01_SYS
+  FName: 工序加工结算单
+  FBillFormID: SFC_OperProcBalance
+
+ID: 005056a03950b50f11e3b629519a94c7
+  FNumber: GXZYD01_SYS
+  FName: 标准工序转移单
+  FBillFormID: SFC_OperationTransfer
+
+ID: 005056a067078da611e401b1f779662c
+  FNumber: SCXLSLJH01_SYS
+  FName: 领送料计划
+  FBillFormID: REM_FeedMtrlPlan
+
+ID: 005056a06707af9511e3e6efe1be1b00
+  FNumber: SCXDLXQJH01_SYS
+  FName: 独立需求计划
+  FBillFormID: REM_IndepenReqPlan
+
+ID: 005056a06707af9511e3e7ceb5cdc3fe
+  FNumber: SCXHLJH01_SYS
+  FName: 混流计划
+  FBillFormID: REM_MixedFlowPlan
+
+ID: 005056a06707b48611e3f781eb080549
+  FNumber: SCXCPWGHB01_SYS
+  FName: 产品完工汇报
+  FBillFormID: REM_ProdLineCompleteReport
+
+ID: 005056a06707b48611e3f78c59d5b9bb
+  FNumber: SCXZXRJH01_SYS
+  FName: 主线日计划
+  FBillFormID: REM_ProdMainDayPlan
+
+ID: 005056c0000882a811e3c539883e0933
+  FNumber: POSADD
+  FName: PC POS
+  FBillFormID: CMK_LS_Retail
+
+ID: 005056c0000882a811e3c539ef71d9fc
+  FNumber: BZLSD
+  FName: 标准零售单
+  FBillFormID: CMK_LS_Retail
+
+ID: 005056c0000882a811e3cb7aacdbb4aa
+  FNumber: BZDJD
+  FName: 标准预订单
+  FBillFormID: CMK_LS_OrderBill
+
+ID: 005056c0000882a811e3cb7ae9cf03e2
+  FNumber: POSDJD
+  FName: 前台POS新增
+  FBillFormID: CMK_LS_OrderBill
+
+ID: 005056c000088c8711e41ac161e30414
+  FNumber: MDDBSHD
+  FName: 门店调拨收货单
+  FBillFormID: CMK_RSM_StoreReceipt
+
+ID: 005056c000088c8711e41ac18652f12a
+  FNumber: MDCGSHD
+  FName: 门店采购收货单
+  FBillFormID: CMK_RSM_StoreReceipt
+
+ID: 005056c000088c8711e41aea4b2f43b9
+  FNumber: MDDBFH
+  FName: 门店调拨发货单
+  FBillFormID: CMK_LS_StoresDelivery
+
+ID: 005056c000088c8711e41aea6af3989c
+  FNumber: MDXSFHD
+  FName: 门店销售发货单
+  FBillFormID: CMK_LS_StoresDelivery
+
+ID: 005056c000088c8711e41bc53a5e136e
+  FNumber: MDQTRKD
+  FName: 门店其他入库单
+  FBillFormID: CMK_RSM_StoreReceipt
+
+ID: 005056c000088c8711e41bcf114c124f
+  FNumber: MDQTCKD
+  FName: 门店其他出库单
+  FBillFormID: CMK_LS_StoresDelivery
+
+ID: 005056c00008b41511e3e642dc36f53e
+  FNumber: YJTJ
+  FName: 永久调价
+  FBillFormID: CMK_PP_ICPromAdjPrice
+
+ID: 005056c00008b72011e3fc389575f596
+  FNumber: BZZHCXPT
+  FName: 标准促销平台
+  FBillFormID: CMK_PP_PromComplex
+
+ID: 005056c00008baa211e3097d5747706d
+  FNumber: JYD001_SYS
+  FName: 来料检验单
+  FBillFormID: QM_InspectBill
+
+ID: 005056c00008baa211e3097d9bc0332e
+  FNumber: JYD002_SYS
+  FName: 产品检验单
+  FBillFormID: QM_InspectBill
+
+ID: 0388a5d89593462086f5ee63a21d973f
+  FNumber: XJCQ01_SYS
+  FName: 存款
+  FBillFormID: CN_CASHACCESSBILL
+
+ID: 03c6c047c65c4a17a792f85dcf3cabec
+  FNumber: CGSQD04_SYS
+  FName: 费用采购申请
+  FBillFormID: PUR_Requisition
+
+ID: 05d3c7dfc2be40abb70a65166f8d3906
+  FNumber: DR01_SYS
+  FName: 跨人事管理中心调入单
+  FBillFormID: HR_HM_TransferIn
+
+ID: 0a2c1694596d440882adb080a7a8ca1b
+  FNumber: RKD03_SYS
+  FName: 委外入库单
+  FBillFormID: STK_InStock
+
+ID: 0bcc8f3ce0a64171b1a901344d1ac239
+  FNumber: ZJDB02_SYS
+  FName: 寄售直接调拨单
+  FBillFormID: STK_TransferDirect
+
+ID: 0c2c96bb7f534768a96ab08cdd6fc26e
+  FNumber: WWTLD01_SYS
+  FName: 普通委外退料
+  FBillFormID: SUB_RETURNMTRL
+
+ID: 0dda70fa0c55451ab1d40d3f78400a4f
+  FNumber: XSTHD02_SYS
+  FName: 寄售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 0de0a582a00f4a35a027ac45341b120f
+  FNumber: PYPK02_SYS
+  FName: 盘亏
+  FBillFormID: FA_CountingSheet
+
+ID: 0e74146732c24bec90178b6fe16a2d1c
+  FNumber: SCDD02_SYS
+  FName: 汇报入库-返工生产
+  FBillFormID: PRD_MO
+
+ID: 0ff191ada31b48c09af88243826ca619
+  FNumber: ZCSQ01_SYS
+  FName: 标准资产申请
+  FBillFormID: FA_REQUISITION
+
+ID: 10985d2448f14595bd8f5e8df82ba6cf
+  FNumber: WLPDZY01_SYS
+  FName: 标准物料盘点作业
+  FBillFormID: STK_StockCountInput
+
+ID: 123ab4b2e10943ea8fe52dc771a727f9
+  FNumber: YCD01_SYS
+  FName: 普通预测单
+  FBillFormID: PLN_FORECAST
+
+ID: 123f39178eb2424c8449f992e1fff1ee
+  FNumber: SCDD01_SYS
+  FName: 汇报入库-普通生产
+  FBillFormID: PRD_MO
+
+ID: 133045efa796421dbf1acb8bc00cdad7
+  FNumber: JDSCTL01_SYS
+  FName: 简单生产退料
+  FBillFormID: SP_ReturnMtrl
+
+ID: 136bf6db80a14da8b3c332383f796739
+  FNumber: QTCKD02_SYS
+  FName: 资产出库
+  FBillFormID: STK_MisDelivery
+
+ID: 141dd309c6b242e7890b56a6dc733c54
+  FNumber: PDCYFT01_SYS
+  FName: 标准差异分摊
+  FBillFormID: PRD_CVA
+
+ID: 180ecd4afd5d44b5be78a6efe4a7e041
+  FNumber: YSD01_SYS
+  FName: 标准应收单
+  FBillFormID: AR_receivable
+
+ID: 193822715afc48aa9fa6d6beca7700ab
+  FNumber: FHTZD01_SYS
+  FName: 标准发货通知单
+  FBillFormID: SAL_DELIVERYNOTICE
+
+ID: 1cab58bc33d24e27826be02249f4edac
+  FNumber: XSPTFP01_SYS
+  FName: 销售普通发票
+  FBillFormID: IV_SALESOC
+
+ID: 1cc1de500a75935f11e33ca00248bfb4
+  FNumber: CXSQ01_SYS
+  FName: 产品促销申请
+  FBillFormID: SPM_PromotionApply
+
+ID: 1cc1de500a75935f11e33ca01d4c6b1a
+  FNumber: CXSQ02_SYS
+  FName: 广告促销申请
+  FBillFormID: SPM_PromotionApply
+
+ID: 1e17ce9c878a483da7fe38e5a4e992a0
+  FNumber: XSDD02_SYS
+  FName: 寄售销售订单
+  FBillFormID: SAL_SaleOrder
+
+ID: 21570de792b54574a5852ffec8a1b5f4
+  FNumber: BRJS03_SYS
+  FName: 应收票据背书
+  FBillFormID: CN_BILLRECSETTLE
+
+ID: 23f62df80a644d05bce25d9d22c69d8f
+  FNumber: SCRKD01_SYS
+  FName: 汇报入库
+  FBillFormID: PRD_INSTOCK
+
+ID: 256df3b168204249b51d601712804680
+  FNumber: TLSQDD02_SYS
+  FName: 资产退回申请单
+  FBillFormID: PUR_MRAPP
+
+ID: 281783bb73244d178d41ce550d877af0
+  FNumber: SCDD03_SYS
+  FName: 直接入库-普通生产
+  FBillFormID: PRD_MO
+
+ID: 2a8dc7108c7845d49e990825220d668b
+  FNumber: TLSQDD03_SYS
+  FName: 委外退料申请单
+  FBillFormID: PUR_MRAPP
+
+ID: 2b3e316465314b4ebe43ff260ded68f4
+  FNumber: PK01_SYS
+  FName: 标准盘亏单
+  FBillFormID: STK_StockCountLoss
+
+ID: 2E8277C8D11047D9BE5FAD7D3D95A7E2
+  FNumber: PDFA01_SYS
+  FName: 标准盘点方案
+  FBillFormID: STK_StockCountScheme
+
+ID: 3441ac133848446f824d0ab760c8b3c7
+  FNumber: ZZCX01_SYS
+  FName: 标准组装拆卸
+  FBillFormID: STK_AssembledApp
+
+ID: 36005cbd3e9e4d5c83debad063a2e114
+  FNumber: CGZZSZYFP01_SYS
+  FName: 采购增值税专用发票
+  FBillFormID: IV_PURCHASEIC
+
+ID: 361a64af5c004111962018af7d2762d0
+  FNumber: XJCQ02_SYS
+  FName: 取款
+  FBillFormID: CN_CASHACCESSBILL
+
+ID: 368c45f12df943058ccf2dfb92b243aa
+  FNumber: YD01_SYS
+  FName: 标准内部异动申请单
+  FBillFormID: HR_HM_InnerTransfer
+
+ID: 36cf265bd8c3452194ed9c83ec5e73d2
+  FNumber: SKDLX01_SYS
+  FName: 销售收款单
+  FBillFormID: AR_RECEIVEBILL
+
+ID: 38a5eb2107b646fbaead6ee1fc9ade2c
+  FNumber: STCLRK01_SYS
+  FName: 标准受托加工材料入库单
+  FBillFormID: STK_OEMInStock
+
+ID: 3a9ac994945e4a5eac2038f0c960221a
+  FNumber: XSTHD04_SYS
+  FName: 分销购销销售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 3c6f819d78ac4d5981891956c4595b20
+  FNumber: YFD02_SYS
+  FName: 费用应付单
+  FBillFormID: AP_Payable
+
+ID: 3f29921f292b490bbc5775477350ab58
+  FNumber: XSDDBGD02_SYS
+  FName: 退货订单变更单
+  FBillFormID: SAL_SaleOrderChange
+
+ID: 40e7bf7e72794ad3a0f0b480af4ce909
+  FNumber: YHZZ01_SYS
+  FName: 标准转账
+  FBillFormID: CN_BANKTRANSBILL
+
+ID: 42247eeffd0c48f7bcf7e389c4563900
+  FNumber: BPJS01_SYS
+  FName: 应付票据到期付款
+  FBillFormID: CN_BILLPAYSETTLE
+
+ID: 428ab6b92b0d4a0aa5bbd83b28e9c6ef
+  FNumber: CHSJWH01_SYS
+  FName: 存货市价单
+  FBillFormID: HS_StoragePrice
+
+ID: 4518706ee0e84af49671ba2af1498d48
+  FNumber: WWLLD02_SYS
+  FName: 倒冲委外领料
+  FBillFormID: SUB_PickMtrl
+
+ID: 45388b3e35924be18908aefadcdc28e1
+  FNumber: FYFP01_SYS
+  FName: 薪酬费用分配单
+  FBillFormID: HR_PA_FeeAllocate
+
+ID: 48f8191c743c4ae3996aecbc12b13536
+  FNumber: ZCJY01_SYS
+  FName: 资产借入
+  FBillFormID: FA_BORROW
+
+ID: 493b8d8560834013adf6f446a149ceda
+  FNumber: TLD04_SYS
+  FName: 委外退料单
+  FBillFormID: PUR_MRB
+
+ID: 49774d40622a46d3b563ac0797220082
+  FNumber: QTYFD01_SYS
+  FName: 其他应付单
+  FBillFormID: AP_OtherPayable
+
+ID: 49cf862e18d544e8ae7aa821228c1cf3
+  FNumber: FKTKDLX02_SYS
+  FName: 其他业务退款单
+  FBillFormID: AP_REFUNDBILL
+
+ID: 4ac9dacdf8054ff6a8b49b467b3d6ee8
+  FNumber: YHZZ02_SYS
+  FName: 购汇
+  FBillFormID: CN_BANKTRANSBILL
+
+ID: 4c1b07214adb4651aa2437ef48738af9
+  FNumber: JHDD01_SYS
+  FName: MPS计划订单
+  FBillFormID: PLN_PLANORDER
+
+ID: 4d20243e32b14834aae8a96525354bcd
+  FNumber: CGRKTZD01_SYS
+  FName: 入库成本调整单
+  FBillFormID: HS_AdjustmentBill
+
+ID: 4dd967bb14574d0ea3dcc17ad981cf92
+  FNumber: WSDD01_SYS
+  FName: 标准网上订单
+  FBillFormID: CP_SaleOrder
+
+ID: 503b2f425825455ea0a9c545a8045b01
+  FNumber: RKD04_SYS
+  FName: 分销购销入库单
+  FBillFormID: STK_InStock
+
+ID: 50ea4e69b6144f69961d2e9b44820929
+  FNumber: XSZZSZYFP01_SYS
+  FName: 销售增值税专用发票
+  FBillFormID: IV_SALESIC
+
+ID: 50fa7c2eda7947b89fab5431bf25d48e
+  FNumber: SCHBD01_SYS
+  FName: 入库汇报
+  FBillFormID: PRD_MORPT
+
+ID: 51dba534927743e7b855272723d1561e
+  FNumber: TLSQDD01_SYS
+  FName: 标准退料申请
+  FBillFormID: PUR_MRAPP
+
+ID: 532c672029694473916a258fae962b1c
+  FNumber: WWBLD01_SYS
+  FName: 普通委外补料
+  FBillFormID: SUB_FEEDMTRL
+
+ID: 5450a1716ca47f
+  FNumber: WWBL01_SYS
+  FName: 委外备料单
+  FBillFormID: SUB_PrepareMtrl
+
+ID: 545301011e96f8
+  FNumber: YSD04_SYS
+  FName: 转销应收单
+  FBillFormID: AR_receivable
+
+ID: 54533291F9A44D38809F70000499BEE9
+  FNumber: QTCKD01_SYS
+  FName: 标准其他出库单
+  FBillFormID: STK_MisDelivery
+
+ID: 5458351793be97
+  FNumber: FKSQ006_SYS
+  FName: 工资付款申请
+  FBillFormID: CN_PAYAPPLY
+
+ID: 54584470279b2a
+  FNumber: B2CDD02_SYS
+  FName: 标准B2C订单
+  FBillFormID: ECC_AllThirdOrder
+
+ID: 54584496279c10
+  FNumber: B2CDD01_SYS
+  FName: 手工B2C订单
+  FBillFormID: ECC_AllThirdOrder
+
+ID: 545a09f7648f18
+  FNumber: B2CTH01_SYS
+  FName: 退货退款申请单
+  FBillFormID: ECC_AfterSaleOrder
+
+ID: 545a0a14648f88
+  FNumber: B2CTH04_SYS
+  FName: 退款不退货申请单
+  FBillFormID: ECC_AfterSaleOrder
+
+ID: 545a0a67648ff8
+  FNumber: B2CTH03_SYS
+  FName: 退货补货（先退后补）申请单
+  FBillFormID: ECC_AfterSaleOrder
+
+ID: 545a0a9f649068
+  FNumber: B2CTH02_SYS
+  FName: 退货换货申请单
+  FBillFormID: ECC_AfterSaleOrder
+
+ID: 546ab95111081b
+  FNumber: FBDR02_SYS
+  FName: VMI分步式调入单
+  FBillFormID: STK_TRANSFERIN
+
+ID: 546abb491109ba
+  FNumber: FBDC02_SYS
+  FName: VMI分步式调出单
+  FBillFormID: STK_TRANSFEROUT
+
+ID: 546d4a78d26794
+  FNumber: ZJDBDLX01_SYS
+  FName: 普通资金调拨
+  FBillFormID: SC_FundsTransf
+
+ID: 546d621dd267c2
+  FNumber: SKDLX05_SYS
+  FName: 资金调拨收款单
+  FBillFormID: AR_RECEIVEBILL
+
+ID: 546d6280d2686a
+  FNumber: FKDLX07_SYS
+  FName: 资金调拨付款单
+  FBillFormID: AP_PAYBILL
+
+ID: 546ff882d798f3
+  FNumber: B2CDD03_SYS
+  FName: 补/换货B2C订单
+  FBillFormID: ECC_AllThirdOrder
+
+ID: 5472f81cb9fb31
+  FNumber: B2CDD04_SYS
+  FName: 漏发补货B2C订单
+  FBillFormID: ECC_AllThirdOrder
+
+ID: 5472f9bcb9fc5a
+  FNumber: B2CTH05_SYS
+  FName: 补发货申请单
+  FBillFormID: ECC_AfterSaleOrder
+
+ID: 547547f815fc40544e
+  FNumber: SCXZIXRJH01_SYS
+  FName: 生产线子线日计划
+  FBillFormID: REM_ProdSubDayPlan
+
+ID: 54a350fbb6c248
+  FNumber: XSDD09_SYS
+  FName: 现销订单
+  FBillFormID: SAL_SaleOrder
+
+ID: 54a35716b6c3f2
+  FNumber: XSCKD06_SYS
+  FName: 现销出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: 54a39502b6c77d
+  FNumber: XSTHD06_SYS
+  FName: 现销退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 54f40946403e91
+  FNumber: BLPCL001_SYS
+  FName: 来料检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 55091887e34726
+  FNumber: B2CTH06_SYS
+  FName: 补货退货（先补后退）申请单
+  FBillFormID: ECC_AfterSaleOrder
+
+ID: 551506d6fb6495
+  FNumber: SCNL01_SYS
+  FName: 生产挪料
+  FBillFormID: PRD_MOVEMTRL
+
+ID: 5518b5b02e5ac9
+  FNumber: QCRKD01_SYS
+  FName: 期初采购入库单
+  FBillFormID: STK_InitInStock
+
+ID: 5518b6672e5b92
+  FNumber: QCRKD02_SYS
+  FName: 期初委外入库单
+  FBillFormID: STK_InitInStock
+
+ID: 5518f5ceee8053
+  FNumber: QCXSCKD_SYS
+  FName: 期初销售出库单
+  FBillFormID: SAL_INITOUTSTOCK
+
+ID: 5518f60aee8191
+  FNumber: QCXSTHD_SYS
+  FName: 期初销售退货单
+  FBillFormID: SAL_INITOUTSTOCK
+
+ID: 551debb583e5ce
+  FNumber: QTCKD05_SYS
+  FName: 库存调整
+  FBillFormID: STK_MisDelivery
+
+ID: 55265fbb285192
+  FNumber: ZCTH01_SYS
+  FName: 标准资产退回
+  FBillFormID: FA_PICKING
+
+ID: 552b12170c0fac
+  FNumber: ZJDBDLX02_SYS
+  FName: 收付内部账户
+  FBillFormID: SC_FundsTransf
+
+ID: 552b125d0c0fe0
+  FNumber: ZJDBDLX03_SYS
+  FName: 资金内部账户
+  FBillFormID: SC_FundsTransf
+
+ID: 552f791d40faf4
+  FNumber: DBHKDLX01_SYS
+  FName: 调拨还款单
+  FBillFormID: SC_TransferRepay
+
+ID: 55345d0617a9e3
+  FNumber: SGRJZ01_SYS
+  FName: 银行存款日记账
+  FBillFormID: CN_JOURNAL
+
+ID: 55345d6217aa2e
+  FNumber: SGRJZ02_SYS
+  FName: 现金日记账
+  FBillFormID: CN_JOURNAL
+
+ID: 5535b4e1bd29f6
+  FNumber: GCBG01_SYS
+  FName: 普通工程变更单
+  FBillFormID: ENG_ECNOrder
+
+ID: 5541df82297466
+  FNumber: SCXPDCYFT01_SYS
+  FName: 生产线盘点差异分摊
+  FBillFormID: REM_CVA
+
+ID: 5552fd395c20e4
+  FNumber: JYD006_SYS
+  FName: 退货检验单
+  FBillFormID: QM_InspectBill
+
+ID: 556d6fe53e824e
+  FNumber: BLPCL002_SYS
+  FName: 退货检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 5580d51e423ec9
+  FNumber: XSCKD07_SYS
+  FName: B2C销售出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: 5590d1d0080063
+  FNumber: YFD04_SYS
+  FName: 转销应付单
+  FBillFormID: AP_Payable
+
+ID: 559351ce1d0252
+  FNumber: XSTHD07_SYS
+  FName: B2C销售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 559dda46190c25
+  FNumber: DJD01_SYS
+  FName: 正常预订单
+  FBillFormID: CMK_LS_DepositBill
+
+ID: 559dda81190cc1
+  FNumber: DJD02_SYS
+  FName: 退订单
+  FBillFormID: CMK_LS_DepositBill
+
+ID: 55a45f6010b04b
+  FNumber: XSHT01_SYS
+  FName: 标准销售合同
+  FBillFormID: CRM_Contract
+
+ID: 55cae425e376a4
+  FNumber: B2CDD05_SYS
+  FName: 合并B2C订单
+  FBillFormID: ECC_AllThirdOrder
+
+ID: 55e41a89963ea8
+  FNumber: PHXLHGX001_SYS
+  FName: 批号序列号关系
+  FBillFormID: QT_LotSNRelation
+
+ID: 566a7999d60c8d
+  FNumber: FHQJD001_SYS
+  FName: 发货请检单
+  FBillFormID: QM_STKAPPInspect
+
+ID: 566a7a6cd60d43
+  FNumber: JYD007_SYS
+  FName: 发货检验单
+  FBillFormID: QM_InspectBill
+
+ID: 5681f1bcffb810
+  FNumber: ZD001_SYS
+  FName: 销售收款账单
+  FBillFormID: ECC_BILLS
+
+ID: 5681f1e3ffb83a
+  FNumber: ZD002_SYS
+  FName: 销售退款账单
+  FBillFormID: ECC_BILLS
+
+ID: 5681f1ffffb864
+  FNumber: ZD003_SYS
+  FName: 销售佣金账单
+  FBillFormID: ECC_BILLS
+
+ID: 5681f21fffb88e
+  FNumber: ZD004_SYS
+  FName: 销售费用账单
+  FBillFormID: ECC_BILLS
+
+ID: 5697070c0d3f0c
+  FNumber: NBZHTZDLX01_SYS
+  FName: 内部账户付款调整单
+  FBillFormID: CN_InnerAccountAdjust
+
+ID: 569707f90d3f3e
+  FNumber: NBZHTZDLX02_SYS
+  FName: 内部账户收款调整单
+  FBillFormID: CN_InnerAccountAdjust
+
+ID: 56a81c97aee375
+  FNumber: XJZZD01_SYS
+  FName: 现金转账单
+  FBillFormID: CN_CASHTRANSBILL
+
+ID: 56d41bc5e45c3c
+  FNumber: JYD008_SYS
+  FName: 生产线检验
+  FBillFormID: QM_InspectBill
+
+ID: 56f8ed85106b5d
+  FNumber: XJD01_SYS
+  FName: 标准询价单
+  FBillFormID: SVM_InquiryBill
+
+ID: 56fcc113a05851
+  FNumber: MRBPSD001_SYS
+  FName: 来料检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 570321e1e172de
+  FNumber: SCPBJ001_SYS
+  FName: 标准报价单
+  FBillFormID: SCP_QuoteBill
+
+ID: 570cadbde7a088
+  FNumber: FYZZSFP01_SYS
+  FName: 进项费用增值税发票
+  FBillFormID: IV_PUREXVATIN
+
+ID: 570cd65be7a1b8
+  FNumber: SVMBJD01_SYS
+  FName: 标准比价单
+  FBillFormID: SVM_ComparePrice
+
+ID: 5716dd8873778e
+  FNumber: SCTK01_SYS
+  FName: 生产退库
+  FBillFormID: PRD_RetStock
+
+ID: 57187819eb4c0d
+  FNumber: GXBLP02_SYS
+  FName: 返修
+  FBillFormID: SFC_OperationRejects
+
+ID: 5719b4056d2525
+  FNumber: QCTLD01_SYS
+  FName: 期初采购退料单
+  FBillFormID: PUR_InitMRS
+
+ID: 5719b47b6d25cb
+  FNumber: QCTLD02_SYS
+  FName: 期初委外退料单
+  FBillFormID: PUR_InitMRS
+
+ID: 574bda01a321ba
+  FNumber: XJD02_SYS
+  FName: 直运询价单
+  FBillFormID: SVM_InquiryBill
+
+ID: 574bda59a3222a
+  FNumber: XJD03_SYS
+  FName: 资产询价单
+  FBillFormID: SVM_InquiryBill
+
+ID: 574bda94a3229a
+  FNumber: XJD04_SYS
+  FName: 费用询价单
+  FBillFormID: SVM_InquiryBill
+
+ID: 574bdaf3a3230a
+  FNumber: XJD05_SYS
+  FName: VMI询价单
+  FBillFormID: SVM_InquiryBill
+
+ID: 574e87276ff23a
+  FNumber: SCDD08_SYS
+  FName: 柔性工序汇报入库-普通生产
+  FBillFormID: PRD_MO
+
+ID: 577658dd483b7d
+  FNumber: SCTLD02_SYS
+  FName: 倒冲生产退料
+  FBillFormID: PRD_ReturnMtrl
+
+ID: 577dfa50c83885
+  FNumber: BLPCL003_SYS
+  FName: 产品检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 577dfa7bc838ed
+  FNumber: BLPCL004_SYS
+  FName: 自制工序检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 577f5674eac0d7
+  FNumber: SEXINV001_SYS
+  FName: 销项费用普通发票
+  FBillFormID: IV_SALEEXINV
+
+ID: 577f56ddeac12d
+  FNumber: SEXVATIN001_SYS
+  FName: 销项费用增值税发票
+  FBillFormID: IV_SALEEXVATIN
+
+ID: 57ad5a1ea216f4
+  FNumber: JDSCTK01_SYS
+  FName: 简单生产退库
+  FBillFormID: SP_OUTSTOCK
+
+ID: 57b00d63a20d413db53ba799040f04a2
+  FNumber: SLD03_SYS
+  FName: 委外收料单
+  FBillFormID: PUR_ReceiveBill
+
+ID: 57b565c144fa20
+  FNumber: YMZGYFD01_SYS
+  FName: 月末暂估应付单
+  FBillFormID: AP_HookPayable
+
+ID: 57cd8a551bc5b6
+  FNumber: O2ODJD
+  FName: O2O预订单
+  FBillFormID: CMK_LS_OrderBill
+
+ID: 57cd9fe41bc6ce
+  FNumber: YDFKD
+  FName: 预订付款单
+  FBillFormID: CMK_LS_OrderBill
+
+ID: 57cfb51a84a65f
+  FNumber: SKJSD01_SYS
+  FName: 收款结算单
+  FBillFormID: SC_RECEIVESETTLEBILL
+
+ID: 57d60b26287089
+  FNumber: FKJSD01_SYS
+  FName: 付款结算单
+  FBillFormID: SC_PAYSETTLEBILL
+
+ID: 57d6767306f207
+  FNumber: WSDD03_SYS
+  FName: BBC企业订单
+  FBillFormID: CP_SaleOrder
+
+ID: 57d676cb06f2a9
+  FNumber: WSDD04_SYS
+  FName: BBC配件订单
+  FBillFormID: CP_SaleOrder
+
+ID: 57e9ec44f4fced
+  FNumber: CMK_RSM_StoreRequestSta
+  FName: 标准门店要货单
+  FBillFormID: CMK_RSM_StoreRequest
+
+ID: 57fc3589bb8730
+  FNumber: BBCTHSQD01_SYS
+  FName: BBC企业商品退货申请单
+  FBillFormID: CP_BBCReturnReq
+
+ID: 57fc35babb8784
+  FNumber: BBCTHSQD02_SYS
+  FName: BBC企业保内配件退货申请单
+  FBillFormID: CP_BBCReturnReq
+
+ID: 57fc35d0bb87db
+  FNumber: BBCTHSQD03_SYS
+  FName: BBC企业保外配件退货申请单
+  FBillFormID: CP_BBCReturnReq
+
+ID: 57fd8f724b2a62
+  FNumber: THTZD03_SYS
+  FName: BBC退货通知单
+  FBillFormID: SAL_RETURNNOTICE
+
+ID: 57fd95e54b2bb8
+  FNumber: XSTHD08_SYS
+  FName: BBC销售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 58218ee1b6da26
+  FNumber: YSBB01_SYS
+  FName: 预算报表
+  FBillFormID: BM_Report
+
+ID: 582aba4fbbedf7
+  FNumber: JKLXD01_SYS
+  FName: 外部借款利息单
+  FBillFormID: SC_BorrowInterest
+
+ID: 5833cf4588fdb1
+  FNumber: WWCYFT01_SYS
+  FName: 标准差异分摊
+  FBillFormID: SUB_CVA
+
+ID: 583d05b9aec0ba
+  FNumber: GCBGSQ01_SYS
+  FName: 工程变更申请单
+  FBillFormID: ENG_ECRApply
+
+ID: 583ed26e77664a9d8346e78aa917ce08
+  FNumber: TLD01_SYS
+  FName: 标准退料单
+  FBillFormID: PUR_MRB
+
+ID: 58413060502ad5
+  FNumber: LYZXJNBJSD01_SYS
+  FName: 利润中心间内部结算单
+  FBillFormID: AMB_INNERSETTLE
+
+ID: 584f4087a14649
+  FNumber: WWCHD01_SYS
+  FName: 委外超耗单
+  FBillFormID: SUB_EXCONSUME
+
+ID: 58844595610b43
+  FNumber: XCYCCLD01_SYS
+  FName: 标准处理单
+  FBillFormID: SFC_AlertBill
+
+ID: 5899503057e1ff
+  FNumber: JDSCLL02_SYS
+  FName: VMI简单生产领料
+  FBillFormID: SP_PickMtrl
+
+ID: 5899791f57ee8f
+  FNumber: JDSCTL02_SYS
+  FName: VMI简单生产退料
+  FBillFormID: SP_ReturnMtrl
+
+ID: 58aa81c0cf5a24
+  FNumber: JYD009_SYS
+  FName: 受托材料检验单
+  FBillFormID: QM_InspectBill
+
+ID: 58ae34fc55bbad
+  FNumber: STCLSL01_SYS
+  FName: 标准受托加工材料收料单
+  FBillFormID: STK_OEMReceive
+
+ID: 58c77e15e6566a
+  FNumber: SKDLX06_SYS
+  FName: 保证金收款单
+  FBillFormID: AR_RECEIVEBILL
+
+ID: 58c7aa52e6592e
+  FNumber: SKTKDLX03_SYS
+  FName: 保证金退款单
+  FBillFormID: AR_REFUNDBILL
+
+ID: 58c8a53ae45e1f
+  FNumber: SCPSHTZD01_SYS
+  FName: 供应商协同送货通知单
+  FBillFormID: SCP_ReceiveBill
+
+ID: 58cf7622410fb0
+  FNumber: SCYMZZZY01_SYS
+  FName: 生产月末在制转移
+  FBillFormID: PRD_MonEndTransfer
+
+ID: 58d0f44fc155d5
+  FNumber: SCPXJD01_SYS
+  FName: 供应商协同询价单
+  FBillFormID: SCP_InquiryBill
+
+ID: 58d0f493c15637
+  FNumber: SCPBJD01_SYS
+  FName: 供应商协同报价单
+  FBillFormID: SVM_QuoteBill
+
+ID: 58d0f4d2c156a1
+  FNumber: SCPCGDD01_SYS
+  FName: 供应商协同采购订单
+  FBillFormID: SCP_PurchaseOrder
+
+ID: 58d0f50ac1572f
+  FNumber: SCPBGD01_SYS
+  FName: 供应商协同采购订单变更单
+  FBillFormID: SCP_POChange
+
+ID: 58d0f55ec15773
+  FNumber: SCPCGRKD01_SYS
+  FName: 供应商协同采购入库单
+  FBillFormID: SCP_InStock
+
+ID: 58d0f63dc157d9
+  FNumber: SCPTLTZ01_SYS
+  FName: 供应商协同退料通知单
+  FBillFormID: SCP_MRAPP
+
+ID: 58d0f699c1581f
+  FNumber: SCPCGTLD01_SYS
+  FName: 供应商协同采购退料单
+  FBillFormID: SCP_MRB
+
+ID: 58d1cbeee395e4
+  FNumber: WWYMZZZY01_SYS
+  FName: 委外月末在制转移
+  FBillFormID: SUB_MonEndTransfer
+
+ID: 58d359987643ca
+  FNumber: XJGHD01_SYS
+  FName: 现金购汇单
+  FBillFormID: CN_CASHFEXCHANGBILL
+
+ID: 58da3c16c65138
+  FNumber: CGHT01_SYS
+  FName: 标准采购合同
+  FBillFormID: PUR_Contract
+
+ID: 58e730f1a6698a
+  FNumber: BBCOrder01_SYS
+  FName: BBC企业订单
+  FBillFormID: CP_BBCOrder
+
+ID: 5929517d7fcc91
+  FNumber: HandAllotType
+  FName: 手工铺货
+  FBillFormID: CMK_BranchRequestManage
+
+ID: 592951ba7fcd11
+  FNumber: AutoAllotType
+  FName: 智能配货
+  FBillFormID: CMK_BranchRequestManage
+
+ID: 596d7093cee171
+  FNumber: SCFLTZD01_SYS
+  FName: 生产发料通知单
+  FBillFormID: PRD_ISSUEMTRNOTICE
+
+ID: 59786806c77fec
+  FNumber: JYD010_SYS
+  FName: 其他检验单
+  FBillFormID: QM_InspectBill
+
+ID: 59a4d4717be5dc
+  FNumber: YSSJSBB01_SYS
+  FName: 预算实际数报表
+  FBillFormID: BM_ActualReport
+
+ID: 59b37bb8130d84
+  FNumber: YSHZBB01_SYS
+  FName: 预算周期汇总报表
+  FBillFormID: BM_Report
+
+ID: 59b384a9130dc9
+  FNumber: YSHZB01_SYS
+  FName: 预算汇总表
+  FBillFormID: BM_BudgetSumReport
+
+ID: 59b8f4615e1ff8
+  FNumber: ESS_PREPAYMENT01_SYS
+  FName: 预付款提报单
+  FBillFormID: ESS_PREPAYMENT
+
+ID: 59bb3687d0f5c7
+  FNumber: BBCOrder02_SYS
+  FName: BBC配件订单
+  FBillFormID: CP_BBCOrder
+
+ID: 59bf919a55dde0
+  FNumber: BBCOrder03_SYS
+  FName: BBC企业分销调拨订单
+  FBillFormID: CP_BBCOrder
+
+ID: 59bf91b855deb2
+  FNumber: BBCOrder04_SYS
+  FName: BBC企业寄售订单
+  FBillFormID: CP_BBCOrder
+
+ID: 59c46b1074cd1d
+  FNumber: DBSQD01_SYS
+  FName: 标准调拨申请单
+  FBillFormID: STK_TRANSFERAPPLY
+
+ID: 59c46b3974cd6f
+  FNumber: DBSQD02_SYS
+  FName: VMI调拨申请单
+  FBillFormID: STK_TRANSFERAPPLY
+
+ID: 59dc3f1c46d65a
+  FNumber: CKSQ01_SYS
+  FName: 标准出库申请
+  FBillFormID: STK_OutStockApply
+
+ID: 59dc3f6446d6c2
+  FNumber: CKSQ02_SYS
+  FName: VMI出库申请
+  FBillFormID: STK_OutStockApply
+
+ID: 59dc68755e39b2
+  FNumber: CKSQ03_SYS
+  FName: 资产出库申请
+  FBillFormID: STK_OutStockApply
+
+ID: 59dc68b45e3a46
+  FNumber: CKSQ04_SYS
+  FName: 费用物料出库申请
+  FBillFormID: STK_OutStockApply
+
+ID: 59e5ced3705f02
+  FNumber: JYD011_SYS
+  FName: 工序巡检单
+  FBillFormID: QM_InspectBill
+
+ID: 59f186400055a3
+  FNumber: MNBJD01_SYS
+  FName: 标准模拟报价单
+  FBillFormID: Sal_SimulateQuotation
+
+ID: 59f2c6719d1180
+  FNumber: AMNBJSD01_SYS
+  FName: 经营单元内部结算单
+  FBillFormID: AM_InnerSettleBill
+
+ID: 59f7e84e995668
+  FNumber: DDJLTZ01_SYS
+  FName: 销售订单级联调整
+  FBillFormID: PLN_CASCADEADJUST
+
+ID: 59f7e8a19956ce
+  FNumber: DDJLTZ02_SYS
+  FName: 预测单级联调整
+  FBillFormID: PLN_CASCADEADJUST
+
+ID: 5a2660bf36f2d3
+  FNumber: YFTHD01_SYS
+  FName: 应付调汇单
+  FBillFormID: AP_AdjustExchangeRate
+
+ID: 5a26613d36f2fc
+  FNumber: YSTHD01_SYS
+  FName: 应收调汇单
+  FBillFormID: AR_AdjustExchangeRate
+
+ID: 5a46fab52dfa51
+  FNumber: BBCTHSQD04_SYS
+  FName: BBC寄售销售退货申请单
+  FBillFormID: CP_BBCReturnReq
+
+ID: 5a59add78ca61e
+  FNumber: SCQLFX01_SYS
+  FName: 标准缺料分析单
+  FBillFormID: PRD_LackAnalyeBill
+
+ID: 5aa0efc8ce62ae
+  FNumber: SCQTFX01_SYS
+  FName: 标准齐套分析单
+  FBillFormID: PRD_MatchAnalyseBill
+
+ID: 5aa629903c894d
+  FNumber: APPADD
+  FName: APP POS
+  FBillFormID: CMK_LS_Retail
+
+ID: 5aa62ab23c8a99
+  FNumber: SMALLROUTINE
+  FName: 小程序扫码购
+  FBillFormID: CMK_LS_Retail
+
+ID: 5aa62aeb3c8be5
+  FNumber: B2CADD
+  FName: B2C自提
+  FBillFormID: CMK_LS_Retail
+
+ID: 5aa62b673c8d31
+  FNumber: DepositConvertSale
+  FName: 预订单转销售
+  FBillFormID: CMK_LS_Retail
+
+ID: 5ab49cee751304
+  FNumber: LDZFD01_SYS
+  FName: 联动支付单
+  FBillFormID: SC_LINKPAYBILL
+
+ID: 5ab866cfec589f
+  FNumber: B2CJPD01_SYS
+  FName: 标准拣配单
+  FBillFormID: ECC_PickDeliverySchedule
+
+ID: 5abd9deba59210
+  FNumber: CGDD08_SYS
+  FName: 现购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: 5abd9ec8a593ec
+  FNumber: SLD07_SYS
+  FName: 现购收料单
+  FBillFormID: PUR_ReceiveBill
+
+ID: 5abdab3ba595b6
+  FNumber: RKD08_SYS
+  FName: 现购入库单
+  FBillFormID: STK_InStock
+
+ID: 5abdae5da59757
+  FNumber: TLD07_SYS
+  FName: 现购退料单
+  FBillFormID: PUR_MRB
+
+ID: 5abdcee6a59925
+  FNumber: TLSQDD04_SYS
+  FName: 现购退料申请
+  FBillFormID: PUR_MRAPP
+
+ID: 5ac2ea23b5c0c5
+  FNumber: B2CJPD03_SYS
+  FName: 代销拣配单
+  FBillFormID: ECC_ConsignmentSchedule
+
+ID: 5ac2eb52b5c1a6
+  FNumber: B2CJPD02_SYS
+  FName: 自提拣配单
+  FBillFormID: ECC_SelfPickSchedule
+
+ID: 5b03c31b827690
+  FNumber: BRJS06_SYS
+  FName: 应收票据质押结算单
+  FBillFormID: CN_BILLRECSETTLE
+
+ID: 5b03c4c98276f8
+  FNumber: BRJS07_SYS
+  FName: 应收票据撤押结算单
+  FBillFormID: CN_BILLRECSETTLE
+
+ID: 5b0f9aa7381170
+  FNumber: YCD02_SYS
+  FName: ATO预测单
+  FBillFormID: PLN_FORECAST
+
+ID: 5b336984a6aae5
+  FNumber: TLSQDD05_SYS
+  FName: VMI退料申请
+  FBillFormID: PUR_MRAPP
+
+ID: 5b37q2da269df0
+  FNumber: SelfhelpShop
+  FName: 自助购
+  FBillFormID: CMK_LS_Retail
+
+ID: 5b715ada2841f5
+  FNumber: SMALLONLINE
+  FName: 小程序线上购
+  FBillFormID: CMK_LS_Retail
+
+ID: 5b91410d323043f3b4f3a7079aad3c68
+  FNumber: RKD02_SYS
+  FName: 零散采购入库单
+  FBillFormID: STK_InStock
+
+ID: 5b9b0e2db8fe8c
+  FNumber: FKSQ007_SYS
+  FName: 保证金付款申请
+  FBillFormID: CN_PAYAPPLY
+
+ID: 5b9b2214b9025b
+  FNumber: FKDLX08_SYS
+  FName: 保证金付款单
+  FBillFormID: AP_PAYBILL
+
+ID: 5ba4567d595f33
+  FNumber: FKTKDLX04_SYS
+  FName: 保证金付款退款单
+  FBillFormID: AP_REFUNDBILL
+
+ID: 5c039a2f9eda426889f68b842c085fd6
+  FNumber: BRJS02_SYS
+  FName: 应收票据贴现
+  FBillFormID: CN_BILLRECSETTLE
+
+ID: 5ca455b964beba
+  FNumber: CLFBX002_SYS
+  FName: 差旅费报销单（2019新政）
+  FBillFormID: ER_ExpReimbursement_Travel
+
+ID: 5cbed69b1d3e79
+  FNumber: XJD06_SYS
+  FName: 委外询价单
+  FBillFormID: SVM_InquiryBill
+
+ID: 5d785518970486
+  FNumber: BBCChannelReq_SYS
+  FName: BBC渠道调拨单
+  FBillFormID: ESS_ChannelReq
+
+ID: 5d7b48447fe2a9
+  FNumber: RetailReturnReq01_SYS
+  FName: 销售开单退货
+  FBillFormID: ESS_RetailReturnReq
+
+ID: 5df86c9176f16b
+  FNumber: BLPCL005_SYS
+  FName: 委外工序检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 5e0ea7fb8381e9
+  FNumber: KCZTZH02_SYS
+  FName: 检验库存状态转换
+  FBillFormID: STK_StockConvert
+
+ID: 5e1697dd50eda8
+  FNumber: HZSSD01_SYS
+  FName: 坏账损失单
+  FBillFormID: AR_BADDebtLoss
+
+ID: 5e587c4bfde1f1
+  FNumber: MRBPSD002_SYS
+  FName: 产品检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 5e757eee834afb
+  FNumber: FZGS01_SYS
+  FName: 标准辅助工时
+  FBillFormID: SFC_UnproductiveTime
+
+ID: 5e7b3a2b70f2a2
+  FNumber: YMZGYSD01_SYS
+  FName: 月末发出商品单
+  FBillFormID: AR_HookReceivable
+
+ID: 5e82b4befc3026
+  FNumber: KP001_SYS
+  FName: 指标卡片
+  FBillFormID: LIVE_ReportCard
+
+ID: 5ebf64b4e90edf
+  FNumber: YFCSGZD01_SYS
+  FName: 预防措施跟踪单
+  FBillFormID: SFC_PrecautionTrack
+
+ID: 5ecb2756601cd8
+  FNumber: MRBPSD003_SYS
+  FName: 自制工序检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 5ed4b647530efe
+  FNumber: KP002_SYS
+  FName: 单据卡片
+  FBillFormID: LIVE_ReportCard
+
+ID: 45388b3e35924be18908aefadcdc28e1
+  FNumber: FYFP01_SYS
+  FName: 进项费用普通发票
+  FBillFormID: IV_PUREXPINV
+
+ID: 5f0d5884c43fd9
+  FNumber: SCTLQJD001_SYS
+  FName: 生产退料请检单
+  FBillFormID: QM_ReturnMtrAppQc
+
+ID: 5f3cd032f332e3
+  FNumber: JYD012_SYS
+  FName: 生产退料检验单
+  FBillFormID: QM_InspectBill
+
+ID: 5f48b37bd3b594
+  FNumber: XLYCD01_SYS
+  FName: 销量预测单
+  FBillFormID: BDIP_SalePrediction
+
+ID: 5fa3694a5bea0c
+  FNumber: ZTCOMMON_SYS
+  FName: 常规主题
+  FBillFormID: LIVE_AnalysisTheme
+
+ID: 5fa369b05bea30
+  FNumber: ZTCUSTBUS_SYS
+  FName: 客户价值分析
+  FBillFormID: LIVE_AnalysisTheme
+
+ID: 5faa3566d90aa4
+  FNumber: JYLSZ01_SYS
+  FName: 日常业务
+  FBillFormID: AM_VOUCHER
+
+ID: 5faa36bdd90af8
+  FNumber: JYLSZ02_SYS
+  FName: 内部交易
+  FBillFormID: AM_VOUCHER
+
+ID: 5faa370ad90b4c
+  FNumber: JYLSZ03_SYS
+  FName: 调整业务
+  FBillFormID: AM_VOUCHER
+
+ID: 5faa373bd90ba0
+  FNumber: JYLSZ04_SYS
+  FName: 共享业务
+  FBillFormID: AM_VOUCHER
+
+ID: 5facd22c0f1fe9
+  FNumber: ZCCZ01_SYS
+  FName: 自有资产处置单
+  FBillFormID: FA_DISPOSAL
+
+ID: 5facd24c0f2055
+  FNumber: ZCCZ02_SYS
+  FName: 租入资产处置单
+  FBillFormID: FA_DISPOSAL
+
+ID: 5fb36e2360e5ad
+  FNumber: MRBPSD004_SYS
+  FName: 库存检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 5fb37269d1389b
+  FNumber: ZJBXD001_SYS
+  FName: 租金报销单
+  FBillFormID: ER_ExpReimbursement
+
+ID: 5fc0c2746a813a
+  FNumber: YCDBGD01_SYS
+  FName: 预测单变更单
+  FBillFormID: PLN_FOChange
+
+ID: 5fdb010a3b6256
+  FNumber: FYSQ002_SYS
+  FName: BBC费用申请单
+  FBillFormID: ER_ExpenseRequest
+
+ID: 5fdb08183b62dc
+  FNumber: FYBXD002_SYS
+  FName: BBC费用报销单
+  FBillFormID: ER_ExpReimbursement
+
+ID: 5fdb37a43b641b
+  FNumber: BBC_FYSQD_SYS
+  FName: 营销费用申请单
+  FBillFormID: MEM_FeeRequest
+
+ID: 5fe2de8c7c3bdc
+  FNumber: HZSHD01_SYS
+  FName: 坏账收回单
+  FBillFormID: AR_BADDEBTRECOVEY
+
+ID: 5ff57d03be1d8a
+  FNumber: BBCFYBXD
+  FName: 营销费用报销单
+  FBillFormID: MEM_FeeReimburse
+
+ID: 600653f1d2e899
+  FNumber: JYLSZ05_SYS
+  FName: 内部分摊
+  FBillFormID: AM_VOUCHER
+
+ID: 6018ec0ae4eadc
+  FNumber: MRBPSD005_SYS
+  FName: 退货检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 6034ca77863f18
+  FNumber: MTOKCSF01_SYS
+  FName: 标准MTO库存释放
+  FBillFormID: PLN_MTOINVRelease
+
+ID: 6034cb06863f6e
+  FNumber: MTOKCTZ01_SYS
+  FName: 标准MTO库存调整
+  FBillFormID: PLN_MTOINVConvert
+
+ID: 6046eadde4f054
+  FNumber: DDJLTZ03_SYS
+  FName: 生产订单级联调整
+  FBillFormID: PLN_CASCADEADJUST
+
+ID: 6046eaf7e4f0f4
+  FNumber: DDJLTZ04_SYS
+  FName: 委外订单级联调整
+  FBillFormID: PLN_CASCADEADJUST
+
+ID: 60470d7f5ef8e1
+  FNumber: ZCTZ01_SYS
+  FName: 人人资产退库单
+  FBillFormID: FA_TRANSFER
+
+ID: 60470d9f5ef903
+  FNumber: ZCTZ02_SYS
+  FName: 人人资产转移单
+  FBillFormID: FA_TRANSFER
+
+ID: 604ad0cb83a848
+  FNumber: BLPCL006_SYS
+  FName: 生产退料检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 605084d6a22105
+  FNumber: JKZY001_SYS
+  FName: 借款转移单
+  FBillFormID: ER_LoanTransfer
+
+ID: 605ae4a95ddccc
+  FNumber: SYSQD001_SYS
+  FName: 事由申请单
+  FBillFormID: ER_ReasonsRequest
+
+ID: 60629812bf1849
+  FNumber: CP_BBCSaleScheme01_SYS
+  FName: BBC标准要货计划
+  FBillFormID: CP_BBCSaleScheme
+
+ID: 6062e5027d5bba
+  FNumber: KP003_SYS
+  FName: 报表卡片
+  FBillFormID: LIVE_ReportCard
+
+ID: 606672b44c0533
+  FNumber: BFTKBXD001_SYS
+  FName: 负数费用报销单
+  FBillFormID: ER_ExpReimbursement
+
+ID: 6066b4b18325db
+  FNumber: RRZCLY01_SYS
+  FName: 人人资产领用
+  FBillFormID: FA_PICKINGAPPLY
+
+ID: 607933f5e83932
+  FNumber: ZTSTATEMENT_SYS
+  FName: 报表主题
+  FBillFormID: LIVE_AnalysisTheme
+
+ID: 607d00162753de
+  FNumber: YSTZB01_SYS
+  FName: None
+  FBillFormID: BM_ReportAdjust
+
+ID: 609b6d4d1deb88
+  FNumber: MRBPSD006_SYS
+  FName: 委外工序检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 609cc478685acc
+  FNumber: FKTKDLX05_SYS
+  FName: 工资发放退款单
+  FBillFormID: AP_REFUNDBILL
+
+ID: 609e1b11b90a8c
+  FNumber: ZXPSQD_SYS_001
+  FName: 助销品申请单
+  FBillFormID: MEM_FEEREUESTGOODS
+
+ID: 60d2460b0e5742d58432f70a06f193b6
+  FNumber: CGSQD03_SYS
+  FName: 资产采购申请单
+  FBillFormID: PUR_Requisition
+
+ID: 60ff66e2463a2f
+  FNumber: BLPCL007_SYS
+  FName: 受托材料检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 6130a80550c216
+  FNumber: QTQJD001_SYS
+  FName: 其他请检单
+  FBillFormID: QM_OtherInspectAppQc
+
+ID: 613dbb10d88b4f548f76767680f3c8d1
+  FNumber: WWDDBGD01_SYS
+  FName: 委外订单变更单
+  FBillFormID: SUB_ReqChange
+
+ID: 6189c78f8f9089
+  FNumber: ESS_OUTSTOCK01_SYS
+  FName: 标准渠道出库单
+  FBillFormID: ESS_ChannelOutStock
+
+ID: 6189c7d28f90e3
+  FNumber: ESS_OrderSign01_SYS
+  FName: 标准渠道入库单
+  FBillFormID: ESS_OrderSign
+
+ID: 61a4d46e5a6f5e
+  FNumber: ESS_OUTSTOCK02_SYS
+  FName: 盘亏出库单
+  FBillFormID: ESS_ChannelOutStock
+
+ID: 61a4d51a5a6fb8
+  FNumber: ESS_OUTSTOCK03_SYS
+  FName: 其他出库单
+  FBillFormID: ESS_ChannelOutStock
+
+ID: 61a4d6065a7012
+  FNumber: ESS_OUTSTOCK04_SYS
+  FName: 红字出库单
+  FBillFormID: ESS_ChannelOutStock
+
+ID: 61a4d6545a706c
+  FNumber: ESS_OrderSign02_SYS
+  FName: 盘盈入库单
+  FBillFormID: ESS_OrderSign
+
+ID: 61a4d6745a70c0
+  FNumber: ESS_OrderSign03_SYS
+  FName: 其他入库单
+  FBillFormID: ESS_OrderSign
+
+ID: 61a4d6a65a7114
+  FNumber: ESS_OrderSign04_SYS
+  FName: 红字入库单
+  FBillFormID: ESS_OrderSign
+
+ID: 61c14680f186d9
+  FNumber: FUM_INADJUST01_SYS
+  FName: 充值调入单
+  FBillFormID: FUM_AccountInAdjust
+
+ID: 61c146abf186ef
+  FNumber: FUM_INADJUST02_SYS
+  FName: 报销调入单
+  FBillFormID: FUM_AccountInAdjust
+
+ID: 61c146c1f18705
+  FNumber: FUM_INADJUST03_SYS
+  FName: 退货调入单
+  FBillFormID: FUM_AccountInAdjust
+
+ID: 61c146d9f1871b
+  FNumber: FUM_INADJUST04_SYS
+  FName: 初始调入单
+  FBillFormID: FUM_AccountInAdjust
+
+ID: 61c14764f18731
+  FNumber: FUM_INADJUST05_SYS
+  FName: 其他调入单
+  FBillFormID: FUM_AccountInAdjust
+
+ID: 61cabfe8604732
+  FNumber: FUM_OUTADJUST01_SYS
+  FName: 订货调出单
+  FBillFormID: FUM_AccountOutAdjust
+
+ID: 61cac015604750
+  FNumber: FUM_OUTADJUST02_SYS
+  FName: 尾款调出单
+  FBillFormID: FUM_AccountOutAdjust
+
+ID: 61cac02860476e
+  FNumber: FUM_OUTADJUST03_SYS
+  FName: 其他调出单
+  FBillFormID: FUM_AccountOutAdjust
+
+ID: 61caf6856047db
+  FNumber: FUM_INOUTADJUST01_SYS
+  FName: 标准账户调整单
+  FBillFormID: FUM_AccountInOutAdjust
+
+ID: 61e669efe22457
+  FNumber: MRBPSD007_SYS
+  FName: 生产退料检验MRB评审
+  FBillFormID: QM_MRBReviewBill
+
+ID: 6209aecac065eb
+  FNumber: MRBPSD008_SYS
+  FName: 受托材料检验MRB评审
+  FBillFormID: QM_MRBReviewBill
+
+ID: 622ee4340df4b4
+  FNumber: BLPCL008_SYS
+  FName: 发货检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 6233f6158ea712
+  FNumber: FUM_INADJUST06_SYS
+  FName: 订单取消调入单
+  FBillFormID: FUM_AccountInAdjust
+
+ID: 623adc7b03e54c85b4645ce203620e7f
+  FNumber: XTZH01_SYS
+  FName: 标准形态转换
+  FBillFormID: STK_StatusConvert
+
+ID: 6247e8be5b17b0
+  FNumber: CGDD09_SYS
+  FName: 分销购销采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: 62679b107e401f
+  FNumber: RKD09_SYS
+  FName: 直运入库单
+  FBillFormID: STK_InStock
+
+ID: 62679bb47e41d2
+  FNumber: TLD08_SYS
+  FName: 直运退料单
+  FBillFormID: PUR_MRB
+
+ID: 626b802f70c134
+  FNumber: WWTLQJD001_SYS
+  FName: 委外退料请检单
+  FBillFormID: QM_SubRtnMtrlAppQc
+
+ID: 62739202506015
+  FNumber: BLPCL009_SYS
+  FName: 其他检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 6278f1e9830f8e
+  FNumber: JYD013_SYS
+  FName: 委外退料检验单
+  FBillFormID: QM_InspectBill
+
+ID: 627b5316a5789a
+  FNumber: YSQMTHD01_SYS
+  FName: 应收期末调汇单
+  FBillFormID: AR_AdFinalExchangeRate
+
+ID: 627b53faa578d8
+  FNumber: YFQMTHD01_SYS
+  FName: 应付期末调汇单
+  FBillFormID: AP_AdFinalExchangeRate
+
+ID: 6281f839a47011
+  FNumber: SKRLD01_SYS
+  FName: 收款认领单
+  FBillFormID: CN_RECCLAIMBILL
+
+ID: 62848c07690aaa
+  FNumber: XSCKD08_SYS
+  FName: 直运销售出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: 6284917c690cfc
+  FNumber: XSTHD09_SYS
+  FName: 直运销售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 628da3da00d2ad
+  FNumber: MRBPSD009_SYS
+  FName: 其他检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 62a82bc345ecc9
+  FNumber: SD_Assemble
+  FName: 标准商品加工单
+  FBillFormID: CMK_LS_ProductAssemble
+
+ID: 62a82bf645ed47
+  FNumber: LS_Assemble
+  FName: 零售自动组装单
+  FBillFormID: CMK_LS_ProductAssemble
+
+ID: 632419c6ed98af
+  FNumber: GXWWJZFC01_SYS
+  FName: 工序委外集中发出
+  FBillFormID: SFC_OperOutGroupSend
+
+ID: 632aba6bc8da98
+  FNumber: BLPCL0010_SYS
+  FName: 委外退料检验不良品处理单
+  FBillFormID: QM_DefectProcessBill
+
+ID: 632d4ed5e61bb4
+  FNumber: SLD08_SYS
+  FName: 分销购销收料单
+  FBillFormID: PUR_ReceiveBill
+
+ID: 63329417b339b6
+  FNumber: GXWAJZJS01_SYS
+  FName: 工序委外集中接收
+  FBillFormID: SFC_OperOutGroupReceive
+
+ID: 6340dfb6e09985
+  FNumber: MRBPSD010_SYS
+  FName: 委外退料检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 6361da97dd86d6
+  FNumber: FUM_INADJUST07_SYS
+  FName: 资金账户授信调增
+  FBillFormID: FUM_AccountInAdjust
+
+ID: 6361dafbdd870e
+  FNumber: FUM_OUTADJUST04_SYS
+  FName: 资金账户授信调减
+  FBillFormID: FUM_AccountOutAdjust
+
+ID: 636219e5634ce8
+  FNumber: FUM_INOUTADJUST02_SYS
+  FName: 信用还款调拨列表
+  FBillFormID: FUM_AccountInOutAdjust
+
+ID: 636b1bb32ce7c5
+  FNumber: KCZTZH03_SYS
+  FName: 序列号调整库存状态转换
+  FBillFormID: STK_StockConvert
+
+ID: 63db1ea3926705
+  FNumber: BBCTKSQD001
+  FName: BBC退款申请单
+  FBillFormID: CP_RefundReq
+
+ID: 63e9ffecd48c1a
+  FNumber: SCPCGHT01_SYS
+  FName: 供应商协同采购合同
+  FBillFormID: SCP_Contract
+
+ID: 6431504593e2aa4611e332fb1d502107
+  FNumber: ZJQKD01_SYS
+  FName: 资金请款
+  FBillFormID: SC_FundsApply
+
+ID: 6431504593e2aa4611e332fb81ea8607
+  FNumber: ZJXBD01_SYS
+  FName: 资金下拨
+  FBillFormID: SC_FundsDown
+
+ID: 6440a9202a11ce
+  FNumber: MDCGTHD
+  FName: 门店采购退货单
+  FBillFormID: CMK_LS_StoresDelivery
+
+ID: 64518d2d40a44b9a8207fcfe22a4c5d1
+  FNumber: BRJS01_SYS
+  FName: 应收票据到期收款
+  FBillFormID: CN_BILLRECSETTLE
+
+ID: 64672b37c3284d
+  FNumber: JSJSD02_SYS
+  FName: 寄售结算单（匹配库存）
+  FBillFormID: SAL_ConsignmentSettle
+
+ID: 649148484344e9
+  FNumber: POSBZDGD
+  FName: POS标准导购单
+  FBillFormID: CMK_LS_Assistants
+
+ID: 6491499943457b
+  FNumber: POSDGYXD
+  FName: POS导购意向单
+  FBillFormID: CMK_LS_Assistants
+
+ID: 649150bb43460d
+  FNumber: POSBZTGD
+  FName: POS标准退购单
+  FBillFormID: CMK_LS_Assistants
+
+ID: 64918ba4e1212f
+  FNumber: YSPJCFD01_SYS
+  FName: 应收票据拆分单
+  FBillFormID: CN_SplitRecBill
+
+ID: 64cb0dfaea5112
+  FNumber: MRBPSD011_SYS
+  FName: 发货检验MRB评审单
+  FBillFormID: QM_MRBReviewBill
+
+ID: 65509029e6fb0d
+  FNumber: XSDD10_SYS
+  FName: 样品销售订单
+  FBillFormID: SAL_SaleOrder
+
+ID: 6579394acb79fb
+  FNumber: XSDD11_SYS
+  FName: 期初销售订单
+  FBillFormID: SAL_SaleOrder
+
+ID: 6588dd4c60a4ad
+  FNumber: CGDD10_SYS
+  FName: 期初采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: 666bb0c435b37d
+  FNumber: RequestToSale
+  FName: 门店要货转销售
+  FBillFormID: CMK_LS_Retail
+
+ID: 66fba68dd04b499e8860966f2ee60117
+  FNumber: THTZD01_SYS
+  FName: 标准退货通知单
+  FBillFormID: SAL_RETURNNOTICE
+
+ID: 670b3608188c425a9f696d7ccb47843d
+  FNumber: SKDLX02_SYS
+  FName: 其他业务收款单
+  FBillFormID: AR_RECEIVEBILL
+
+ID: 683e2791298b4e79974ef3d2adc187ff
+  FNumber: WLQD01_SYS
+  FName: 物料清单
+  FBillFormID: ENG_BOM
+
+ID: 6942bfeaeaf04a7194fd982474567908
+  FNumber: ZCJY02_SYS
+  FName: 资产借出
+  FBillFormID: FA_BORROW
+
+ID: 6a0f0eed3859428d901bdc3441384835
+  FNumber: FHTZD02_SYS
+  FName: 寄售发货通知单
+  FBillFormID: SAL_DELIVERYNOTICE
+
+ID: 6a4321986af642c895449a7671e4d10f
+  FNumber: SCYLQDBGD01_SYS
+  FName: 生产用料清单变更单
+  FBillFormID: PRD_PPBOMChange
+
+ID: 6d01d059713d42a28bb976c90a121142
+  FNumber: CGDD02_SYS
+  FName: 标准委外订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: 6e4b730a35eb4d0da8298ec1e5cc63f1
+  FNumber: XSDDBGD01_SYS
+  FName: 标准销售订单变更单
+  FBillFormID: SAL_SaleOrderChange
+
+ID: 73383412199a402bb58439509e089077
+  FNumber: XSTHD01_SYS
+  FName: 标准销售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: 74642AA9BA1E4EE98123C143BFAB788C
+  FNumber: CSKC01_SYS
+  FName: 标准初始库存单
+  FBillFormID: STK_InvInit
+
+ID: 7555657A-FD6A-4879-AC4F-60E7A648DE67
+  FNumber: FKTKDLX01_SYS
+  FName: 采购业务退款单
+  FBillFormID: AP_REFUNDBILL
+
+ID: 777f5fd25084498a9e77e1ef2a72e645
+  FNumber: SLD04_SYS
+  FName: 资产接收单
+  FBillFormID: PUR_ReceiveBill
+
+ID: 77ddfb5c4daa44d288b4e9efbd768e94
+  FNumber: JHDD02_SYS
+  FName: MRP计划订单
+  FBillFormID: PLN_PLANORDER
+
+ID: 78acc0949cc4a9d311e33ac646700f54
+  FNumber: BHD01_SYS
+  FName: 标准补货单
+  FBillFormID: DRP_ReOrderBill
+
+ID: 78acc0949cc4ab0d11e3271ac68f4165
+  FNumber: YHSQ003_SYS
+  FName: 标准要货申请
+  FBillFormID: DRP_NeedApplication
+
+ID: 78acc0ac34018b1e11e303f97ece4232
+  FNumber: XSDD08_SYS
+  FName: VMI销售订单
+  FBillFormID: SAL_SaleOrder
+
+ID: 78acc0ac34018bd711e3057dcb9e2c7d
+  FNumber: FHTZD05_SYS
+  FName: VMI发货通知单
+  FBillFormID: SAL_DELIVERYNOTICE
+
+ID: 78acc0ac34018bd711e30581c729f1fb
+  FNumber: XSCKD05_SYS
+  FName: VMI出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: 78acc0ac3462ba8b11e300bb88ac2143
+  FNumber: FKSQ001_SYS
+  FName: 采购付款申请
+  FBillFormID: CN_PAYAPPLY
+
+ID: 78acc0ac3462ba8b11e300bc0786706b
+  FNumber: FKSQ002_SYS
+  FName: 其他付款申请
+  FBillFormID: CN_PAYAPPLY
+
+ID: 78acc0ac3462ba8b11e300bc1dda91e9
+  FNumber: FKSQ003_SYS
+  FName: 销售退款申请
+  FBillFormID: CN_PAYAPPLY
+
+ID: 78acc0ac3462ba8b11e300bc43d04c32
+  FNumber: FKSQ004_SYS
+  FName: 其他退款申请
+  FBillFormID: CN_PAYAPPLY
+
+ID: 78e7d1d91cb6929611e3413968c926a3
+  FNumber: SC_Interest
+  FName: 内部利息单
+  FBillFormID: SC_Interest
+
+ID: 78e7d1d91cb6af2c11e3362c3fede221
+  FNumber: SC_FundsUp
+  FName: 资金上划单
+  FBillFormID: SC_FundsUp
+
+ID: 791dc3a3626e4e7896a2de1f08e1d616
+  FNumber: JSJSD01_SYS
+  FName: 寄售结算单
+  FBillFormID: SAL_ConsignmentSettle
+
+ID: 7cd93c259999489c97798063f2f7bd70
+  FNumber: SLD01_SYS
+  FName: 标准收料单
+  FBillFormID: PUR_ReceiveBill
+
+ID: 7d64a06f056b462b81c30321e2e8eeff
+  FNumber: PLMTDFA01_SYS
+  FName: PLM替代方案
+  FBillFormID: PLM_STD_BOM_SUB
+
+ID: 7e206b700d1343b5b60e20b992c84469
+  FNumber: XSDD04_SYS
+  FName: 直运销售订单
+  FBillFormID: SAL_SaleOrder
+
+ID: 7fd8da51bb784f78a023a77d98b9c2a9
+  FNumber: PYPK01_SYS
+  FName: 盘盈
+  FBillFormID: FA_CountingSheet
+
+ID: 83d822ca3e374b4ab01e5dd46a0062bd
+  FNumber: CGDD01_SYS
+  FName: 标准采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: 8598879ae671415f8aa98ac0cfb6a0c0
+  FNumber: SCDDBGD01_SYS
+  FName: 生产订单变更单
+  FBillFormID: PRD_MOChange
+
+ID: 86bfe0f3ded642be90f04d4409d1751a
+  FNumber: RZ01_SYS
+  FName: 标准任职信息
+  FBillFormID: HR_HM_PostBill
+
+ID: 87035fdb6a31407a8819750df751d233
+  FNumber: WWDD02_SYS
+  FName: 返工委外订单
+  FBillFormID: SUB_SUBREQORDER
+
+ID: 87c13654b4984832a710c6736c0b8bd9
+  FNumber: ZCLY01_SYS
+  FName: 标准资产领用
+  FBillFormID: FA_PICKING
+
+ID: 88b415d4c17a42b99757f035808ea77c
+  FNumber: KCZTZH01_SYS
+  FName: 标准库存状态转换
+  FBillFormID: STK_StockConvert
+
+ID: 88de45ad2499437f9b21096997b297e2
+  FNumber: XSDD03_SYS
+  FName: 受托加工销售
+  FBillFormID: SAL_SaleOrder
+
+ID: 8a8d6788913e4de087ca8547fc23af6d
+  FNumber: PY01_SYS
+  FName: 标准盘盈单
+  FBillFormID: STK_StockCountGain
+
+ID: 8c6fa3fa450b4bcd9d909ee31998f648
+  FNumber: YHDZD01_SYS
+  FName: 银行对账单
+  FBillFormID: CN_BANKACNTSTATE
+
+ID: 8f32d0db72e14464a3bd093b0a5e1813
+  FNumber: TLD05_SYS
+  FName: 分销购销退料单
+  FBillFormID: PUR_MRB
+
+ID: 92c2cf6f246848efb71bfea12361efcc
+  FNumber: SCLLD02_SYS
+  FName: 倒冲生产领料
+  FBillFormID: PRD_PickMtrl
+
+ID: 93591469feb54ca2b08eb635f8b79de3
+  FNumber: CGSQD01_SYS
+  FName: 标准采购申请
+  FBillFormID: PUR_Requisition
+
+ID: 93904bf745d84ae0ad08da30949754e0
+  FNumber: WWDD01_SYS
+  FName: 普通委外订单
+  FBillFormID: SUB_SUBREQORDER
+
+ID: 94e3ddd060ea453d8585d91d45ef572b
+  FNumber: WLZQPD01_SYS
+  FName: 标准周期盘点表
+  FBillFormID: STK_CycleCountTable
+
+ID: 95af25dfa7be49ef88a3edfebf7071cb
+  FNumber: WSDD02_SYS
+  FName: 寄售网上订单
+  FBillFormID: CP_SaleOrder
+
+ID: 962956a0d2c442bdac3ea2fa4b0fa610
+  FNumber: YHSQ02_SYS
+  FName: 购销要货申请
+  FBillFormID: DRP_NeedApplication
+
+ID: 99b9dfb2715b47cfbf58ef1c53882ebe
+  FNumber: WWLLD01_SYS
+  FName: 普通委外领料
+  FBillFormID: SUB_PickMtrl
+
+ID: 9a1621221f4c47cfb018a11640b1b03f
+  FNumber: JDSCLL01_SYS
+  FName: 简单生产领料
+  FBillFormID: SP_PickMtrl
+
+ID: 9b9aa75212734511bcab1716f2587e2a
+  FNumber: SCBL01_SYS
+  FName: 生产备料单
+  FBillFormID: PRD_PREPAREMTRL
+
+ID: 9BB562A7CB0A4801BA14DF2632FDEF0A
+  FNumber: XSCKD03_SYS
+  FName: 零售出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: 9c6106cf16674ae4949d33fb8e360bf3
+  FNumber: QTYSD01_SYS
+  FName: 其他应收单
+  FBillFormID: AR_OtherRecAble
+
+ID: 9C6801BB869E41D6973694F731D03B47
+  FNumber: ZQPDJH01_SYS
+  FName: 标准周期盘点计划单
+  FBillFormID: STK_CycleCountPlan
+
+ID: 9cea9708483e41a4b0c8af1fd0a5cdf5
+  FNumber: JDSCRK01_SYS
+  FName: 简单生产入库
+  FBillFormID: SP_InStock
+
+ID: 9fcdd78f9d334271a7b2d2eef72200bb
+  FNumber: GY01_SYS
+  FName: 标准雇佣员工申请单
+  FBillFormID: HR_HM_Employee
+
+ID: a033661686bc487a808b222403ef28a6
+  FNumber: PHTZ01_SYS
+  FName: 标准批号调整单
+  FBillFormID: STK_LOTADJUST
+
+ID: a0a1896cfe3d4a81891af018b2d54e8b
+  FNumber: CGPTFP01_SYS
+  FName: 采购普通发票
+  FBillFormID: IV_PURCHASEOC
+
+ID: a1d51ba6e6dd4a7ba1ab4242fc769c2e
+  FNumber: DC01_SYS
+  FName: 跨人事管理中心调出单
+  FBillFormID: HR_HM_TransferOut
+
+ID: a1ff32276cd9469dad3bf2494366fa4f
+  FNumber: RKD01_SYS
+  FName: 标准采购入库
+  FBillFormID: STK_InStock
+
+ID: a300e2620037435492aed9842875b451
+  FNumber: XSDD05_SYS
+  FName: 退货订单
+  FBillFormID: SAL_SaleOrder
+
+ID: a5369925a82743108f8817f545b780d2
+  FNumber: STCLTL01_SYS
+  FName: 标准受托加工材料退料单
+  FBillFormID: STK_OEMInStockRETURN
+
+ID: a7c7f20d5faa46ecbeb88ee4e207390e
+  FNumber: ZJDB03_SYS
+  FName: 委外直接调拨单
+  FBillFormID: STK_TransferDirect
+
+ID: a7f7185a1c294df09755d9b0344f1cbd
+  FNumber: YFHXD01_SYS
+  FName: 应付核销单
+  FBillFormID: AP_Match
+
+ID: a83c007f22414b399b0ee9b9aafc75f9
+  FNumber: YFD01_SYS
+  FName: 标准应付单
+  FBillFormID: AP_Payable
+
+ID: aad67c44702d46d387432863420f48a6
+  FNumber: BRJS04_SYS
+  FName: 应收票据背书退回
+  FBillFormID: CN_BILLRECSETTLE
+
+ID: abcd00000d1343b5b60e20b992c84469
+  FNumber: FHTZD04_SYS
+  FName: 分销购销发货通知单
+  FBillFormID: SAL_DELIVERYNOTICE
+
+ID: abcd0000878a483da7fe38e5a4e992a0
+  FNumber: FHTZD03_SYS
+  FName: 分销调拨发货通知单
+  FBillFormID: SAL_DELIVERYNOTICE
+
+ID: abcd6b700d1343b5b60e20b992c84469
+  FNumber: XSDD07_SYS
+  FName: 分销购销订单
+  FBillFormID: SAL_SaleOrder
+
+ID: abcdce9c878a483da7fe38e5a4e992a0
+  FNumber: XSDD06_SYS
+  FName: 分销调拨订单
+  FBillFormID: SAL_SaleOrder
+
+ID: ad0779a4685a43a08f08d2e42d7bf3e9
+  FNumber: XSCKD01_SYS
+  FName: 标准销售出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: b0677860cd16433895be5f520086b69f
+  FNumber: CGDD04_SYS
+  FName: 资产采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: b15923ad5e39421aa188380c89849cb5
+  FNumber: ZJDB04_SYS
+  FName: 分销直接调拨单
+  FBillFormID: STK_TransferDirect
+
+ID: b1985f24f35841fdb418329af6ed7bd0
+  FNumber: CGDD05_SYS
+  FName: 费用采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: b20142134c144a48b144e7af8a1a95fb
+  FNumber: LZ01_SYS
+  FName: 标准离职申请单
+  FBillFormID: HM_DimissionManager
+
+ID: b538d861e2f84828ab18662724e7dc39
+  FNumber: BRJS05_SYS
+  FName: 应收票据退票
+  FBillFormID: CN_BILLRECSETTLE
+
+ID: b60bafec7a7749618c6914714d776b10
+  FNumber: YHSQ01_SYS
+  FName: 调拨要货申请
+  FBillFormID: DRP_NeedApplication
+
+ID: b7dd912d4ef545578f0f5d1d08cb2602
+  FNumber: SCDD04_SYS
+  FName: 直接入库-返工生产
+  FBillFormID: PRD_MO
+
+ID: b8df755fd92b4c2baedef2439c29f793
+  FNumber: CGDD03_SYS
+  FName: 直运采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: b943c27f285546f8a5c0d544034328de
+  FNumber: WWTLD02_SYS
+  FName: 倒冲委外退料
+  FBillFormID: SUB_RETURNMTRL
+
+ID: b9b2335770b84a3aa9b09b22767cd7e3
+  FNumber: YSHXD01_SYS
+  FName: 应收核销单
+  FBillFormID: AR_Match
+
+ID: ba0754db8aa04f8cb3d42d186858ed03
+  FNumber: CGSQD02_SYS
+  FName: 直运采购申请
+  FBillFormID: PUR_Requisition
+
+ID: ba3ad5fc48d44271a048da26b615b589
+  FNumber: CGDD06-SYS
+  FName: 补料采购订单
+  FBillFormID: PUR_PurchaseOrder
+
+ID: bb59b7f5cc314546a5b6e94e9533feb2
+  FNumber: FKDLX03_SYS
+  FName: 工资发放付款单
+  FBillFormID: AP_PAYBILL
+
+ID: bf60c58b16964fef9db74774ccb7d02a
+  FNumber: PLSYZZ01_SYS
+  FName: 标准批量试用转正申请单
+  FBillFormID: HR_HM_PrbtEndBatch
+
+ID: c35098f8f53c455d8fb6678290a87a65
+  FNumber: YFQLDLX
+  FName: 应付清理单
+  FBillFormID: AP_InnerPayClear
+
+ID: c4c6d7ef915149269d6d25fbf155f36f
+  FNumber: HT01_SYS
+  FName: 中国地区劳动合同
+  FBillFormID: HR_HM_CONTRACT
+
+ID: c4e4cef46c844a2bb2a7faf0cf6dc2cb
+  FNumber: SCTLD01_SYS
+  FName: 普通生产退料
+  FBillFormID: PRD_ReturnMtrl
+
+ID: c7a8e6ec73754c31b0cde0f8cc01e328
+  FNumber: ARNBQLD
+  FName: 内部应收清理单
+  FBillFormID: AR_InnerRecClear
+
+ID: c97bce78f66642c8a655e304bdc8610d
+  FNumber: SLD05_SYS
+  FName: 费用物料接收单
+  FBillFormID: PUR_ReceiveBill
+
+ID: ca103ed148d0492dbe81d89f54d9ef85
+  FNumber: SCBLD01_SYS
+  FName: 普通生产补料
+  FBillFormID: PRD_FeedMtrl
+
+ID: cad8c3ae5a9b44b0b9319cd999c09dd5
+  FNumber: BPJS02_SYS
+  FName: 应付票据退票
+  FBillFormID: CN_BILLPAYSETTLE
+
+ID: ce8f49055c5c4782b65463a3f863bb4a
+  FNumber: ZJDB01_SYS
+  FName: 标准直接调拨单
+  FBillFormID: STK_TransferDirect
+
+ID: CEB80356E70D492F9DD7C5E9CD37107E
+  FNumber: XSTHD03_SYS
+  FName: 零售退货单
+  FBillFormID: SAL_RETURNSTOCK
+
+ID: d040f688e69b406186aecfb5d9a86101
+  FNumber: CKCBTZD01_SYS
+  FName: 出库成本调整单
+  FBillFormID: HS_AdjustmentBill
+
+ID: d52451a5048a40818d7af332fb181966
+  FNumber: TLD02_SYS
+  FName: 零散采购退料单
+  FBillFormID: PUR_MRB
+
+ID: d588ab5aeb23490aadbb665874b1eabf
+  FNumber: CGDDBGD01_SYS
+  FName: 标准采购订单变更单
+  FBillFormID: PUR_POChange
+
+ID: d772ead981e748d69dda1caac7583f8c
+  FNumber: QTRKD01_SYS
+  FName: 标准其他入库单
+  FBillFormID: STK_MISCELLANEOUS
+
+ID: d8d3858138f0810811e2fb1db393697f
+  FNumber: RKD05_SYS
+  FName: 资产入库单
+  FBillFormID: STK_InStock
+
+ID: d8d3858138f0810811e2fb49f168b6d4
+  FNumber: RKD06_SYS
+  FName: 费用入库单
+  FBillFormID: STK_InStock
+
+ID: D9652BC4-1420-4D3B-A214-2509BC9BF925
+  FNumber: FKDLX01_SYS
+  FName: 采购业务付款单
+  FBillFormID: AP_PAYBILL
+
+ID: dd1b0498f52e43fc8da0969086184629
+  FNumber: WWYLQDBGD01_SYS
+  FName: 委外用料清单变更单
+  FBillFormID: SUB_PPBOMChange
+
+ID: dde3ab8a6b714e9fa7039d065a169f92
+  FNumber: XSBJD01_SYS
+  FName: 标准销售报价单
+  FBillFormID: SAL_QUOTATION
+
+ID: de29f16214744c21b374044d629595f2
+  FNumber: SCRKD02_SYS
+  FName: 生产入库
+  FBillFormID: PRD_INSTOCK
+
+ID: de3bcacc98434ec68a358aa5abcd9183
+  FNumber: FBDC01_SYS
+  FName: 标准分步式调出单
+  FBillFormID: STK_TRANSFEROUT
+
+ID: de677c4afcd4492688c4bc4c3e6ae2a1
+  FNumber: TDFA01_SYS
+  FName: 替代方案
+  FBillFormID: ENG_Substitution
+
+ID: e52b554423704173b7306554708a8b05
+  FNumber: SCHBD02_SYS
+  FName: 生产汇报
+  FBillFormID: PRD_MORPT
+
+ID: e634313fdebb43259fcb9db7b528260b
+  FNumber: SLD02_SYS
+  FName: 零散采购收料单
+  FBillFormID: PUR_ReceiveBill
+
+ID: e65a4f29743a44b7b67dc8145e1f9c92
+  FNumber: FBDR01_SYS
+  FName: 标准分步式调入单
+  FBillFormID: STK_TRANSFERIN
+
+ID: e7cb39ee01cf467ea6afcc36f08f5227
+  FNumber: SKTKDLX02_SYS
+  FName: 其他业务退款单
+  FBillFormID: AR_REFUNDBILL
+
+ID: ea4889bc7c004230babdbe8f6ef889b7
+  FNumber: XSCKD02_SYS
+  FName: 寄售出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: eacb50844fc84a10b03d7b841f3a6278
+  FNumber: XSDD01_SYS
+  FName: 标准销售订单
+  FBillFormID: SAL_SaleOrder
+
+ID: ecd0331047f44d6b868af85d3e8dadff
+  FNumber: SYZZ01_SYS
+  FName: 标准试用转正申请单
+  FBillFormID: HR_HM_PrbtEndMgr
+
+ID: ed2209ac299b47068e4ee5c421efefca
+  FNumber: THTZD02_SYS
+  FName: 寄售退货通知单
+  FBillFormID: SAL_RETURNNOTICE
+
+ID: ef06f87d394a462d9f96cb2397803372
+  FNumber: SKTKDLX01_SYS
+  FName: 销售业务退款单
+  FBillFormID: AR_REFUNDBILL
+
+ID: ef17d378e9bc46beb2b216944688d45b
+  FNumber: TLD03_SYS
+  FName: 资产退回单
+  FBillFormID: PUR_MRB
+
+ID: f4f46eb78a7149b1b7e4de98586acb67
+  FNumber: SCLLD01_SYS
+  FName: 普通生产领料
+  FBillFormID: PRD_PickMtrl
+
+ID: f94e4845700c4dab93e652b61edcb819
+  FNumber: ZZJXQD01_SYS
+  FName: 组织间需求单
+  FBillFormID: PLN_REQUIREMENTORDER
+
+ID: f9744c3493db410cbe2ef85a5a1290c3
+  FNumber: XSCKD04_SYS
+  FName: 分销购销销售出库单
+  FBillFormID: SAL_OUTSTOCK
+
+ID: fad46ca477d44b30b3fa7043c4604876
+  FNumber: FKDLX02_SYS
+  FName: 其他业务付款单
+  FBillFormID: AP_PAYBILL
+
+--------------------------------------------------------------------------------
+共建立 530 条映射
+
+BILL_TYPE_MAPPING = {
+    "000ffecf2c6f97f311e32b0998d51004": "FYBXD001_SYS",
+    "000ffecf861ca11611e31159493e8417": "PSD01_SYS",
+    "001f29d2c9af844211e342cad266ac71": "GXJH01_SYS",
+    "001f29d2c9af844211e342cba3aaa38c": "GXHB01_SYS",
+    "001f29d2c9af844211e342cbb8c2240c": "GXHB02_SYS",
+    "0023240234df807511e308990e04cf6a": "CGDD07_SYS",
+    "0023240234df807511e3089ad113642a": "SLD06_SYS",
+    "0023240234df807511e3089bc912a28a": "RKD07_SYS",
+    "0023240234df807511e3089d56422b7a": "TLD06_SYS",
+    "00232405fc58a68311e33257e9e17076": "SCDD05_SYS",
+    "005056941128814b11e31b9d2979ed35": "QTCKD03_SYS",
+    "005056941128823c11e323525db18103": "ZJDB05_SYS",
+    "005056941128986d11e32982afbc3f6d": "WQZY001_SYS",
+    "005056941128bfb811e324e5af9b2b4b": "PK02_SYS",
+    "005056941d729cf711e3d4ef32bbcaf8": "LSD-XSD",
+    "005056941d729cf711e3d4efc743a92c": "LSD-THD",
+    "0050569440d094c111e32b11bda21497": "FYLSJK_SYS",
+    "0050569440d094c111e32b23ca5ac5fc": "FYSQ001_SYS",
+    "0050569440d094c111e32b23fe311b1c": "FYZY_SYS",
+    "0050569440d0b2e211e330ae3ecc47a8": "FYHXD",
+    "0050569440d0b9d111e346b1c24d3fe1": "CCSQ001_SYS",
+    "0050569440d0b9d111e346dc2d05234a": "CLFBX001_SYS",
+    "0050569448a4966511e336d026c93cba": "QTCKD04_SYS",
+    "00505694499eb16411e3cd16dc62e287": "SCDD06_SYS",
+    "005056945db184ed11e3af2d604e4dba": "JYD003_SYS",
+    "005056945db184ed11e3af2dcda7ee49": "JYD004_SYS",
+    "005056945db184ed11e3af3d4cfc520d": "JYD005_SYS",
+    "005056945db1ae8311e3ba1347429bab": "KCQJD001_SYS",
+    "005056945fca85e511e42420f363da25": "SCDD07_SYS",
+    "0050569463e5b88611e39459894134ae": "XSTHD05_SYS",
+    "00505694799c836111e33d159520efd3": "SC_INNERACTINIT",
+    "00505694799c955111e325bc9e6eb056": "YSD02_SYS",
+    "00505694799c955111e325bcd36fe8c2": "YSD03_SYS",
+    "00505694799c955111e327183a40bee1": "YFD03_SYS",
+    "00505694799c955111e327524dd878be": "FKSQ005_SYS",
+    "00505694799c955111e32755b2a799d8": "FKDLX04_SYS",
+    "00505694799c955111e327567f7bac7a": "FKTKDLX03_SYS",
+    "00505694799c9a1111e327684fe24f72": "QTYFD02_SYS",
+    "00505694799ca95211e34095069002e4": "SKDLX04_SYS",
+    "00505694799ca95211e340960f6efe11": "FKDLX06_SYS",
+    "00505694799cb1fb11e3353a0b27480a": "FKDLX05_SYS",
+    "00505694799cb1fb11e3353ab8d4fcbe": "SKDLX03_SYS",
+    "005056a0066b9d1811e3670215b3ee84": "GXBLP01_SYS",
+    "005056a02337943b11e413a568bd7319": "SCXZZCKDB01_SYS",
+    "005056a02337af3111e3f5c4803e6c61": "SCXCPRKD01_SYS",
+    "005056a02337af3111e3f5cd1af8047d": "SCXCPTKD01_SYS",
+    "005056a02337af3111e3f5ceb286cd4d": "SCXLLD01_SYS",
+    "005056a02337af3111e3f5ced3487453": "SCXTLD01_SYS",
+    "005056a02ada930511e3b721790e4f4d": "GXJGJSD01_SYS",
+    "005056a03950b50f11e3b629519a94c7": "GXZYD01_SYS",
+    "005056a067078da611e401b1f779662c": "SCXLSLJH01_SYS",
+    "005056a06707af9511e3e6efe1be1b00": "SCXDLXQJH01_SYS",
+    "005056a06707af9511e3e7ceb5cdc3fe": "SCXHLJH01_SYS",
+    "005056a06707b48611e3f781eb080549": "SCXCPWGHB01_SYS",
+    "005056a06707b48611e3f78c59d5b9bb": "SCXZXRJH01_SYS",
+    "005056c0000882a811e3c539883e0933": "POSADD",
+    "005056c0000882a811e3c539ef71d9fc": "BZLSD",
+    "005056c0000882a811e3cb7aacdbb4aa": "BZDJD",
+    "005056c0000882a811e3cb7ae9cf03e2": "POSDJD",
+    "005056c000088c8711e41ac161e30414": "MDDBSHD",
+    "005056c000088c8711e41ac18652f12a": "MDCGSHD",
+    "005056c000088c8711e41aea4b2f43b9": "MDDBFH",
+    "005056c000088c8711e41aea6af3989c": "MDXSFHD",
+    "005056c000088c8711e41bc53a5e136e": "MDQTRKD",
+    "005056c000088c8711e41bcf114c124f": "MDQTCKD",
+    "005056c00008b41511e3e642dc36f53e": "YJTJ",
+    "005056c00008b72011e3fc389575f596": "BZZHCXPT",
+    "005056c00008baa211e3097d5747706d": "JYD001_SYS",
+    "005056c00008baa211e3097d9bc0332e": "JYD002_SYS",
+    "0388a5d89593462086f5ee63a21d973f": "XJCQ01_SYS",
+    "03c6c047c65c4a17a792f85dcf3cabec": "CGSQD04_SYS",
+    "05d3c7dfc2be40abb70a65166f8d3906": "DR01_SYS",
+    "0a2c1694596d440882adb080a7a8ca1b": "RKD03_SYS",
+    "0bcc8f3ce0a64171b1a901344d1ac239": "ZJDB02_SYS",
+    "0c2c96bb7f534768a96ab08cdd6fc26e": "WWTLD01_SYS",
+    "0dda70fa0c55451ab1d40d3f78400a4f": "XSTHD02_SYS",
+    "0de0a582a00f4a35a027ac45341b120f": "PYPK02_SYS",
+    "0e74146732c24bec90178b6fe16a2d1c": "SCDD02_SYS",
+    "0ff191ada31b48c09af88243826ca619": "ZCSQ01_SYS",
+    "10985d2448f14595bd8f5e8df82ba6cf": "WLPDZY01_SYS",
+    "123ab4b2e10943ea8fe52dc771a727f9": "YCD01_SYS",
+    "123f39178eb2424c8449f992e1fff1ee": "SCDD01_SYS",
+    "133045efa796421dbf1acb8bc00cdad7": "JDSCTL01_SYS",
+    "136bf6db80a14da8b3c332383f796739": "QTCKD02_SYS",
+    "141dd309c6b242e7890b56a6dc733c54": "PDCYFT01_SYS",
+    "180ecd4afd5d44b5be78a6efe4a7e041": "YSD01_SYS",
+    "193822715afc48aa9fa6d6beca7700ab": "FHTZD01_SYS",
+    "1cab58bc33d24e27826be02249f4edac": "XSPTFP01_SYS",
+    "1cc1de500a75935f11e33ca00248bfb4": "CXSQ01_SYS",
+    "1cc1de500a75935f11e33ca01d4c6b1a": "CXSQ02_SYS",
+    "1e17ce9c878a483da7fe38e5a4e992a0": "XSDD02_SYS",
+    "21570de792b54574a5852ffec8a1b5f4": "BRJS03_SYS",
+    "23f62df80a644d05bce25d9d22c69d8f": "SCRKD01_SYS",
+    "256df3b168204249b51d601712804680": "TLSQDD02_SYS",
+    "281783bb73244d178d41ce550d877af0": "SCDD03_SYS",
+    "2a8dc7108c7845d49e990825220d668b": "TLSQDD03_SYS",
+    "2b3e316465314b4ebe43ff260ded68f4": "PK01_SYS",
+    "2E8277C8D11047D9BE5FAD7D3D95A7E2": "PDFA01_SYS",
+    "3441ac133848446f824d0ab760c8b3c7": "ZZCX01_SYS",
+    "36005cbd3e9e4d5c83debad063a2e114": "CGZZSZYFP01_SYS",
+    "361a64af5c004111962018af7d2762d0": "XJCQ02_SYS",
+    "368c45f12df943058ccf2dfb92b243aa": "YD01_SYS",
+    "36cf265bd8c3452194ed9c83ec5e73d2": "SKDLX01_SYS",
+    "38a5eb2107b646fbaead6ee1fc9ade2c": "STCLRK01_SYS",
+    "3a9ac994945e4a5eac2038f0c960221a": "XSTHD04_SYS",
+    "3c6f819d78ac4d5981891956c4595b20": "YFD02_SYS",
+    "3f29921f292b490bbc5775477350ab58": "XSDDBGD02_SYS",
+    "40e7bf7e72794ad3a0f0b480af4ce909": "YHZZ01_SYS",
+    "42247eeffd0c48f7bcf7e389c4563900": "BPJS01_SYS",
+    "428ab6b92b0d4a0aa5bbd83b28e9c6ef": "CHSJWH01_SYS",
+    "4518706ee0e84af49671ba2af1498d48": "WWLLD02_SYS",
+    "45388b3e35924be18908aefadcdc28e1": "FYFP01_SYS",
+    "48f8191c743c4ae3996aecbc12b13536": "ZCJY01_SYS",
+    "493b8d8560834013adf6f446a149ceda": "TLD04_SYS",
+    "49774d40622a46d3b563ac0797220082": "QTYFD01_SYS",
+    "49cf862e18d544e8ae7aa821228c1cf3": "FKTKDLX02_SYS",
+    "4ac9dacdf8054ff6a8b49b467b3d6ee8": "YHZZ02_SYS",
+    "4c1b07214adb4651aa2437ef48738af9": "JHDD01_SYS",
+    "4d20243e32b14834aae8a96525354bcd": "CGRKTZD01_SYS",
+    "4dd967bb14574d0ea3dcc17ad981cf92": "WSDD01_SYS",
+    "503b2f425825455ea0a9c545a8045b01": "RKD04_SYS",
+    "50ea4e69b6144f69961d2e9b44820929": "XSZZSZYFP01_SYS",
+    "50fa7c2eda7947b89fab5431bf25d48e": "SCHBD01_SYS",
+    "51dba534927743e7b855272723d1561e": "TLSQDD01_SYS",
+    "532c672029694473916a258fae962b1c": "WWBLD01_SYS",
+    "5450a1716ca47f": "WWBL01_SYS",
+    "545301011e96f8": "YSD04_SYS",
+    "54533291F9A44D38809F70000499BEE9": "QTCKD01_SYS",
+    "5458351793be97": "FKSQ006_SYS",
+    "54584470279b2a": "B2CDD02_SYS",
+    "54584496279c10": "B2CDD01_SYS",
+    "545a09f7648f18": "B2CTH01_SYS",
+    "545a0a14648f88": "B2CTH04_SYS",
+    "545a0a67648ff8": "B2CTH03_SYS",
+    "545a0a9f649068": "B2CTH02_SYS",
+    "546ab95111081b": "FBDR02_SYS",
+    "546abb491109ba": "FBDC02_SYS",
+    "546d4a78d26794": "ZJDBDLX01_SYS",
+    "546d621dd267c2": "SKDLX05_SYS",
+    "546d6280d2686a": "FKDLX07_SYS",
+    "546ff882d798f3": "B2CDD03_SYS",
+    "5472f81cb9fb31": "B2CDD04_SYS",
+    "5472f9bcb9fc5a": "B2CTH05_SYS",
+    "547547f815fc40544e": "SCXZIXRJH01_SYS",
+    "54a350fbb6c248": "XSDD09_SYS",
+    "54a35716b6c3f2": "XSCKD06_SYS",
+    "54a39502b6c77d": "XSTHD06_SYS",
+    "54f40946403e91": "BLPCL001_SYS",
+    "55091887e34726": "B2CTH06_SYS",
+    "551506d6fb6495": "SCNL01_SYS",
+    "5518b5b02e5ac9": "QCRKD01_SYS",
+    "5518b6672e5b92": "QCRKD02_SYS",
+    "5518f5ceee8053": "QCXSCKD_SYS",
+    "5518f60aee8191": "QCXSTHD_SYS",
+    "551debb583e5ce": "QTCKD05_SYS",
+    "55265fbb285192": "ZCTH01_SYS",
+    "552b12170c0fac": "ZJDBDLX02_SYS",
+    "552b125d0c0fe0": "ZJDBDLX03_SYS",
+    "552f791d40faf4": "DBHKDLX01_SYS",
+    "55345d0617a9e3": "SGRJZ01_SYS",
+    "55345d6217aa2e": "SGRJZ02_SYS",
+    "5535b4e1bd29f6": "GCBG01_SYS",
+    "5541df82297466": "SCXPDCYFT01_SYS",
+    "5552fd395c20e4": "JYD006_SYS",
+    "556d6fe53e824e": "BLPCL002_SYS",
+    "5580d51e423ec9": "XSCKD07_SYS",
+    "5590d1d0080063": "YFD04_SYS",
+    "559351ce1d0252": "XSTHD07_SYS",
+    "559dda46190c25": "DJD01_SYS",
+    "559dda81190cc1": "DJD02_SYS",
+    "55a45f6010b04b": "XSHT01_SYS",
+    "55cae425e376a4": "B2CDD05_SYS",
+    "55e41a89963ea8": "PHXLHGX001_SYS",
+    "566a7999d60c8d": "FHQJD001_SYS",
+    "566a7a6cd60d43": "JYD007_SYS",
+    "5681f1bcffb810": "ZD001_SYS",
+    "5681f1e3ffb83a": "ZD002_SYS",
+    "5681f1ffffb864": "ZD003_SYS",
+    "5681f21fffb88e": "ZD004_SYS",
+    "5697070c0d3f0c": "NBZHTZDLX01_SYS",
+    "569707f90d3f3e": "NBZHTZDLX02_SYS",
+    "56a81c97aee375": "XJZZD01_SYS",
+    "56d41bc5e45c3c": "JYD008_SYS",
+    "56f8ed85106b5d": "XJD01_SYS",
+    "56fcc113a05851": "MRBPSD001_SYS",
+    "570321e1e172de": "SCPBJ001_SYS",
+    "570cadbde7a088": "FYZZSFP01_SYS",
+    "570cd65be7a1b8": "SVMBJD01_SYS",
+    "5716dd8873778e": "SCTK01_SYS",
+    "57187819eb4c0d": "GXBLP02_SYS",
+    "5719b4056d2525": "QCTLD01_SYS",
+    "5719b47b6d25cb": "QCTLD02_SYS",
+    "574bda01a321ba": "XJD02_SYS",
+    "574bda59a3222a": "XJD03_SYS",
+    "574bda94a3229a": "XJD04_SYS",
+    "574bdaf3a3230a": "XJD05_SYS",
+    "574e87276ff23a": "SCDD08_SYS",
+    "577658dd483b7d": "SCTLD02_SYS",
+    "577dfa50c83885": "BLPCL003_SYS",
+    "577dfa7bc838ed": "BLPCL004_SYS",
+    "577f5674eac0d7": "SEXINV001_SYS",
+    "577f56ddeac12d": "SEXVATIN001_SYS",
+    "57ad5a1ea216f4": "JDSCTK01_SYS",
+    "57b00d63a20d413db53ba799040f04a2": "SLD03_SYS",
+    "57b565c144fa20": "YMZGYFD01_SYS",
+    "57cd8a551bc5b6": "O2ODJD",
+    "57cd9fe41bc6ce": "YDFKD",
+    "57cfb51a84a65f": "SKJSD01_SYS",
+    "57d60b26287089": "FKJSD01_SYS",
+    "57d6767306f207": "WSDD03_SYS",
+    "57d676cb06f2a9": "WSDD04_SYS",
+    "57e9ec44f4fced": "CMK_RSM_StoreRequestSta",
+    "57fc3589bb8730": "BBCTHSQD01_SYS",
+    "57fc35babb8784": "BBCTHSQD02_SYS",
+    "57fc35d0bb87db": "BBCTHSQD03_SYS",
+    "57fd8f724b2a62": "THTZD03_SYS",
+    "57fd95e54b2bb8": "XSTHD08_SYS",
+    "58218ee1b6da26": "YSBB01_SYS",
+    "582aba4fbbedf7": "JKLXD01_SYS",
+    "5833cf4588fdb1": "WWCYFT01_SYS",
+    "583d05b9aec0ba": "GCBGSQ01_SYS",
+    "583ed26e77664a9d8346e78aa917ce08": "TLD01_SYS",
+    "58413060502ad5": "LYZXJNBJSD01_SYS",
+    "584f4087a14649": "WWCHD01_SYS",
+    "58844595610b43": "XCYCCLD01_SYS",
+    "5899503057e1ff": "JDSCLL02_SYS",
+    "5899791f57ee8f": "JDSCTL02_SYS",
+    "58aa81c0cf5a24": "JYD009_SYS",
+    "58ae34fc55bbad": "STCLSL01_SYS",
+    "58c77e15e6566a": "SKDLX06_SYS",
+    "58c7aa52e6592e": "SKTKDLX03_SYS",
+    "58c8a53ae45e1f": "SCPSHTZD01_SYS",
+    "58cf7622410fb0": "SCYMZZZY01_SYS",
+    "58d0f44fc155d5": "SCPXJD01_SYS",
+    "58d0f493c15637": "SCPBJD01_SYS",
+    "58d0f4d2c156a1": "SCPCGDD01_SYS",
+    "58d0f50ac1572f": "SCPBGD01_SYS",
+    "58d0f55ec15773": "SCPCGRKD01_SYS",
+    "58d0f63dc157d9": "SCPTLTZ01_SYS",
+    "58d0f699c1581f": "SCPCGTLD01_SYS",
+    "58d1cbeee395e4": "WWYMZZZY01_SYS",
+    "58d359987643ca": "XJGHD01_SYS",
+    "58da3c16c65138": "CGHT01_SYS",
+    "58e730f1a6698a": "BBCOrder01_SYS",
+    "5929517d7fcc91": "HandAllotType",
+    "592951ba7fcd11": "AutoAllotType",
+    "596d7093cee171": "SCFLTZD01_SYS",
+    "59786806c77fec": "JYD010_SYS",
+    "59a4d4717be5dc": "YSSJSBB01_SYS",
+    "59b37bb8130d84": "YSHZBB01_SYS",
+    "59b384a9130dc9": "YSHZB01_SYS",
+    "59b8f4615e1ff8": "ESS_PREPAYMENT01_SYS",
+    "59bb3687d0f5c7": "BBCOrder02_SYS",
+    "59bf919a55dde0": "BBCOrder03_SYS",
+    "59bf91b855deb2": "BBCOrder04_SYS",
+    "59c46b1074cd1d": "DBSQD01_SYS",
+    "59c46b3974cd6f": "DBSQD02_SYS",
+    "59dc3f1c46d65a": "CKSQ01_SYS",
+    "59dc3f6446d6c2": "CKSQ02_SYS",
+    "59dc68755e39b2": "CKSQ03_SYS",
+    "59dc68b45e3a46": "CKSQ04_SYS",
+    "59e5ced3705f02": "JYD011_SYS",
+    "59f186400055a3": "MNBJD01_SYS",
+    "59f2c6719d1180": "AMNBJSD01_SYS",
+    "59f7e84e995668": "DDJLTZ01_SYS",
+    "59f7e8a19956ce": "DDJLTZ02_SYS",
+    "5a2660bf36f2d3": "YFTHD01_SYS",
+    "5a26613d36f2fc": "YSTHD01_SYS",
+    "5a46fab52dfa51": "BBCTHSQD04_SYS",
+    "5a59add78ca61e": "SCQLFX01_SYS",
+    "5aa0efc8ce62ae": "SCQTFX01_SYS",
+    "5aa629903c894d": "APPADD",
+    "5aa62ab23c8a99": "SMALLROUTINE",
+    "5aa62aeb3c8be5": "B2CADD",
+    "5aa62b673c8d31": "DepositConvertSale",
+    "5ab49cee751304": "LDZFD01_SYS",
+    "5ab866cfec589f": "B2CJPD01_SYS",
+    "5abd9deba59210": "CGDD08_SYS",
+    "5abd9ec8a593ec": "SLD07_SYS",
+    "5abdab3ba595b6": "RKD08_SYS",
+    "5abdae5da59757": "TLD07_SYS",
+    "5abdcee6a59925": "TLSQDD04_SYS",
+    "5ac2ea23b5c0c5": "B2CJPD03_SYS",
+    "5ac2eb52b5c1a6": "B2CJPD02_SYS",
+    "5b03c31b827690": "BRJS06_SYS",
+    "5b03c4c98276f8": "BRJS07_SYS",
+    "5b0f9aa7381170": "YCD02_SYS",
+    "5b336984a6aae5": "TLSQDD05_SYS",
+    "5b37q2da269df0": "SelfhelpShop",
+    "5b715ada2841f5": "SMALLONLINE",
+    "5b91410d323043f3b4f3a7079aad3c68": "RKD02_SYS",
+    "5b9b0e2db8fe8c": "FKSQ007_SYS",
+    "5b9b2214b9025b": "FKDLX08_SYS",
+    "5ba4567d595f33": "FKTKDLX04_SYS",
+    "5c039a2f9eda426889f68b842c085fd6": "BRJS02_SYS",
+    "5ca455b964beba": "CLFBX002_SYS",
+    "5cbed69b1d3e79": "XJD06_SYS",
+    "5d785518970486": "BBCChannelReq_SYS",
+    "5d7b48447fe2a9": "RetailReturnReq01_SYS",
+    "5df86c9176f16b": "BLPCL005_SYS",
+    "5e0ea7fb8381e9": "KCZTZH02_SYS",
+    "5e1697dd50eda8": "HZSSD01_SYS",
+    "5e587c4bfde1f1": "MRBPSD002_SYS",
+    "5e757eee834afb": "FZGS01_SYS",
+    "5e7b3a2b70f2a2": "YMZGYSD01_SYS",
+    "5e82b4befc3026": "KP001_SYS",
+    "5ebf64b4e90edf": "YFCSGZD01_SYS",
+    "5ecb2756601cd8": "MRBPSD003_SYS",
+    "5ed4b647530efe": "KP002_SYS",
+    "5f0d5884c43fd9": "SCTLQJD001_SYS",
+    "5f3cd032f332e3": "JYD012_SYS",
+    "5f48b37bd3b594": "XLYCD01_SYS",
+    "5fa3694a5bea0c": "ZTCOMMON_SYS",
+    "5fa369b05bea30": "ZTCUSTBUS_SYS",
+    "5faa3566d90aa4": "JYLSZ01_SYS",
+    "5faa36bdd90af8": "JYLSZ02_SYS",
+    "5faa370ad90b4c": "JYLSZ03_SYS",
+    "5faa373bd90ba0": "JYLSZ04_SYS",
+    "5facd22c0f1fe9": "ZCCZ01_SYS",
+    "5facd24c0f2055": "ZCCZ02_SYS",
+    "5fb36e2360e5ad": "MRBPSD004_SYS",
+    "5fb37269d1389b": "ZJBXD001_SYS",
+    "5fc0c2746a813a": "YCDBGD01_SYS",
+    "5fdb010a3b6256": "FYSQ002_SYS",
+    "5fdb08183b62dc": "FYBXD002_SYS",
+    "5fdb37a43b641b": "BBC_FYSQD_SYS",
+    "5fe2de8c7c3bdc": "HZSHD01_SYS",
+    "5ff57d03be1d8a": "BBCFYBXD",
+    "600653f1d2e899": "JYLSZ05_SYS",
+    "6018ec0ae4eadc": "MRBPSD005_SYS",
+    "6034ca77863f18": "MTOKCSF01_SYS",
+    "6034cb06863f6e": "MTOKCTZ01_SYS",
+    "6046eadde4f054": "DDJLTZ03_SYS",
+    "6046eaf7e4f0f4": "DDJLTZ04_SYS",
+    "60470d7f5ef8e1": "ZCTZ01_SYS",
+    "60470d9f5ef903": "ZCTZ02_SYS",
+    "604ad0cb83a848": "BLPCL006_SYS",
+    "605084d6a22105": "JKZY001_SYS",
+    "605ae4a95ddccc": "SYSQD001_SYS",
+    "60629812bf1849": "CP_BBCSaleScheme01_SYS",
+    "6062e5027d5bba": "KP003_SYS",
+    "606672b44c0533": "BFTKBXD001_SYS",
+    "6066b4b18325db": "RRZCLY01_SYS",
+    "607933f5e83932": "ZTSTATEMENT_SYS",
+    "607d00162753de": "YSTZB01_SYS",
+    "609b6d4d1deb88": "MRBPSD006_SYS",
+    "609cc478685acc": "FKTKDLX05_SYS",
+    "609e1b11b90a8c": "ZXPSQD_SYS_001",
+    "60d2460b0e5742d58432f70a06f193b6": "CGSQD03_SYS",
+    "60ff66e2463a2f": "BLPCL007_SYS",
+    "6130a80550c216": "QTQJD001_SYS",
+    "613dbb10d88b4f548f76767680f3c8d1": "WWDDBGD01_SYS",
+    "6189c78f8f9089": "ESS_OUTSTOCK01_SYS",
+    "6189c7d28f90e3": "ESS_OrderSign01_SYS",
+    "61a4d46e5a6f5e": "ESS_OUTSTOCK02_SYS",
+    "61a4d51a5a6fb8": "ESS_OUTSTOCK03_SYS",
+    "61a4d6065a7012": "ESS_OUTSTOCK04_SYS",
+    "61a4d6545a706c": "ESS_OrderSign02_SYS",
+    "61a4d6745a70c0": "ESS_OrderSign03_SYS",
+    "61a4d6a65a7114": "ESS_OrderSign04_SYS",
+    "61c14680f186d9": "FUM_INADJUST01_SYS",
+    "61c146abf186ef": "FUM_INADJUST02_SYS",
+    "61c146c1f18705": "FUM_INADJUST03_SYS",
+    "61c146d9f1871b": "FUM_INADJUST04_SYS",
+    "61c14764f18731": "FUM_INADJUST05_SYS",
+    "61cabfe8604732": "FUM_OUTADJUST01_SYS",
+    "61cac015604750": "FUM_OUTADJUST02_SYS",
+    "61cac02860476e": "FUM_OUTADJUST03_SYS",
+    "61caf6856047db": "FUM_INOUTADJUST01_SYS",
+    "61e669efe22457": "MRBPSD007_SYS",
+    "6209aecac065eb": "MRBPSD008_SYS",
+    "622ee4340df4b4": "BLPCL008_SYS",
+    "6233f6158ea712": "FUM_INADJUST06_SYS",
+    "623adc7b03e54c85b4645ce203620e7f": "XTZH01_SYS",
+    "6247e8be5b17b0": "CGDD09_SYS",
+    "62679b107e401f": "RKD09_SYS",
+    "62679bb47e41d2": "TLD08_SYS",
+    "626b802f70c134": "WWTLQJD001_SYS",
+    "62739202506015": "BLPCL009_SYS",
+    "6278f1e9830f8e": "JYD013_SYS",
+    "627b5316a5789a": "YSQMTHD01_SYS",
+    "627b53faa578d8": "YFQMTHD01_SYS",
+    "6281f839a47011": "SKRLD01_SYS",
+    "62848c07690aaa": "XSCKD08_SYS",
+    "6284917c690cfc": "XSTHD09_SYS",
+    "628da3da00d2ad": "MRBPSD009_SYS",
+    "62a82bc345ecc9": "SD_Assemble",
+    "62a82bf645ed47": "LS_Assemble",
+    "632419c6ed98af": "GXWWJZFC01_SYS",
+    "632aba6bc8da98": "BLPCL0010_SYS",
+    "632d4ed5e61bb4": "SLD08_SYS",
+    "63329417b339b6": "GXWAJZJS01_SYS",
+    "6340dfb6e09985": "MRBPSD010_SYS",
+    "6361da97dd86d6": "FUM_INADJUST07_SYS",
+    "6361dafbdd870e": "FUM_OUTADJUST04_SYS",
+    "636219e5634ce8": "FUM_INOUTADJUST02_SYS",
+    "636b1bb32ce7c5": "KCZTZH03_SYS",
+    "63db1ea3926705": "BBCTKSQD001",
+    "63e9ffecd48c1a": "SCPCGHT01_SYS",
+    "6431504593e2aa4611e332fb1d502107": "ZJQKD01_SYS",
+    "6431504593e2aa4611e332fb81ea8607": "ZJXBD01_SYS",
+    "6440a9202a11ce": "MDCGTHD",
+    "64518d2d40a44b9a8207fcfe22a4c5d1": "BRJS01_SYS",
+    "64672b37c3284d": "JSJSD02_SYS",
+    "649148484344e9": "POSBZDGD",
+    "6491499943457b": "POSDGYXD",
+    "649150bb43460d": "POSBZTGD",
+    "64918ba4e1212f": "YSPJCFD01_SYS",
+    "64cb0dfaea5112": "MRBPSD011_SYS",
+    "65509029e6fb0d": "XSDD10_SYS",
+    "6579394acb79fb": "XSDD11_SYS",
+    "6588dd4c60a4ad": "CGDD10_SYS",
+    "666bb0c435b37d": "RequestToSale",
+    "66fba68dd04b499e8860966f2ee60117": "THTZD01_SYS",
+    "670b3608188c425a9f696d7ccb47843d": "SKDLX02_SYS",
+    "683e2791298b4e79974ef3d2adc187ff": "WLQD01_SYS",
+    "6942bfeaeaf04a7194fd982474567908": "ZCJY02_SYS",
+    "6a0f0eed3859428d901bdc3441384835": "FHTZD02_SYS",
+    "6a4321986af642c895449a7671e4d10f": "SCYLQDBGD01_SYS",
+    "6d01d059713d42a28bb976c90a121142": "CGDD02_SYS",
+    "6e4b730a35eb4d0da8298ec1e5cc63f1": "XSDDBGD01_SYS",
+    "73383412199a402bb58439509e089077": "XSTHD01_SYS",
+    "74642AA9BA1E4EE98123C143BFAB788C": "CSKC01_SYS",
+    "7555657A-FD6A-4879-AC4F-60E7A648DE67": "FKTKDLX01_SYS",
+    "777f5fd25084498a9e77e1ef2a72e645": "SLD04_SYS",
+    "77ddfb5c4daa44d288b4e9efbd768e94": "JHDD02_SYS",
+    "78acc0949cc4a9d311e33ac646700f54": "BHD01_SYS",
+    "78acc0949cc4ab0d11e3271ac68f4165": "YHSQ003_SYS",
+    "78acc0ac34018b1e11e303f97ece4232": "XSDD08_SYS",
+    "78acc0ac34018bd711e3057dcb9e2c7d": "FHTZD05_SYS",
+    "78acc0ac34018bd711e30581c729f1fb": "XSCKD05_SYS",
+    "78acc0ac3462ba8b11e300bb88ac2143": "FKSQ001_SYS",
+    "78acc0ac3462ba8b11e300bc0786706b": "FKSQ002_SYS",
+    "78acc0ac3462ba8b11e300bc1dda91e9": "FKSQ003_SYS",
+    "78acc0ac3462ba8b11e300bc43d04c32": "FKSQ004_SYS",
+    "78e7d1d91cb6929611e3413968c926a3": "SC_Interest",
+    "78e7d1d91cb6af2c11e3362c3fede221": "SC_FundsUp",
+    "791dc3a3626e4e7896a2de1f08e1d616": "JSJSD01_SYS",
+    "7cd93c259999489c97798063f2f7bd70": "SLD01_SYS",
+    "7d64a06f056b462b81c30321e2e8eeff": "PLMTDFA01_SYS",
+    "7e206b700d1343b5b60e20b992c84469": "XSDD04_SYS",
+    "7fd8da51bb784f78a023a77d98b9c2a9": "PYPK01_SYS",
+    "83d822ca3e374b4ab01e5dd46a0062bd": "CGDD01_SYS",
+    "8598879ae671415f8aa98ac0cfb6a0c0": "SCDDBGD01_SYS",
+    "86bfe0f3ded642be90f04d4409d1751a": "RZ01_SYS",
+    "87035fdb6a31407a8819750df751d233": "WWDD02_SYS",
+    "87c13654b4984832a710c6736c0b8bd9": "ZCLY01_SYS",
+    "88b415d4c17a42b99757f035808ea77c": "KCZTZH01_SYS",
+    "88de45ad2499437f9b21096997b297e2": "XSDD03_SYS",
+    "8a8d6788913e4de087ca8547fc23af6d": "PY01_SYS",
+    "8c6fa3fa450b4bcd9d909ee31998f648": "YHDZD01_SYS",
+    "8f32d0db72e14464a3bd093b0a5e1813": "TLD05_SYS",
+    "92c2cf6f246848efb71bfea12361efcc": "SCLLD02_SYS",
+    "93591469feb54ca2b08eb635f8b79de3": "CGSQD01_SYS",
+    "93904bf745d84ae0ad08da30949754e0": "WWDD01_SYS",
+    "94e3ddd060ea453d8585d91d45ef572b": "WLZQPD01_SYS",
+    "95af25dfa7be49ef88a3edfebf7071cb": "WSDD02_SYS",
+    "962956a0d2c442bdac3ea2fa4b0fa610": "YHSQ02_SYS",
+    "99b9dfb2715b47cfbf58ef1c53882ebe": "WWLLD01_SYS",
+    "9a1621221f4c47cfb018a11640b1b03f": "JDSCLL01_SYS",
+    "9b9aa75212734511bcab1716f2587e2a": "SCBL01_SYS",
+    "9BB562A7CB0A4801BA14DF2632FDEF0A": "XSCKD03_SYS",
+    "9c6106cf16674ae4949d33fb8e360bf3": "QTYSD01_SYS",
+    "9C6801BB869E41D6973694F731D03B47": "ZQPDJH01_SYS",
+    "9cea9708483e41a4b0c8af1fd0a5cdf5": "JDSCRK01_SYS",
+    "9fcdd78f9d334271a7b2d2eef72200bb": "GY01_SYS",
+    "a033661686bc487a808b222403ef28a6": "PHTZ01_SYS",
+    "a0a1896cfe3d4a81891af018b2d54e8b": "CGPTFP01_SYS",
+    "a1d51ba6e6dd4a7ba1ab4242fc769c2e": "DC01_SYS",
+    "a1ff32276cd9469dad3bf2494366fa4f": "RKD01_SYS",
+    "a300e2620037435492aed9842875b451": "XSDD05_SYS",
+    "a5369925a82743108f8817f545b780d2": "STCLTL01_SYS",
+    "a7c7f20d5faa46ecbeb88ee4e207390e": "ZJDB03_SYS",
+    "a7f7185a1c294df09755d9b0344f1cbd": "YFHXD01_SYS",
+    "a83c007f22414b399b0ee9b9aafc75f9": "YFD01_SYS",
+    "aad67c44702d46d387432863420f48a6": "BRJS04_SYS",
+    "abcd00000d1343b5b60e20b992c84469": "FHTZD04_SYS",
+    "abcd0000878a483da7fe38e5a4e992a0": "FHTZD03_SYS",
+    "abcd6b700d1343b5b60e20b992c84469": "XSDD07_SYS",
+    "abcdce9c878a483da7fe38e5a4e992a0": "XSDD06_SYS",
+    "ad0779a4685a43a08f08d2e42d7bf3e9": "XSCKD01_SYS",
+    "b0677860cd16433895be5f520086b69f": "CGDD04_SYS",
+    "b15923ad5e39421aa188380c89849cb5": "ZJDB04_SYS",
+    "b1985f24f35841fdb418329af6ed7bd0": "CGDD05_SYS",
+    "b20142134c144a48b144e7af8a1a95fb": "LZ01_SYS",
+    "b538d861e2f84828ab18662724e7dc39": "BRJS05_SYS",
+    "b60bafec7a7749618c6914714d776b10": "YHSQ01_SYS",
+    "b7dd912d4ef545578f0f5d1d08cb2602": "SCDD04_SYS",
+    "b8df755fd92b4c2baedef2439c29f793": "CGDD03_SYS",
+    "b943c27f285546f8a5c0d544034328de": "WWTLD02_SYS",
+    "b9b2335770b84a3aa9b09b22767cd7e3": "YSHXD01_SYS",
+    "ba0754db8aa04f8cb3d42d186858ed03": "CGSQD02_SYS",
+    "ba3ad5fc48d44271a048da26b615b589": "CGDD06-SYS",
+    "bb59b7f5cc314546a5b6e94e9533feb2": "FKDLX03_SYS",
+    "bf60c58b16964fef9db74774ccb7d02a": "PLSYZZ01_SYS",
+    "c35098f8f53c455d8fb6678290a87a65": "YFQLDLX",
+    "c4c6d7ef915149269d6d25fbf155f36f": "HT01_SYS",
+    "c4e4cef46c844a2bb2a7faf0cf6dc2cb": "SCTLD01_SYS",
+    "c7a8e6ec73754c31b0cde0f8cc01e328": "ARNBQLD",
+    "c97bce78f66642c8a655e304bdc8610d": "SLD05_SYS",
+    "ca103ed148d0492dbe81d89f54d9ef85": "SCBLD01_SYS",
+    "cad8c3ae5a9b44b0b9319cd999c09dd5": "BPJS02_SYS",
+    "ce8f49055c5c4782b65463a3f863bb4a": "ZJDB01_SYS",
+    "CEB80356E70D492F9DD7C5E9CD37107E": "XSTHD03_SYS",
+    "d040f688e69b406186aecfb5d9a86101": "CKCBTZD01_SYS",
+    "d52451a5048a40818d7af332fb181966": "TLD02_SYS",
+    "d588ab5aeb23490aadbb665874b1eabf": "CGDDBGD01_SYS",
+    "d772ead981e748d69dda1caac7583f8c": "QTRKD01_SYS",
+    "d8d3858138f0810811e2fb1db393697f": "RKD05_SYS",
+    "d8d3858138f0810811e2fb49f168b6d4": "RKD06_SYS",
+    "D9652BC4-1420-4D3B-A214-2509BC9BF925": "FKDLX01_SYS",
+    "dd1b0498f52e43fc8da0969086184629": "WWYLQDBGD01_SYS",
+    "dde3ab8a6b714e9fa7039d065a169f92": "XSBJD01_SYS",
+    "de29f16214744c21b374044d629595f2": "SCRKD02_SYS",
+    "de3bcacc98434ec68a358aa5abcd9183": "FBDC01_SYS",
+    "de677c4afcd4492688c4bc4c3e6ae2a1": "TDFA01_SYS",
+    "e52b554423704173b7306554708a8b05": "SCHBD02_SYS",
+    "e634313fdebb43259fcb9db7b528260b": "SLD02_SYS",
+    "e65a4f29743a44b7b67dc8145e1f9c92": "FBDR01_SYS",
+    "e7cb39ee01cf467ea6afcc36f08f5227": "SKTKDLX02_SYS",
+    "ea4889bc7c004230babdbe8f6ef889b7": "XSCKD02_SYS",
+    "eacb50844fc84a10b03d7b841f3a6278": "XSDD01_SYS",
+    "ecd0331047f44d6b868af85d3e8dadff": "SYZZ01_SYS",
+    "ed2209ac299b47068e4ee5c421efefca": "THTZD02_SYS",
+    "ef06f87d394a462d9f96cb2397803372": "SKTKDLX01_SYS",
+    "ef17d378e9bc46beb2b216944688d45b": "TLD03_SYS",
+    "f4f46eb78a7149b1b7e4de98586acb67": "SCLLD01_SYS",
+    "f94e4845700c4dab93e652b61edcb819": "ZZJXQD01_SYS",
+    "f9744c3493db410cbe2ef85a5a1290c3": "XSCKD04_SYS",
+    "fad46ca477d44b30b3fa7043c4604876": "FKDLX02_SYS",
+}

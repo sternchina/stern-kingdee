@@ -1,0 +1,14 @@
+=== Starting generate_import_excel ===
+RUN_TS: 20260429_173336
+OUTPUT_DIR: C:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\output
+Step 1: Output directory created
+Step 2: Old files cleared
+Step 3: Template found: ENG_BOM_物料清单_2026042910472139_209999.xlsx
+Step 4: Sheet loaded: 物料清单#单据头(FBillHead)
+Step 5: Header loaded, 182 columns
+Step 6: Data file found: ENG_BOM_20260429_173306.csv
+Step 7: Data loaded: 5283 rows
+Step 8: Output path: c:\Users\shenjj\Desktop\stern-kingdee-main\workspace\BOM_API\output\物料清单_20260429_173336_导入.xlsx
+Step 9: Header written
+Step 10: File saved, size: 2.17 MB
+=== Done ===

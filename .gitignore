@@ -1,0 +1,63 @@
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+conf.ini
+conf.*.ini
+!conf.ini.example
+.vendor/*
+!.vendor/kingdee.cdp.webapi.sdk-8.2.0-py3-none-any.whl
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Project data (exports may contain sensitive business data)
+data/out/
+data/out/**/*.xlsx
+data/out/**/*.xls
+
+# Logs
+*.log
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+*.xlsx
+*.csv
+/.claude
+
+# Local requirement notes
+需求.md
+
+# Backup files
+project_backup_*.zip
+
+# Debug / temp scripts
+debug_api.py
+run_test.py
+test_fields.py
+test_mapping.py
+test_material_id.py

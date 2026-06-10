@@ -1,0 +1,12 @@
+[开始] 从金蝶拉取数据
+  [清理] data/ 目录已清空
+  [字段] ENG_BOM ... 44 个字段
+  [数据] ENG_BOM: 共 5284 行
+  [转换] FBILLTYPE ID 已转换为编码
+  [转换] FUNITID ID 已转换为编码
+  [转换] FGroup ID 已转换为编码
+  [转换] FBOMCATEGORY ID 已转换为编码
+  [转换] FBOMUSE ID 已转换为编码
+  [转换] FGroup 编码已转换为名称
+  [保存] ENG_BOM_20260430_102250.csv
+[完成] 从金蝶拉取数据

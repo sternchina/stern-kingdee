@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kingdee Master Data 数据同步工具</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1a365d;
+    --primary-light: #2a4a7f;
+    --accent: #d69e2e;
+    --accent-hover: #b7791f;
+    --accent-glow: rgba(214, 158, 46, 0.3);
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --card-border: #e2e8f0;
+    --text: #1a202c;
+    --text-secondary: #718096;
+    --text-muted: #a0aec0;
+    --success: #38a169;
+    --success-bg: #f0fff4;
+    --error: #e53e3e;
+    --error-bg: #fff5f5;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+  }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Header ────────────────────────────────────────────────────── */
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    padding: 28px 0 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(214,158,46,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: 10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .header h1 {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    margin-top: 4px;
+    font-weight: 300;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-left: 12px;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Main Container ────────────────────────────────────────────── */
+  .container {
+    max-width: 960px;
+    margin: -16px auto 40px;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── Card ──────────────────────────────────────────────────────── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--card-border);
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .card-title .icon.form-icon {
+    background: linear-gradient(135deg, #ebf4ff, #c3dafe);
+    color: var(--primary);
+  }
+  .card-title .icon.lang-icon {
+    background: linear-gradient(135deg, #fefcbf, #f6e05e);
+    color: #975a16;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+  }
+
+  /* ── Checkbox Grid ─────────────────────────────────────────────── */
+  .select-all-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .select-all-bar label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+  }
+  .select-all-bar .count {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: #edf2f7;
+    padding: 2px 10px;
+    border-radius: 12px;
+  }
+
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 768px) {
+    .checkbox-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .checkbox-grid { grid-template-columns: 1fr; }
+  }
+
+  .checkbox-item {
+    position: relative;
+    border: 1.5px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .checkbox-item:hover {
+    border-color: var(--accent);
+    background: #fffff0;
+  }
+  .checkbox-item.checked {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #fffff0, #fefcbf);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .checkbox-item input[type="checkbox"] {
+    display: none;
+  }
+  .checkbox-item .check-mark {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid #cbd5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 12px;
+    color: transparent;
+    background: #fff;
+  }
+  .checkbox-item.checked .check-mark {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .checkbox-item .item-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+    padding-right: 24px;
+  }
+  .checkbox-item .item-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .checkbox-item .item-id {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+    margin-top: 4px;
+  }
+
+  /* ── Language Grid ─────────────────────────────────────────────── */
+  .lang-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 480px) {
+    .lang-grid { grid-template-columns: 1fr; }
+  }
+
+  .lang-item {
+    position: relative;
+    border: 1.5px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .lang-item:hover {
+    border-color: var(--accent);
+    background: #fffff0;
+  }
+  .lang-item.checked {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #fffff0, #fefcbf);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .lang-item input[type="checkbox"] { display: none; }
+  .lang-item .lang-flag {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .lang-item .lang-flag.cn {
+    background: linear-gradient(135deg, #fed7d7, #feb2b2);
+  }
+  .lang-item .lang-flag.en {
+    background: linear-gradient(135deg, #bee3f8, #90cdf4);
+  }
+  .lang-item .lang-info { flex: 1; }
+  .lang-item .lang-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .lang-item .lang-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .lang-item .check-mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid #cbd5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 12px;
+    color: transparent;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .lang-item.checked .check-mark {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Buttons ───────────────────────────────────────────────────── */
+  .button-bar {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .btn {
+    padding: 12px 36px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+  }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    color: #fff;
+    box-shadow: 0 2px 8px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 4px 16px var(--accent-glow);
+    filter: brightness(1.05);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid #cbd5e0;
+  }
+  .btn-secondary:hover {
+    border-color: #a0aec0;
+    color: var(--text);
+    background: #f7fafc;
+  }
+
+  .btn-danger {
+    background: var(--error);
+    color: #fff;
+  }
+  .btn-danger:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+  .btn-outline:hover {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-danger-outline {
+    color: var(--error);
+    border-color: var(--error);
+  }
+  .btn-danger-outline:hover {
+    background: var(--error);
+    color: #fff;
+  }
+
+  /* ── Progress ──────────────────────────────────────────────────── */
+  .progress-section {
+    display: none;
+  }
+  .progress-section.visible {
+    display: block;
+  }
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .progress-step {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .progress-percent {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .progress-bar-track {
+    width: 100%;
+    height: 10px;
+    background: #edf2f7;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #ecc94b);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+  }
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255,255,255,0.3) 50%,
+      transparent 100%
+    );
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .progress-bar-fill.done {
+    background: linear-gradient(90deg, var(--success), #48bb78);
+  }
+  .progress-bar-fill.done::after {
+    animation: none;
+  }
+  .progress-bar-fill.error {
+    background: linear-gradient(90deg, var(--error), #fc8181);
+  }
+  .progress-bar-fill.error::after {
+    animation: none;
+  }
+
+  .progress-steps {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--accent-glow);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── Output ────────────────────────────────────────────────────── */
+  .output-section {
+    display: none;
+  }
+  .output-section.visible {
+    display: block;
+    animation: fadeInUp 0.4s ease;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .output-path {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-all;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .output-path .path-icon {
+    color: var(--accent);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .output-files {
+    margin-bottom: 16px;
+  }
+  .output-files-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .output-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--success-bg);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .output-file .file-icon {
+    color: var(--success);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .output-file .file-name {
+    flex: 1;
+    color: var(--text);
+  }
+  .output-file .file-size {
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .output-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Toast ─────────────────────────────────────────────────────── */
+  .toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    max-width: 360px;
+  }
+  .toast.visible {
+    transform: translateX(0);
+  }
+  .toast.error {
+    background: var(--error);
+    color: #fff;
+  }
+  .toast.success {
+    background: var(--success);
+    color: #fff;
+  }
+  .toast.warning {
+    background: var(--accent);
+    color: var(--primary);
+  }
+
+  /* ── Output Path Input ──────────────────────────────────────────── */
+  .output-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .output-input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'Courier New', monospace;
+    color: var(--text);
+    background: #f7fafc;
+    transition: border-color 0.2s;
+  }
+  .output-input-row input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+  .output-input-row input::placeholder {
+    color: var(--text-muted);
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  /* ── Footer ────────────────────────────────────────────────────── */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── Header Button ─────────────────────────────────────────────── */
+  .header-actions {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+  .btn-header {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    backdrop-filter: blur(4px);
+  }
+  .btn-header:hover {
+    background: rgba(255,255,255,0.25);
+    border-color: rgba(255,255,255,0.5);
+  }
+
+  /* ── Modal ─────────────────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 900;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-overlay.visible {
+    display: flex;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-box {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    padding: 28px 32px;
+    max-width: 420px;
+    width: 90%;
+    animation: modalSlide 0.25s ease;
+  }
+  @keyframes modalSlide {
+    from { opacity: 0; transform: translateY(-16px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+  .modal-icon.warn {
+    background: #fefcbf;
+    color: #975a16;
+  }
+  .modal-icon.danger {
+    background: var(--error-bg);
+    color: var(--error);
+  }
+  .modal-icon.info {
+    background: #ebf8ff;
+    color: #2b6cb0;
+  }
+
+  .modal-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .modal-message {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .modal-actions .btn {
+    padding: 9px 24px;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <h1>Kingdee Master Data 数据同步工具 <span class="header-badge">K3 Cloud</span></h1>
+    <p>金蝶云星空数据同步与导入 Excel 生成</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-header" onclick="openLogDir()">&#128196; 打开日志</button>
+    <button class="btn-header" onclick="showClearLogModal()">&#128465; 清空日志</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="container">
+
+  <!-- Part 1: Form Selection -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon form-icon">&#9776;</span>
+      表单选项
+    </div>
+    <div class="card-desc">选择需要导出的表单类型，支持多选</div>
+
+    <div class="select-all-bar">
+      <label onclick="toggleAllForms()">
+        <input type="checkbox" id="selectAllForms" onchange="toggleAllForms()">
+        全选 / 取消全选
+      </label>
+      <span class="count" id="formCount">已选 0 / 9</span>
+    </div>
+
+    <div class="checkbox-grid" id="formGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Part 2: Language Selection -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon lang-icon">&#127760;</span>
+      语言选项
+    </div>
+    <div class="card-desc">选择输出 Excel 的语言版本</div>
+
+    <div class="select-all-bar">
+      <label onclick="toggleAllLangs()">
+        <input type="checkbox" id="selectAllLangs" onchange="toggleAllLangs()">
+        全选 / 取消全选
+      </label>
+      <span class="count" id="langCount">已选 0 / 2</span>
+    </div>
+
+    <div class="lang-grid" id="langGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Part 2.5: Output Location -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon form-icon">&#128193;</span>
+      输出位置
+    </div>
+    <div class="card-desc">设置网络共享输出路径，文件将同时输出到本地和网络位置</div>
+    <div class="output-input-row">
+      <input type="text" id="networkOutputPath" placeholder="例如：\\192.168.1.181\99_Share\04_IT\KingdeeExport" value="\\192.168.1.181\99_Share\04_IT\KingdeeExport">
+    </div>
+  </div>
+
+  <!-- Part 3: Action Buttons -->
+  <div class="card">
+    <div class="button-bar">
+      <button class="btn btn-primary" id="btnConfirm" onclick="confirmRun()">
+        &#9654; 确认运行
+      </button>
+      <button class="btn btn-secondary" id="btnReset" onclick="resetAll()">
+        &#8634; 重置
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card progress-section" id="progressSection">
+    <div class="card-title">
+      <span class="icon form-icon">&#9881;</span>
+      运行状态
+    </div>
+
+    <div class="progress-header">
+      <span class="progress-step" id="progressStep">准备中...</span>
+      <span class="progress-percent" id="progressPercent">0%</span>
+    </div>
+
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+
+    <div class="progress-steps">
+      <span class="spinner" id="progressSpinner"></span>
+      <span id="progressDetail">步骤 0 / 0</span>
+    </div>
+
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn btn-danger" id="btnStop" onclick="stopRun()" style="padding: 8px 20px; font-size: 13px;">
+        &#9632; 停止运行
+      </button>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="card output-section" id="outputSection">
+    <div class="card-title">
+      <span class="icon form-icon">&#128193;</span>
+      输出结果
+    </div>
+
+    <div class="output-path" id="outputPath">
+      <span class="path-icon">&#128193;</span>
+      <span id="outputPathText">-</span>
+    </div>
+
+    <div class="output-files" id="outputFiles">
+      <div class="output-files-title">生成的文件：</div>
+      <div id="outputFileList"></div>
+    </div>
+
+    <div class="output-actions">
+      <button class="btn btn-outline" onclick="openOutputDir()">
+        &#128194; 打开输出目录
+      </button>
+      <button class="btn btn-outline btn-danger-outline" onclick="showClearOutputModal()">
+        &#128465; 清空输出
+      </button>
+      <button class="btn btn-outline" onclick="refreshOutput()">
+        &#128260; 刷新文件列表
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="onModalOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-message" id="modalMessage"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="modalCancel" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="modalConfirm"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  Kingdee Master Data Sync Tool &middot; Kingdee K3 Cloud Integration
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────
+const FORMS = [
+  { id: 'BD_MATERIAL', name: '物料基础资料', desc: '物料主数据' },
+  { id: 'ENG_BOM', name: '物料清单', desc: 'BOM 清单' },
+  { id: 'PLN_FORECAST', name: '预测单', desc: '计划预测' },
+  { id: 'PLN_PLANORDER', name: '计划订单', desc: '计划订单' },
+  { id: 'PRD_MO', name: '生产订单', desc: '生产制造订单' },
+  { id: 'PUR_PurchaseOrder', name: '采购订单', desc: '采购订单' },
+  { id: 'PRD_INSTOCK', name: '生产入库单', desc: '生产入库' },
+  { id: 'STK_Inventory', name: '即时库存', desc: '库存查询' },
+  { id: 'PRD_PickMtrl', name: '生产领料单', desc: '生产领料' },
+];
+
+const LANGS = [
+  { id: 'CN', name: '中文版', desc: 'Chinese', flag: '🇨🇳', flagClass: 'cn' },
+  { id: 'EN', name: '英文版', desc: 'English', flag: '🇬🇧', flagClass: 'en' },
+];
+
+let selectedForms = new Set();
+let selectedLangs = new Set();
+let pollTimer = null;
+let isRunning = false;
+
+// ── Init ──────────────────────────────────────────────────────────
+function init() {
+  renderForms();
+  renderLangs();
+  checkExistingProgress();
+}
+
+function renderForms() {
+  const grid = document.getElementById('formGrid');
+  grid.innerHTML = FORMS.map(f => `
+    <div class="checkbox-item" id="form-${f.id}" onclick="toggleForm('${f.id}')">
+      <input type="checkbox" value="${f.id}">
+      <div class="check-mark">&#10003;</div>
+      <div class="item-name">${f.name}</div>
+      <div class="item-desc">${f.desc}</div>
+      <div class="item-id">${f.id}</div>
+    </div>
+  `).join('');
+}
+
+function renderLangs() {
+  const grid = document.getElementById('langGrid');
+  grid.innerHTML = LANGS.map(l => `
+    <div class="lang-item" id="lang-${l.id}" onclick="toggleLang('${l.id}')">
+      <input type="checkbox" value="${l.id}">
+      <div class="lang-flag ${l.flagClass}">${l.flag}</div>
+      <div class="lang-info">
+        <div class="lang-name">${l.name}</div>
+        <div class="lang-desc">${l.desc}</div>
+      </div>
+      <div class="check-mark">&#10003;</div>
+    </div>
+  `).join('');
+}
+
+// ── Toggle ────────────────────────────────────────────────────────
+function toggleForm(id) {
+  if (isRunning) return;
+  if (selectedForms.has(id)) {
+    selectedForms.delete(id);
+    document.getElementById('form-' + id).classList.remove('checked');
+  } else {
+    selectedForms.add(id);
+    document.getElementById('form-' + id).classList.add('checked');
+  }
+  updateFormCount();
+}
+
+function toggleLang(id) {
+  if (isRunning) return;
+  if (selectedLangs.has(id)) {
+    selectedLangs.delete(id);
+    document.getElementById('lang-' + id).classList.remove('checked');
+  } else {
+    selectedLangs.add(id);
+    document.getElementById('lang-' + id).classList.add('checked');
+  }
+  updateLangCount();
+}
+
+function toggleAllForms() {
+  if (isRunning) return;
+  const allSelected = selectedForms.size === FORMS.length;
+  FORMS.forEach(f => {
+    const el = document.getElementById('form-' + f.id);
+    if (allSelected) {
+      selectedForms.delete(f.id);
+      el.classList.remove('checked');
+    } else {
+      selectedForms.add(f.id);
+      el.classList.add('checked');
+    }
+  });
+  document.getElementById('selectAllForms').checked = !allSelected;
+  updateFormCount();
+}
+
+function toggleAllLangs() {
+  if (isRunning) return;
+  const allSelected = selectedLangs.size === LANGS.length;
+  LANGS.forEach(l => {
+    const el = document.getElementById('lang-' + l.id);
+    if (allSelected) {
+      selectedLangs.delete(l.id);
+      el.classList.remove('checked');
+    } else {
+      selectedLangs.add(l.id);
+      el.classList.add('checked');
+    }
+  });
+  document.getElementById('selectAllLangs').checked = !allSelected;
+  updateLangCount();
+}
+
+function updateFormCount() {
+  document.getElementById('formCount').textContent = `已选 ${selectedForms.size} / ${FORMS.length}`;
+}
+
+function updateLangCount() {
+  document.getElementById('langCount').textContent = `已选 ${selectedLangs.size} / ${LANGS.length}`;
+}
+
+// ── Confirm & Reset ───────────────────────────────────────────────
+function confirmRun() {
+  if (isRunning) return;
+
+  if (selectedForms.size === 0) {
+    showToast('请至少选择一个表单类型', 'warning');
+    return;
+  }
+  if (selectedLangs.size === 0) {
+    showToast('请至少选择一种语言', 'warning');
+    return;
+  }
+
+  const formNames = Array.from(selectedForms).map(id => {
+    const f = FORMS.find(x => x.id === id);
+    return f ? f.name : id;
+  }).join('、');
+  const langNames = Array.from(selectedLangs).map(id => {
+    const l = LANGS.find(x => x.id === id);
+    return l ? l.name : id;
+  }).join('、');
+
+  showModal({
+    icon: '&#9654;',
+    iconClass: 'info',
+    title: '确认运行',
+    message: `即将运行以下任务：<br><strong>表单：</strong>${formNames}<br><strong>语言：</strong>${langNames}<br><br>确认开始运行？`,
+    confirmText: '确认运行',
+    confirmClass: 'btn-primary',
+    onConfirm: doRun,
+  });
+}
+
+async function doRun() {
+  const btnConfirm = document.getElementById('btnConfirm');
+  btnConfirm.disabled = true;
+  isRunning = true;
+
+  const networkOutput = document.getElementById('networkOutputPath').value.trim();
+
+  try {
+    const resp = await fetch('/api/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        forms: Array.from(selectedForms),
+        langs: Array.from(selectedLangs),
+        network_output: networkOutput,
+      }),
+    });
+
+    const data = await resp.json();
+
+    if (!data.success) {
+      showToast(data.error || '启动失败', 'error');
+      btnConfirm.disabled = false;
+      isRunning = false;
+      return;
+    }
+
+    // Show progress section
+    document.getElementById('progressSection').classList.add('visible');
+    document.getElementById('outputSection').classList.remove('visible');
+
+    // Start polling
+    startPolling();
+
+  } catch (err) {
+    showToast('请求失败: ' + err.message, 'error');
+    btnConfirm.disabled = false;
+    isRunning = false;
+  }
+}
+
+function resetAll() {
+  if (isRunning) return;
+
+  selectedForms.clear();
+  selectedLangs.clear();
+
+  FORMS.forEach(f => {
+    document.getElementById('form-' + f.id).classList.remove('checked');
+  });
+  LANGS.forEach(l => {
+    document.getElementById('lang-' + l.id).classList.remove('checked');
+  });
+
+  document.getElementById('selectAllForms').checked = false;
+  document.getElementById('selectAllLangs').checked = false;
+  updateFormCount();
+  updateLangCount();
+
+  // Hide progress and output
+  document.getElementById('progressSection').classList.remove('visible');
+  document.getElementById('outputSection').classList.remove('visible');
+
+  // Reset progress bar
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('progressBar').className = 'progress-bar-fill';
+  document.getElementById('progressStep').textContent = '准备中...';
+  document.getElementById('progressPercent').textContent = '0%';
+  document.getElementById('progressDetail').textContent = '步骤 0 / 0';
+}
+
+// ── Progress Polling ──────────────────────────────────────────────
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(pollProgress, 1500);
+  pollProgress();
+}
+
+function stopPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+}
+
+async function pollProgress() {
+  try {
+    const resp = await fetch('/api/progress');
+    const data = await resp.json();
+
+    const bar = document.getElementById('progressBar');
+    const step = document.getElementById('progressStep');
+    const percent = document.getElementById('progressPercent');
+    const detail = document.getElementById('progressDetail');
+    const spinner = document.getElementById('progressSpinner');
+
+    bar.style.width = data.progress + '%';
+    step.textContent = data.step || '';
+    percent.textContent = data.progress + '%';
+    detail.textContent = `步骤 ${data.completed_steps} / ${data.total_steps}`;
+
+    if (data.running) {
+      spinner.style.display = 'inline-block';
+      bar.className = 'progress-bar-fill';
+    } else {
+      spinner.style.display = 'none';
+      isRunning = false;
+      document.getElementById('btnConfirm').disabled = false;
+
+      if (data.error) {
+        bar.className = 'progress-bar-fill error';
+        step.textContent = data.step;
+        showToast('运行出错: ' + data.error, 'error');
+      } else {
+        bar.className = 'progress-bar-fill done';
+        showToast('运行完成!', 'success');
+        showOutput();
+      }
+
+      stopPolling();
+    }
+  } catch (err) {
+    console.error('Poll error:', err);
+  }
+}
+
+// ── Stop ──────────────────────────────────────────────────────────
+function stopRun() {
+  showModal({
+    icon: '&#9632;',
+    iconClass: 'danger',
+    title: '停止运行',
+    message: '确定要停止当前正在运行的任务吗？<br>已生成的文件不会被删除。',
+    confirmText: '确认停止',
+    confirmClass: 'btn-danger',
+    onConfirm: doStop,
+  });
+}
+
+async function doStop() {
+  try {
+    await fetch('/api/stop', { method: 'POST' });
+    showToast('已发送停止请求', 'warning');
+  } catch (err) {
+    showToast('停止失败: ' + err.message, 'error');
+  }
+}
+
+// ── Output ────────────────────────────────────────────────────────
+async function showOutput() {
+  try {
+    const resp = await fetch('/api/output');
+    const data = await resp.json();
+
+    document.getElementById('outputPathText').textContent = data.output_dir;
+
+    const fileList = document.getElementById('outputFileList');
+    if (data.files && data.files.length > 0) {
+      fileList.innerHTML = data.files.map(f => `
+        <div class="output-file">
+          <span class="file-icon">&#128196;</span>
+          <span class="file-name">${f.name}</span>
+          <span class="file-size">${formatSize(f.size)}</span>
+        </div>
+      `).join('');
+    } else {
+      fileList.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">暂无输出文件</div>';
+    }
+
+    document.getElementById('outputSection').classList.add('visible');
+  } catch (err) {
+    console.error('Output error:', err);
+  }
+}
+
+async function refreshOutput() {
+  await showOutput();
+}
+
+function openOutputDir() {
+  fetch('/api/open-output', { method: 'POST' })
+    .then(resp => resp.json())
+    .then(data => {
+      if (!data.success) {
+        showToast('打开失败: ' + (data.error || '未知错误'), 'error');
+      }
+    })
+    .catch(err => {
+      showToast('打开失败: ' + err.message, 'error');
+    });
+}
+
+// ── Check Existing Progress ───────────────────────────────────────
+async function checkExistingProgress() {
+  try {
+    const resp = await fetch('/api/progress');
+    const data = await resp.json();
+    if (data.running) {
+      isRunning = true;
+      document.getElementById('btnConfirm').disabled = true;
+      document.getElementById('progressSection').classList.add('visible');
+      startPolling();
+    } else if (data.progress > 0 && !data.error) {
+      // Previous run completed
+      document.getElementById('progressSection').classList.add('visible');
+      const bar = document.getElementById('progressBar');
+      bar.style.width = '100%';
+      bar.className = 'progress-bar-fill done';
+      document.getElementById('progressStep').textContent = '完成!';
+      document.getElementById('progressPercent').textContent = '100%';
+      document.getElementById('progressDetail').textContent = `步骤 ${data.completed_steps} / ${data.total_steps}`;
+      document.getElementById('progressSpinner').style.display = 'none';
+      showOutput();
+    }
+  } catch (err) {
+    // Ignore - server may not be running yet
+  }
+}
+
+// ── Utils ─────────────────────────────────────────────────────────
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type;
+  setTimeout(() => toast.classList.add('visible'), 10);
+  setTimeout(() => toast.classList.remove('visible'), 3500);
+}
+
+// ── Modal ─────────────────────────────────────────────────────────
+let _modalOnConfirm = null;
+
+function showModal({ icon, iconClass, title, message, confirmText, confirmClass, onConfirm }) {
+  document.getElementById('modalIcon').innerHTML = icon;
+  document.getElementById('modalIcon').className = 'modal-icon ' + iconClass;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMessage').innerHTML = message;
+
+  const confirmBtn = document.getElementById('modalConfirm');
+  confirmBtn.textContent = confirmText;
+  confirmBtn.className = 'btn ' + confirmClass;
+  confirmBtn.onclick = () => {
+    const callback = _modalOnConfirm;
+    closeModal();
+    if (callback) callback();
+  };
+
+  _modalOnConfirm = onConfirm;
+  document.getElementById('modalOverlay').classList.add('visible');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('visible');
+  _modalOnConfirm = null;
+}
+
+function onModalOverlayClick(event) {
+  if (event.target === document.getElementById('modalOverlay')) {
+    closeModal();
+  }
+}
+
+// ── Log Dir ──────────────────────────────────────────────────────
+async function openLogDir() {
+  try {
+    const resp = await fetch('/api/open-log', { method: 'POST' });
+    const data = await resp.json();
+    if (!data.success) {
+      showToast('打开日志目录失败: ' + (data.error || '未知错误'), 'error');
+    }
+  } catch (err) {
+    showToast('打开日志目录失败: ' + err.message, 'error');
+  }
+}
+
+function showClearLogModal() {
+  showModal({
+    icon: '&#128465;',
+    iconClass: 'danger',
+    title: '清空日志文件夹',
+    message: '确定要删除 log 目录下的所有日志文件吗？<br>此操作不可撤销。',
+    confirmText: '确认清空',
+    confirmClass: 'btn-danger',
+    onConfirm: doClearLog,
+  });
+}
+
+async function doClearLog() {
+  try {
+    const resp = await fetch('/api/clear-log', { method: 'POST' });
+    const data = await resp.json();
+    if (data.success) {
+      showToast(`已清空日志文件夹，删除 ${data.deleted} 个文件`, 'success');
+    } else {
+      showToast('清空日志失败: ' + (data.error || '未知错误'), 'error');
+    }
+  } catch (err) {
+    showToast('清空日志失败: ' + err.message, 'error');
+  }
+}
+
+// ── Clear Output ──────────────────────────────────────────────────
+function showClearOutputModal() {
+  if (isRunning) {
+    showToast('运行中无法清空输出文件夹', 'warning');
+    return;
+  }
+
+  const networkPath = document.getElementById('networkOutputPath').value.trim();
+  if (!networkPath) {
+    showToast('请先填写网络输出路径', 'warning');
+    return;
+  }
+
+  showModal({
+    icon: '&#128465;',
+    iconClass: 'danger',
+    title: '清空网络输出文件夹',
+    message: `确定要清空以下网络路径中的所有 Excel 文件吗？<br><strong>${networkPath}</strong><br>此操作不可撤销。`,
+    confirmText: '确认清空',
+    confirmClass: 'btn-danger',
+    onConfirm: doClearOutput,
+  });
+}
+
+async function doClearOutput() {
+  const networkPath = document.getElementById('networkOutputPath').value.trim();
+  try {
+    const resp = await fetch('/api/clear-output', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ network_output: networkPath }),
+    });
+    const data = await resp.json();
+    if (data.success) {
+      showToast(`已清空网络输出文件夹，删除 ${data.deleted} 个文件`, 'success');
+      if (document.getElementById('outputSection').classList.contains('visible')) {
+        showOutput();
+      }
+    } else {
+      showToast('清空失败: ' + (data.error || '未知错误'), 'error');
+    }
+  } catch (err) {
+    showToast('清空失败: ' + err.message, 'error');
+  }
+}
+
+// ── Start ─────────────────────────────────────────────────────────
+init();
+</script>
+
+</body>
+</html>
