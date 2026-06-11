@@ -9,7 +9,7 @@ Kingdee Master Data 数据同步与导入 Excel 生成工具
 
 参数说明：
     --form: 指定导出的表单类型，可选值见下方"支持的表单类型"，默认 all
-    --lang: 指定输出语言，CN 为中文版，EN 为英文版，默认 CN
+    --lang: 指定输出语言，EN 为英文版（默认），CN 为中文版，ALL 为中英文都输出
     --skip-fetch: 跳过从金蝶拉取数据，使用本地已有的 CSV 文件
     --netaddr: 网络输出路径（SMB共享），默认 \\192.168.1.181\99_Share\04_IT\KingdeeExport，留空则不同步
 
@@ -5306,14 +5306,14 @@ def main() -> None:
     parser.add_argument("--form", type=str, default="all",
                         choices=["all", "BD_MATERIAL", "ENG_BOM", "PLN_FORECAST", "PLN_PLANORDER", "PRD_MO", "PUR_PurchaseOrder", "PRD_INSTOCK", "STK_Inventory", "PRD_PickMtrl"],
                         help="指定要处理的表单，支持: all(全部), BD_MATERIAL(物料基础资料), ENG_BOM(物料清单), PLN_FORECAST(预测单), PLN_PLANORDER(计划订单), PRD_MO(生产订单), PUR_PurchaseOrder(采购订单), PRD_INSTOCK(生产入库单), STK_Inventory(即时库存), PRD_PickMtrl(生产领料单)")
-    parser.add_argument("--lang", type=str, default="all",
-                        choices=["all", "CN", "EN"],
-                        help="输出语言版本: all(中英文都输出), CN(仅中文), EN(仅英文)")
+    parser.add_argument("--lang", type=str, default="EN",
+                        choices=["ALL", "CN", "EN"],
+                        help="输出语言版本: ALL(中英文都输出), CN(仅中文), EN(仅英文，默认)")
     parser.add_argument("--netaddr", type=str, default=r"\\192.168.1.181\99_Share\04_IT\KingdeeExport",
                         help="网络输出路径（SMB共享），留空则不同步到网络")
     args = parser.parse_args()
 
-    langs = ["CN", "EN"] if args.lang == "all" else [args.lang]
+    langs = ["CN", "EN"] if args.lang == "ALL" else [args.lang]
 
     print("══════════════════════════════════════════════════════════════════════")
     print(f"ENG_BOM & PLN_FORECAST & PLN_PLANORDER & PRD_MO & PUR_PurchaseOrder 数据同步与导入 Excel 生成工具")

@@ -245,7 +245,7 @@ python workspace/BOM_API/sync_and_generate.py --netaddr ""
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
 | `--form` | 指定表单类型，支持多选 | `all` |
-| `--lang` | 输出语言（CN/EN） | `all` |
+| `--lang` | 输出语言（EN/CN/ALL） | `EN` |
 | `--skip-fetch` | 跳过金蝶拉取，使用本地缓存 | - |
 | `--netaddr` | 网络输出路径（SMB共享） | `\\192.168.1.181\99_Share\04_IT\KingdeeExport` |
 
