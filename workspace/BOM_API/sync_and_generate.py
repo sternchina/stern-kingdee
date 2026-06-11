@@ -11,7 +11,7 @@ Kingdee Master Data 数据同步与导入 Excel 生成工具
     --form: 指定导出的表单类型，可选值见下方"支持的表单类型"，默认 all
     --lang: 指定输出语言，EN 为英文版（默认），CN 为中文版，ALL 为中英文都输出
     --skip-fetch: 跳过从金蝶拉取数据，使用本地已有的 CSV 文件
-    --netaddr: 网络输出路径（SMB共享），默认 \\192.168.1.181\99_Share\04_IT\KingdeeExport，留空则不同步
+    --netaddr: 网络输出根路径（SMB共享），默认 \\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade，留空则不同步
 
 流程：
     1. 从金蝶拉取 BD_MATERIAL、ENG_BOM、PLN_FORECAST、PLN_PLANORDER、PRD_MO、PUR_PurchaseOrder、PRD_INSTOCK、STK_Inventory、PRD_PickMtrl 数据，保存到 data/ 目录
@@ -19,15 +19,15 @@ Kingdee Master Data 数据同步与导入 Excel 生成工具
     3. 输出到 output/ 目录
 
 输出文件：
-    - BD_MATERIAL_物料基础资料.xlsx / BD_MATERIAL_Material.xlsx
-    - ENG_BOM_物料清单.xlsx / ENG_BOM_BOM.xlsx
-    - PLN_FORECAST_预测单.xlsx / PLN_FORECAST_Forecast.xlsx
-    - PLN_PLANORDER_计划订单.xlsx / PLN_PLANORDER_PlanOrder.xlsx
-    - PRD_MO_生产订单.xlsx / PRD_MO_ManufacturingOrder.xlsx
-    - PUR_PurchaseOrder_采购订单.xlsx / PUR_PurchaseOrder_PurchaseOrder.xlsx
-    - PRD_INSTOCK_生产入库单.xlsx / PRD_INSTOCK_ProductionReceipt.xlsx
-    - STK_Inventory_即时库存.xlsx / STK_Inventory_Inventory.xlsx
-    - PRD_PickMtrl_生产领料单.xlsx / PRD_PickMtrl_PickingList.xlsx
+    - 物料列表.xlsx / K3_MaterialMaster.xlsx
+    - 物料清单列表.xlsx / K3_BOM.xlsx
+    - 预测单列表.xlsx / K3_Forecast.xlsx
+    - 计划订单列表.xlsx / K3_PlannedOrders.xlsx
+    - 生产订单列表.xlsx / K3_ManufacturingOrders.xlsx
+    - 采购订单列表.xlsx / K3_PurchaseOrders.xlsx
+    - 生产入库单列表.xlsx / K3_Production_Receipts.xlsx
+    - 即时库存.xlsx / K3_Inventory.xlsx
+    - 生产领料单列表.xlsx / K3_18015_PickingList.xlsx
 
 支持的表单类型（通过 --form 参数指定）：
     - all: 导出所有表单
@@ -1303,11 +1303,11 @@ def generate_material_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "bool"
 
     if lang == "CN":
-        output_name = "BD_MATERIAL_物料基础资料.xlsx"
-        sheet_title = "物料基础资料"
+        output_name = "物料列表.xlsx"
+        sheet_title = "物料列表"
     else:
-        output_name = "BD_MATERIAL_Material.xlsx"
-        sheet_title = "Material"
+        output_name = "K3_MaterialMaster.xlsx"
+        sheet_title = "MaterialMaster"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -1609,10 +1609,10 @@ def generate_import_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "unit_name"
 
     if lang == "CN":
-        output_name = "ENG_BOM_物料清单.xlsx"
-        sheet_title = "物料清单"
+        output_name = "物料清单列表.xlsx"
+        sheet_title = "物料清单列表"
     else:
-        output_name = "ENG_BOM_BOM.xlsx"
+        output_name = "K3_BOM.xlsx"
         sheet_title = "BOM"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
@@ -2091,10 +2091,10 @@ def generate_forecast_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "cust_name"
 
     if lang == "CN":
-        output_name = "PLN_FORECAST_预测单.xlsx"
-        sheet_title = "预测单"
+        output_name = "预测单列表.xlsx"
+        sheet_title = "预测单列表"
     else:
-        output_name = "PLN_FORECAST_Forecast.xlsx"
+        output_name = "K3_Forecast.xlsx"
         sheet_title = "Forecast"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
@@ -2633,11 +2633,11 @@ def generate_planorder_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "schedule_name"
 
     if lang == "CN":
-        output_name = "PLN_PLANORDER_计划订单.xlsx"
-        sheet_title = "计划订单"
+        output_name = "计划订单列表.xlsx"
+        sheet_title = "计划订单列表"
     else:
-        output_name = "PLN_PLANORDER_PlanOrder.xlsx"
-        sheet_title = "PlanOrder"
+        output_name = "K3_PlannedOrders.xlsx"
+        sheet_title = "PlannedOrders"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -3030,11 +3030,11 @@ def generate_mo_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "org_name"
 
     if lang == "CN":
-        output_name = "PRD_MO_生产订单.xlsx"
-        sheet_title = "生产订单"
+        output_name = "生产订单列表.xlsx"
+        sheet_title = "生产订单列表"
     else:
-        output_name = "PRD_MO_ManufacturingOrder.xlsx"
-        sheet_title = "ManufacturingOrder"
+        output_name = "K3_ManufacturingOrders.xlsx"
+        sheet_title = "ManufacturingOrders"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -3489,11 +3489,11 @@ def generate_purchaseorder_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "creator_name"
 
     if lang == "CN":
-        output_name = "PUR_PurchaseOrder_采购订单.xlsx"
-        sheet_title = "采购订单"
+        output_name = "采购订单列表.xlsx"
+        sheet_title = "采购订单列表"
     else:
-        output_name = "PUR_PurchaseOrder_PurchaseOrder.xlsx"
-        sheet_title = "PurchaseOrder"
+        output_name = "K3_PurchaseOrders.xlsx"
+        sheet_title = "PurchaseOrders"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -4013,11 +4013,11 @@ def generate_instock_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "aux_prop_name"
 
     if lang == "CN":
-        output_name = "PRD_INSTOCK_生产入库单.xlsx"
-        sheet_title = "生产入库单"
+        output_name = "生产入库单列表.xlsx"
+        sheet_title = "生产入库单列表"
     else:
-        output_name = "PRD_INSTOCK_ProductionReceipt.xlsx"
-        sheet_title = "ProductionReceipt"
+        output_name = "K3_Production_Receipts.xlsx"
+        sheet_title = "ProductionReceipts"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -4146,10 +4146,10 @@ def generate_inv_excel(lang: str = "CN") -> None:
     print(f"  [表头] {len(h0)} 列")
 
     if lang == "CN":
-        output_name = "STK_Inventory_即时库存.xlsx"
+        output_name = "即时库存.xlsx"
         sheet_title = "即时库存"
     else:
-        output_name = "STK_Inventory_Inventory.xlsx"
+        output_name = "K3_Inventory.xlsx"
         sheet_title = "Inventory"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
@@ -4762,11 +4762,11 @@ def generate_pickmtrl_excel(lang: str = "CN") -> None:
     print(f"  [数据] {len(df)} 行, {len(data_cols)} 列")
 
     if lang == "CN":
-        output_name = "PRD_PickMtrl_生产领料单.xlsx"
-        sheet_title = "生产领料单"
+        output_name = "生产领料单列表.xlsx"
+        sheet_title = "生产领料单列表"
     else:
-        output_name = "PRD_PickMtrl_PickingList.xlsx"
-        sheet_title = "Picking List"
+        output_name = "K3_18015_PickingList.xlsx"
+        sheet_title = "PickingList"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -5226,43 +5226,71 @@ def generate_pickmtrl_excel(lang: str = "CN") -> None:
 # 主函数
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _sync_to_network(network_path: str) -> None:
-    """将本地 output 目录中的 xlsx 文件同步到网络共享目录（映射驱动器方式）。"""
+def _sync_to_network(network_root: str) -> None:
+    """将本地 output 目录中的 xlsx 文件同步到网络共享目录（映射驱动器方式），每个文件对应独立子目录。"""
     import subprocess, tempfile
 
     if not OUTPUT_DIR.exists():
         print(f"[同步] 本地 output 目录不存在，跳过同步")
         return
-    if not network_path:
+    if not network_root:
         print(f"[同步] 未指定网络输出路径，跳过同步")
         return
 
+    # 文件名 → 网络子目录映射
+    FILE_NET_MAP = {
+        "物料清单列表.xlsx": "K3_Data_BOM",
+        "K3_BOM.xlsx": "K3_Data_BOM",
+        "即时库存.xlsx": "K3_Data_Inventory",
+        "K3_Inventory.xlsx": "K3_Data_Inventory",
+        "生产领料单列表.xlsx": "K3_Data_PickingList",
+        "K3_18015_PickingList.xlsx": "K3_Data_PickingList",
+        "生产入库单列表.xlsx": "K3_Data_Production_Receipts_MTD",
+        "K3_Production_Receipts.xlsx": "K3_Data_Production_Receipts_MTD",
+        "生产订单列表.xlsx": "K3_Data_ProductionOrders",
+        "K3_ManufacturingOrders.xlsx": "K3_Data_ProductionOrders",
+        "计划订单列表.xlsx": "K3_Data_ProductionRequests",
+        "K3_PlannedOrders.xlsx": "K3_Data_ProductionRequests",
+        "采购订单列表.xlsx": "K3_Data_PurchaseOrders",
+        "K3_PurchaseOrders.xlsx": "K3_Data_PurchaseOrders",
+        "预测单列表.xlsx": "K3_Data_SalesForecast",
+        "K3_Forecast.xlsx": "K3_Data_SalesForecast",
+        "物料列表.xlsx": "K3_MaterialMaster",
+        "K3_MaterialMaster.xlsx": "K3_MaterialMaster",
+    }
+
     xlsx_files = list(OUTPUT_DIR.glob("*.xlsx"))
-    print(f"[同步] 本地 output 共 {len(xlsx_files)} 个 xlsx 文件，目标: {network_path}")
+    print(f"[同步] 本地 output 共 {len(xlsx_files)} 个 xlsx 文件，目标根: {network_root}")
 
     if not xlsx_files:
         print(f"[同步] 无 xlsx 文件需要复制")
         return
 
     # 网络认证参数
-    parts = Path(network_path).parts
-    share_root = parts[0].rstrip("\\") if parts else network_path
+    parts = Path(network_root).parts
+    share_root = parts[0].rstrip("\\") if parts else network_root
     net_user = r"STERN\shenjj"
     net_pass = r"zH820303."
-    sub_path = str(Path(network_path)).replace(share_root, "").strip("\\")
+    root_sub_path = str(Path(network_root)).replace(share_root, "").strip("\\")
 
-    # 生成临时批处理脚本：映射驱动器 → 复制 → 断开驱动器
+    # 生成临时批处理脚本：映射驱动器 → 创建子目录 → 复制 → 断开驱动器
     bat_lines = [
         f'net use * /delete /yes 2>nul',
         f'timeout /t 1 /nobreak >nul',
         f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
     ]
     for f in xlsx_files:
+        sub_dir = FILE_NET_MAP.get(f.name)
+        if not sub_dir:
+            print(f"[同步] 跳过未映射文件: {f.name}")
+            continue
         src = str(f).replace("/", "\\")
-        if sub_path:
-            dst = f"Z:\\{sub_path}\\{f.name}"
+        if root_sub_path:
+            dst_dir = f"Z:\\{root_sub_path}\\{sub_dir}"
         else:
-            dst = f"Z:\\{f.name}"
+            dst_dir = f"Z:\\{sub_dir}"
+        bat_lines.append(f'if not exist "{dst_dir}" mkdir "{dst_dir}"')
+        dst = f"{dst_dir}\\{f.name}"
         bat_lines.append(f'copy /Y "{src}" "{dst}"')
     bat_lines.append(f'net use Z: /delete /yes')
     bat_lines.append('exit /b 0')
@@ -5286,7 +5314,7 @@ def _sync_to_network(network_path: str) -> None:
                 if line:
                     print(f"[同步] {line}")
         if result.returncode == 0:
-            print(f"[同步] 完成，成功复制 {len(xlsx_files)} 个文件到 {network_path}")
+            print(f"[同步] 完成，成功复制 {len(xlsx_files)} 个文件到 {network_root}")
         else:
             print(f"[同步] 批处理返回非零退出码: {result.returncode}")
     except subprocess.TimeoutExpired:
@@ -5309,8 +5337,8 @@ def main() -> None:
     parser.add_argument("--lang", type=str, default="EN",
                         choices=["ALL", "CN", "EN"],
                         help="输出语言版本: ALL(中英文都输出), CN(仅中文), EN(仅英文，默认)")
-    parser.add_argument("--netaddr", type=str, default=r"\\192.168.1.181\99_Share\04_IT\KingdeeExport",
-                        help="网络输出路径（SMB共享），留空则不同步到网络")
+    parser.add_argument("--netaddr", type=str, default=r"\\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade",
+                        help="网络输出根路径（SMB共享），留空则不同步到网络")
     args = parser.parse_args()
 
     langs = ["CN", "EN"] if args.lang == "ALL" else [args.lang]

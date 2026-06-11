@@ -247,9 +247,23 @@ python workspace/BOM_API/sync_and_generate.py --netaddr ""
 | `--form` | 指定表单类型，支持多选 | `all` |
 | `--lang` | 输出语言（EN/CN/ALL） | `EN` |
 | `--skip-fetch` | 跳过金蝶拉取，使用本地缓存 | - |
-| `--netaddr` | 网络输出路径（SMB共享） | `\\192.168.1.181\99_Share\04_IT\KingdeeExport` |
+| `--netaddr` | 网络输出根路径（SMB共享） | `\\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade` |
 
 支持的表单类型：`BD_MATERIAL`（物料基础资料）、`ENG_BOM`（物料清单）、`PLN_FORECAST`（预测单）、`PLN_PLANORDER`（计划订单）、`PRD_MO`（生产订单）、`PUR_PurchaseOrder`（采购订单）、`PRD_INSTOCK`（生产入库单）、`STK_Inventory`（即时库存）、`PRD_PickMtrl`（生产领料单）
+
+**输出文件列表**：
+
+| 表单 | 中文文件名 | 英文文件名 | 网络子目录 |
+|------|-----------|-----------|-----------|
+| BD_MATERIAL | 物料列表.xlsx | K3_MaterialMaster.xlsx | K3_MaterialMaster |
+| ENG_BOM | 物料清单列表.xlsx | K3_BOM.xlsx | K3_Data_BOM |
+| PLN_FORECAST | 预测单列表.xlsx | K3_Forecast.xlsx | K3_Data_SalesForecast |
+| PLN_PLANORDER | 计划订单列表.xlsx | K3_PlannedOrders.xlsx | K3_Data_ProductionRequests |
+| PRD_MO | 生产订单列表.xlsx | K3_ManufacturingOrders.xlsx | K3_Data_ProductionOrders |
+| PUR_PurchaseOrder | 采购订单列表.xlsx | K3_PurchaseOrders.xlsx | K3_Data_PurchaseOrders |
+| PRD_INSTOCK | 生产入库单列表.xlsx | K3_Production_Receipts.xlsx | K3_Data_Production_Receipts_MTD |
+| STK_Inventory | 即时库存.xlsx | K3_Inventory.xlsx | K3_Data_Inventory |
+| PRD_PickMtrl | 生产领料单列表.xlsx | K3_18015_PickingList.xlsx | K3_Data_PickingList |
 
 ## SDK 加载顺序
 
