@@ -224,7 +224,7 @@ Web 界面支持将输出文件同步到 SMB 网络共享路径：
 **命令行**：
 
 ```bash
-# 导出所有表单（中英文）
+# 导出所有表单（中英文），并同步到默认网络路径
 python workspace/BOM_API/sync_and_generate.py
 
 # 指定表单和语言
@@ -232,7 +232,22 @@ python workspace/BOM_API/sync_and_generate.py --form ENG_BOM --lang CN
 
 # 跳过金蝶拉取，使用本地缓存
 python workspace/BOM_API/sync_and_generate.py --skip-fetch
+
+# 指定网络输出路径
+python workspace/BOM_API/sync_and_generate.py --netaddr "\\server\share\path"
+
+# 不同步到网络
+python workspace/BOM_API/sync_and_generate.py --netaddr ""
 ```
+
+**参数说明**：
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| `--form` | 指定表单类型，支持多选 | `all` |
+| `--lang` | 输出语言（CN/EN） | `all` |
+| `--skip-fetch` | 跳过金蝶拉取，使用本地缓存 | - |
+| `--netaddr` | 网络输出路径（SMB共享） | `\\192.168.1.181\99_Share\04_IT\KingdeeExport` |
 
 支持的表单类型：`BD_MATERIAL`（物料基础资料）、`ENG_BOM`（物料清单）、`PLN_FORECAST`（预测单）、`PLN_PLANORDER`（计划订单）、`PRD_MO`（生产订单）、`PUR_PurchaseOrder`（采购订单）、`PRD_INSTOCK`（生产入库单）、`STK_Inventory`（即时库存）、`PRD_PickMtrl`（生产领料单）
 

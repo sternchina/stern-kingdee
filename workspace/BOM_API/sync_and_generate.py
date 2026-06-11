@@ -5,11 +5,13 @@ Kingdee Master Data 数据同步与导入 Excel 生成工具
     python workspace/BOM_API/sync_and_generate.py
     python workspace/BOM_API/sync_and_generate.py --skip-fetch   # 跳过拉取，用本地 CSV
     python workspace/BOM_API/sync_and_generate.py --form PRD_INSTOCK --lang EN   # 导出指定表单的英文版
+    python workspace/BOM_API/sync_and_generate.py --netaddr ""   # 不同步到网络
 
 参数说明：
     --form: 指定导出的表单类型，可选值见下方"支持的表单类型"，默认 all
     --lang: 指定输出语言，CN 为中文版，EN 为英文版，默认 CN
     --skip-fetch: 跳过从金蝶拉取数据，使用本地已有的 CSV 文件
+    --netaddr: 网络输出路径（SMB共享），默认 \\192.168.1.181\99_Share\04_IT\KingdeeExport，留空则不同步
 
 流程：
     1. 从金蝶拉取 BD_MATERIAL、ENG_BOM、PLN_FORECAST、PLN_PLANORDER、PRD_MO、PUR_PurchaseOrder、PRD_INSTOCK、STK_Inventory、PRD_PickMtrl 数据，保存到 data/ 目录
@@ -5224,6 +5226,80 @@ def generate_pickmtrl_excel(lang: str = "CN") -> None:
 # 主函数
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _sync_to_network(network_path: str) -> None:
+    """将本地 output 目录中的 xlsx 文件同步到网络共享目录（映射驱动器方式）。"""
+    import subprocess, tempfile
+
+    if not OUTPUT_DIR.exists():
+        print(f"[同步] 本地 output 目录不存在，跳过同步")
+        return
+    if not network_path:
+        print(f"[同步] 未指定网络输出路径，跳过同步")
+        return
+
+    xlsx_files = list(OUTPUT_DIR.glob("*.xlsx"))
+    print(f"[同步] 本地 output 共 {len(xlsx_files)} 个 xlsx 文件，目标: {network_path}")
+
+    if not xlsx_files:
+        print(f"[同步] 无 xlsx 文件需要复制")
+        return
+
+    # 网络认证参数
+    parts = Path(network_path).parts
+    share_root = parts[0].rstrip("\\") if parts else network_path
+    net_user = r"STERN\shenjj"
+    net_pass = r"zH820303."
+    sub_path = str(Path(network_path)).replace(share_root, "").strip("\\")
+
+    # 生成临时批处理脚本：映射驱动器 → 复制 → 断开驱动器
+    bat_lines = [
+        f'net use * /delete /yes 2>nul',
+        f'timeout /t 1 /nobreak >nul',
+        f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
+    ]
+    for f in xlsx_files:
+        src = str(f).replace("/", "\\")
+        if sub_path:
+            dst = f"Z:\\{sub_path}\\{f.name}"
+        else:
+            dst = f"Z:\\{f.name}"
+        bat_lines.append(f'copy /Y "{src}" "{dst}"')
+    bat_lines.append(f'net use Z: /delete /yes')
+    bat_lines.append('exit /b 0')
+
+    bat_content = "\r\n".join(bat_lines)
+    bat_file = Path(tempfile.gettempdir()) / "bom_sync.bat"
+    bat_file.write_text(bat_content, encoding="gbk")
+
+    print(f"[同步] 执行批处理同步")
+    try:
+        result = subprocess.run(
+            ["cmd", "/c", str(bat_file)],
+            capture_output=True, text=True, timeout=180,
+            encoding="gbk", errors="replace",
+        )
+        output = (result.stdout or "") + (result.stderr or "")
+        print(f"[同步] 批处理返回码: {result.returncode}")
+        if output.strip():
+            for line in output.strip().splitlines():
+                line = line.strip()
+                if line:
+                    print(f"[同步] {line}")
+        if result.returncode == 0:
+            print(f"[同步] 完成，成功复制 {len(xlsx_files)} 个文件到 {network_path}")
+        else:
+            print(f"[同步] 批处理返回非零退出码: {result.returncode}")
+    except subprocess.TimeoutExpired:
+        print(f"[同步] 批处理超时（180秒）")
+    except Exception as e:
+        print(f"[同步] 批处理执行失败: {e}")
+    finally:
+        try:
+            bat_file.unlink()
+        except OSError:
+            pass
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="ENG_BOM & PLN_FORECAST & PLN_PLANORDER & PRD_MO & PUR_PurchaseOrder 数据同步与导入 Excel 生成")
     parser.add_argument("--skip-fetch", action="store_true", help="跳过金蝶拉取")
@@ -5233,6 +5309,8 @@ def main() -> None:
     parser.add_argument("--lang", type=str, default="all",
                         choices=["all", "CN", "EN"],
                         help="输出语言版本: all(中英文都输出), CN(仅中文), EN(仅英文)")
+    parser.add_argument("--netaddr", type=str, default=r"\\192.168.1.181\99_Share\04_IT\KingdeeExport",
+                        help="网络输出路径（SMB共享），留空则不同步到网络")
     args = parser.parse_args()
 
     langs = ["CN", "EN"] if args.lang == "all" else [args.lang]
@@ -5292,6 +5370,10 @@ def main() -> None:
     if args.form == "all" or args.form == "PRD_PickMtrl":
         for lang in langs:
             generate_pickmtrl_excel(lang)
+
+    # 11. 同步到网络地址
+    if args.netaddr:
+        _sync_to_network(args.netaddr)
 
     print("══════════════════════════════════════════════════════════════════════")
     print("完成!")

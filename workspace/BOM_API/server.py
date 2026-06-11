@@ -312,6 +312,7 @@ def _run_sync(forms: list[str], langs: list[str], network_output: str) -> None:
                     str(SYNC_SCRIPT),
                     "--form", form,
                     "--lang", lang,
+                    "--netaddr", "",
                 ]
 
                 env = os.environ.copy()
