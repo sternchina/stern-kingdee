@@ -28,7 +28,29 @@ PROJECT_ROOT = WORKSPACE.parent.parent
 SYNC_SCRIPT = WORKSPACE / "sync_and_generate.py"
 OUTPUT_DIR = WORKSPACE / "output"
 LOG_DIR = WORKSPACE / "log"
-DEFAULT_NETWORK_OUTPUT = r"\\192.168.1.181\99_Share\04_IT\KingdeeExport"
+DEFAULT_NETWORK_OUTPUT = r"\\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade"
+
+# 文件名 → 网络子目录映射（与 sync_and_generate.py 保持一致）
+FILE_NET_MAP = {
+    "物料清单列表.xlsx": "K3_Data_BOM",
+    "K3_BOM.xlsx": "K3_Data_BOM",
+    "即时库存.xlsx": "K3_Data_Inventory",
+    "K3_Inventory.xlsx": "K3_Data_Inventory",
+    "生产领料单列表.xlsx": "K3_Data_PickingList",
+    "K3_18015_PickingList.xlsx": "K3_Data_PickingList",
+    "生产入库单列表.xlsx": "K3_Data_Production_Receipts_MTD",
+    "K3_Production_Receipts.xlsx": "K3_Data_Production_Receipts_MTD",
+    "生产订单列表.xlsx": "K3_Data_ProductionOrders",
+    "K3_ManufacturingOrders.xlsx": "K3_Data_ProductionOrders",
+    "计划订单列表.xlsx": "K3_Data_ProductionRequests",
+    "K3_PlannedOrders.xlsx": "K3_Data_ProductionRequests",
+    "采购订单列表.xlsx": "K3_Data_PurchaseOrders",
+    "K3_PurchaseOrders.xlsx": "K3_Data_PurchaseOrders",
+    "预测单列表.xlsx": "K3_Data_SalesForecast",
+    "K3_Forecast.xlsx": "K3_Data_SalesForecast",
+    "物料列表.xlsx": "K3_MaterialMaster",
+    "K3_MaterialMaster.xlsx": "K3_MaterialMaster",
+}
 PROGRESS_FILE = WORKSPACE / ".progress.json"
 
 # 当前运行时使用的网络输出路径
@@ -110,17 +132,17 @@ def _read_progress() -> dict:
     return json.loads(PROGRESS_FILE.read_text(encoding="utf-8"))
 
 
-def _sync_to_network(network_path: str) -> dict | None:
-    """将本地 output 目录中的 xlsx 文件同步到网络共享目录。"""
+def _sync_to_network(network_root: str) -> dict | None:
+    """将本地 output 目录中的 xlsx 文件同步到网络共享目录，每个文件对应独立子目录。"""
     if not OUTPUT_DIR.exists():
         print(f"[同步] 本地 output 目录不存在，跳过同步")
         return None
-    if not network_path:
+    if not network_root:
         print(f"[同步] 未指定网络输出路径，跳过同步")
         return None
 
     xlsx_files = list(OUTPUT_DIR.glob("*.xlsx"))
-    print(f"[同步] 本地 output 共 {len(xlsx_files)} 个 xlsx 文件，目标: {network_path}")
+    print(f"[同步] 本地 output 共 {len(xlsx_files)} 个 xlsx 文件，目标根: {network_root}")
 
     if not xlsx_files:
         print(f"[同步] 无 xlsx 文件需要复制")
@@ -129,27 +151,31 @@ def _sync_to_network(network_path: str) -> dict | None:
     all_log_lines = []
 
     # 网络认证参数
-    parts = Path(network_path).parts
-    share_root = parts[0].rstrip("\\") if parts else network_path
+    parts = Path(network_root).parts
+    share_root = parts[0].rstrip("\\") if parts else network_root
     net_user = r"STERN\shenjj"
     net_pass = r"zH820303."
-    # 计算共享根目录下的子路径
-    sub_path = str(Path(network_path)).replace(share_root, "").strip("\\")
+    root_sub_path = str(Path(network_root)).replace(share_root, "").strip("\\")
 
-    # 生成临时批处理脚本：映射驱动器 → 复制 → 断开驱动器
+    # 生成临时批处理脚本：映射驱动器 → 创建子目录 → 复制 → 断开驱动器
     import tempfile
     bat_lines = [
-        # 先断开所有与该服务器的连接（解决错误 1219）
         f'net use * /delete /yes 2>nul',
         f'timeout /t 1 /nobreak >nul',
         f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
     ]
     for f in xlsx_files:
+        sub_dir = FILE_NET_MAP.get(f.name)
+        if not sub_dir:
+            print(f"[同步] 跳过未映射文件: {f.name}")
+            continue
         src = str(f).replace("/", "\\")
-        if sub_path:
-            dst = f"Z:\\{sub_path}\\{f.name}"
+        if root_sub_path:
+            dst_dir = f"Z:\\{root_sub_path}\\{sub_dir}"
         else:
-            dst = f"Z:\\{f.name}"
+            dst_dir = f"Z:\\{sub_dir}"
+        bat_lines.append(f'if not exist "{dst_dir}" mkdir "{dst_dir}"')
+        dst = f"{dst_dir}\\{f.name}"
         bat_lines.append(f'copy /Y "{src}" "{dst}"')
     bat_lines.append(f'net use Z: /delete /yes')
     bat_lines.append('exit /b 0')
@@ -185,10 +211,13 @@ def _sync_to_network(network_path: str) -> dict | None:
             pass
 
     # 统计复制结果：检查目标目录中的文件
-    target_dir = Path(network_path)
     copied = 0
     for f in xlsx_files:
-        dest_file = target_dir / f.name
+        sub_dir = FILE_NET_MAP.get(f.name)
+        if sub_dir:
+            dest_file = Path(network_root) / sub_dir / f.name
+        else:
+            dest_file = Path(network_root) / f.name
         if dest_file.exists():
             copied += 1
 
@@ -408,7 +437,7 @@ def run():
 
     # 保存当前网络输出路径
     global _current_network_output
-    _current_network_output = network_output or DEFAULT_NETWORK_OUTPUT
+    _current_network_output = network_output
 
     # 启动后台线程运行主程序
     thread = threading.Thread(
@@ -426,18 +455,25 @@ def get_progress():
 
 @app.route("/api/output", methods=["GET"])
 def get_output():
-    network_path = _current_network_output
-    display_dir = network_path
-    scan_dir = Path(network_path) if Path(network_path).exists() else OUTPUT_DIR
+    network_root = _current_network_output
+    display_dir = network_root or "（未设置网络输出路径）"
 
     files = []
-    if scan_dir.exists():
-        for f in sorted(scan_dir.glob("*.xlsx"), key=lambda x: x.stat().st_mtime, reverse=True):
+    if OUTPUT_DIR.exists():
+        for f in sorted(OUTPUT_DIR.glob("*.xlsx"), key=lambda x: x.stat().st_mtime, reverse=True):
+            sub_dir = FILE_NET_MAP.get(f.name, "")
+            if network_root and sub_dir:
+                net_path = str(Path(network_root) / sub_dir / f.name)
+            elif network_root:
+                net_path = str(Path(network_root) / f.name)
+            else:
+                net_path = ""
             files.append({
                 "name": f.name,
-                "path": str(Path(network_path) / f.name),
+                "path": net_path,
                 "size": f.stat().st_size,
                 "modified": datetime.fromtimestamp(f.stat().st_mtime).isoformat(),
+                "sub_dir": sub_dir,
             })
 
     return jsonify({"output_dir": display_dir, "files": files})
@@ -465,7 +501,7 @@ def clear_output():
                     errors.append(error_msg)
                     print(f"[清空] {error_msg}")
 
-    # 清空网络输出（批处理：映射驱动器 + del + 断开驱动器）
+    # 清空网络输出（批处理：映射驱动器 + 删除各子目录中的xlsx + 断开驱动器）
     if network_path:
         try:
             import tempfile
@@ -473,18 +509,24 @@ def clear_output():
             share_root = parts[0].rstrip("\\") if parts else network_path
             net_user = r"STERN\shenjj"
             net_pass = r"zH820303."
-            # 计算共享根目录下的子路径
-            sub_path = str(Path(network_path)).replace(share_root, "").strip("\\")
-            pattern = sub_path + "\\*.xlsx" if sub_path else "*.xlsx"
+            root_sub_path = str(Path(network_path)).replace(share_root, "").strip("\\")
+
+            # 收集所有需要清空的子目录
+            sub_dirs = set(FILE_NET_MAP.values())
+
             bat_lines = [
-                # 先断开所有与该服务器的连接（解决错误 1219）
                 f'net use * /delete /yes 2>nul',
                 f'timeout /t 1 /nobreak >nul',
                 f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
-                f'del /Q /F "Z:\\{pattern}"',
-                f'net use Z: /delete /yes',
-                'exit /b 0',
             ]
+            for sd in sub_dirs:
+                if root_sub_path:
+                    pattern = f"{root_sub_path}\\{sd}\\*.xlsx"
+                else:
+                    pattern = f"{sd}\\*.xlsx"
+                bat_lines.append(f'del /Q /F "Z:\\{pattern}"')
+            bat_lines.append(f'net use Z: /delete /yes')
+            bat_lines.append('exit /b 0')
             bat_content = "\r\n".join(bat_lines)
             bat_file = Path(tempfile.gettempdir()) / "bom_clear.bat"
             bat_file.write_text(bat_content, encoding="gbk")

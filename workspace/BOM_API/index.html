@@ -562,9 +562,22 @@
     flex: 1;
     color: var(--text);
   }
+  .output-file .file-subdir {
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .output-file .file-netpath {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+    margin-top: 2px;
+  }
   .output-file .file-size {
     color: var(--text-muted);
     font-size: 12px;
+    flex-shrink: 0;
   }
 
   .output-actions {
@@ -814,7 +827,7 @@
     </div>
     <div class="card-desc">设置网络共享输出路径，文件将同时输出到本地和网络位置</div>
     <div class="output-input-row">
-      <input type="text" id="networkOutputPath" placeholder="例如：\\192.168.1.181\99_Share\04_IT\KingdeeExport" value="\\192.168.1.181\99_Share\04_IT\KingdeeExport">
+      <input type="text" id="networkOutputPath" placeholder="例如：\\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade" value="\\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade">
     </div>
   </div>
 
@@ -1229,10 +1242,12 @@ async function showOutput() {
     const fileList = document.getElementById('outputFileList');
     if (data.files && data.files.length > 0) {
       fileList.innerHTML = data.files.map(f => `
-        <div class="output-file">
+        <div class="output-file" style="flex-wrap:wrap;">
           <span class="file-icon">&#128196;</span>
           <span class="file-name">${f.name}</span>
+          ${f.sub_dir ? `<span class="file-subdir">→ ${f.sub_dir}/</span>` : ''}
           <span class="file-size">${formatSize(f.size)}</span>
+          ${f.path ? `<div class="file-netpath" style="width:100%;padding-left:28px;">${f.path}</div>` : ''}
         </div>
       `).join('');
     } else {

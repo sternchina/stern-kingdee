@@ -11,7 +11,7 @@ Kingdee Master Data 数据同步与导入 Excel 生成工具
     --form: 指定导出的表单类型，可选值见下方"支持的表单类型"，默认 all
     --lang: 指定输出语言，EN 为英文版（默认），CN 为中文版，ALL 为中英文都输出
     --skip-fetch: 跳过从金蝶拉取数据，使用本地已有的 CSV 文件
-    --netaddr: 网络输出根路径（SMB共享），默认 \\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade，留空则不同步
+    --netaddr: 网络输出根路径（SMB共享），默认 \\\\192.168.1.181\\12_SupplyChain\\07_MPS\\MPS_Upgrade，留空则不同步
 
 流程：
     1. 从金蝶拉取 BD_MATERIAL、ENG_BOM、PLN_FORECAST、PLN_PLANORDER、PRD_MO、PUR_PurchaseOrder、PRD_INSTOCK、STK_Inventory、PRD_PickMtrl 数据，保存到 data/ 目录
@@ -404,8 +404,10 @@ def _print_progress(current: int, total: int, prefix: str = "", suffix: str = ""
     print(f"\r{prefix} [{bar}] {percent:.1f}% ({current}/{total}) {suffix}", end="", flush=True)
 
 
-def _clean_string(s: str) -> str:
-    """清理字符串中的非法字符，使其可以用于Excel工作表。"""
+def _clean_string(s):
+    """清理字符串中的非法字符，使其可以用于Excel工作表。datetime 对象直接返回。"""
+    if isinstance(s, datetime):
+        return s
     if not s:
         return ""
     
@@ -425,21 +427,44 @@ def _clean_string(s: str) -> str:
     return ''.join(result)
 
 
-def _format_date(s: str) -> str:
-    """将金蝶日期格式 '2023-12-01T00:00:00' 转换为 '2023/12/1 00:00:00'。"""
+def _format_date(s: str):
+    """将金蝶日期格式 '2023-12-01T00:00:00' 转换为 datetime 对象，Excel 按单元格格式自动显示。"""
     if not s:
         return s
     try:
         if "T" in s:
+            # 金蝶格式: 2023-12-01T00:00:00 或 2023-12-01T00:00:00.123
             date_part, time_part = s.split("T", 1)
             time_part = time_part.split(".")[0]
-            y, m, d = date_part.split("-")
-            m_int = int(m)
-            d_int = int(d)
-            return f"{y}/{m_int}/{d_int} {time_part}"
+            return datetime.strptime(f"{date_part} {time_part}", "%Y-%m-%d %H:%M:%S")
+        # 尝试其他常见格式
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(s, fmt)
+            except ValueError:
+                continue
         return s
     except Exception:
         return s
+
+
+def _apply_date_formats(ws, header_row: list, date_col_names: set, field_mapping: dict):
+    """为日期列设置 Excel 单元格格式。根据模板列名判断是否含时间部分。"""
+    for tpl_idx, data_col in field_mapping.items():
+        if data_col not in date_col_names:
+            continue
+        header = header_row[tpl_idx] if tpl_idx < len(header_row) else ""
+        # 含"时间"/"Time"的列用带时间的格式，其他用纯日期格式
+        if any(kw in str(header) for kw in ("时间", "Time", "开始日期", "结束日期", "Start Date", "End Date",
+                                              "开工", "完工", "建议", "确认", "需求")):
+            fmt = "yyyy/M/d HH:mm:ss"
+        else:
+            fmt = "yyyy/M/d"
+        # 从第2行开始（第1行是表头），设置该列所有数据行的格式
+        for row_idx in range(2, ws.max_row + 1):
+            cell = ws.cell(row=row_idx, column=tpl_idx + 1)
+            if isinstance(cell.value, datetime):
+                cell.number_format = fmt
 
 
 def _load_material_mapping() -> tuple[dict[str, str], dict[str, str]]:
@@ -1304,10 +1329,10 @@ def generate_material_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "物料列表.xlsx"
-        sheet_title = "物料列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_MaterialMaster.xlsx"
-        sheet_title = "MaterialMaster"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -1610,10 +1635,10 @@ def generate_import_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "物料清单列表.xlsx"
-        sheet_title = "物料清单列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_BOM.xlsx"
-        sheet_title = "BOM"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -2090,12 +2115,14 @@ def generate_forecast_excel(lang: str = "CN") -> None:
         elif tpl_field in ("客户名称", "Customer Name"):
             special_cols[tpl_idx] = "cust_name"
 
+    date_cols = {"FDate", "FStartDate", "FEndDate", "FCreateDate", "FApproveDate"}
+
     if lang == "CN":
         output_name = "预测单列表.xlsx"
-        sheet_title = "预测单列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_Forecast.xlsx"
-        sheet_title = "Forecast"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -2155,10 +2182,14 @@ def generate_forecast_excel(lang: str = "CN") -> None:
                 elif sc == "cust_name":
                     str_val = cust_name_map.get(str_val, str_val)
 
+            if data_col in date_cols and str_val:
+                str_val = _format_date(str_val)
+
             output_row[tpl_idx] = _clean_string(str_val)
 
         ws_out.append(output_row)
 
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
     workbook.save(output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成预测单 Excel ({lang_label})")
@@ -2634,10 +2665,10 @@ def generate_planorder_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "计划订单列表.xlsx"
-        sheet_title = "计划订单列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_PlannedOrders.xlsx"
-        sheet_title = "PlannedOrders"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -2724,6 +2755,7 @@ def generate_planorder_excel(lang: str = "CN") -> None:
 
         ws_out.append(output_row)
 
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
     workbook.save(output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成计划订单 Excel ({lang_label})")
@@ -3031,10 +3063,10 @@ def generate_mo_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "生产订单列表.xlsx"
-        sheet_title = "生产订单列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_ManufacturingOrders.xlsx"
-        sheet_title = "ManufacturingOrders"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -3101,6 +3133,7 @@ def generate_mo_excel(lang: str = "CN") -> None:
 
         ws_out.append(output_row)
 
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
     workbook.save(output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成生产订单 Excel ({lang_label})")
@@ -3490,10 +3523,10 @@ def generate_purchaseorder_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "采购订单列表.xlsx"
-        sheet_title = "采购订单列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_PurchaseOrders.xlsx"
-        sheet_title = "PurchaseOrders"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -3573,6 +3606,7 @@ def generate_purchaseorder_excel(lang: str = "CN") -> None:
 
         ws_out.append(output_row)
 
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
     workbook.save(output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成采购订单 Excel ({lang_label})")
@@ -4014,10 +4048,10 @@ def generate_instock_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "生产入库单列表.xlsx"
-        sheet_title = "生产入库单列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_Production_Receipts.xlsx"
-        sheet_title = "ProductionReceipts"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -4103,6 +4137,7 @@ def generate_instock_excel(lang: str = "CN") -> None:
 
         ws_out.append(output_row)
 
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
     workbook.save(output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成生产入库单 Excel ({lang_label})")
@@ -4147,10 +4182,10 @@ def generate_inv_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "即时库存.xlsx"
-        sheet_title = "即时库存"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_Inventory.xlsx"
-        sheet_title = "Inventory"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -4647,12 +4682,9 @@ def generate_inv_excel(lang: str = "CN") -> None:
         guarantee_period = ""
         if produce_date and expiry_date and produce_date not in ("None", "") and expiry_date not in ("None", ""):
             try:
-                from datetime import datetime
-                pd_date = _format_date(produce_date)
-                ed_date = _format_date(expiry_date)
-                if pd_date and ed_date:
-                    pd_dt = datetime.strptime(pd_date, "%Y-%m-%d")
-                    ed_dt = datetime.strptime(ed_date, "%Y-%m-%d")
+                pd_dt = _format_date(produce_date)
+                ed_dt = _format_date(expiry_date)
+                if isinstance(pd_dt, datetime) and isinstance(ed_dt, datetime):
                     delta = ed_dt - pd_dt
                     guarantee_period = str(delta.days)
             except Exception:
@@ -4692,9 +4724,25 @@ def generate_inv_excel(lang: str = "CN") -> None:
                 data_key = inv_field_map[tpl_field]
                 val = field_values.get(data_key, "")
                 if val is not None and str(val).strip() not in ("None", "0.0"):
-                    output_row[tpl_idx] = _clean_string(str(val).strip()) if val != "" else ""
+                    if isinstance(val, datetime):
+                        output_row[tpl_idx] = val
+                    elif val != "":
+                        output_row[tpl_idx] = _clean_string(str(val).strip())
 
         ws_out.append(output_row)
+
+    # 为日期列设置单元格格式
+    for tpl_idx, tpl_field in enumerate(h0):
+        if not tpl_field:
+            continue
+        if tpl_field in inv_field_map:
+            data_key = inv_field_map[tpl_field]
+            if data_key in date_cols:
+                fmt = "yyyy/M/d"
+                for row_idx in range(2, ws_out.max_row + 1):
+                    cell = ws_out.cell(row=row_idx, column=tpl_idx + 1)
+                    if isinstance(cell.value, datetime):
+                        cell.number_format = fmt
 
     workbook.save(output_path)
     print(f"    Lot: {lot_ok} 映射成功, {lot_fail} 未映射")
@@ -4763,10 +4811,10 @@ def generate_pickmtrl_excel(lang: str = "CN") -> None:
 
     if lang == "CN":
         output_name = "生产领料单列表.xlsx"
-        sheet_title = "生产领料单列表"
+        sheet_title = "Sheet1"
     else:
         output_name = "K3_18015_PickingList.xlsx"
-        sheet_title = "PickingList"
+        sheet_title = "Sheet1"
     output_path = OUTPUT_DIR / output_name
     for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
         try:
@@ -5213,6 +5261,8 @@ def generate_pickmtrl_excel(lang: str = "CN") -> None:
 
         ws_out.append(output_row)
 
+    date_cols = {"FDate", "FProduceDate", "FExpiryDate"}
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
     workbook.save(output_path)
     print(f"  [完成] {output_path.name} ({len(df)} 行)")
 
@@ -5337,7 +5387,9 @@ def main() -> None:
     parser.add_argument("--lang", type=str, default="EN",
                         choices=["ALL", "CN", "EN"],
                         help="输出语言版本: ALL(中英文都输出), CN(仅中文), EN(仅英文，默认)")
-    parser.add_argument("--netaddr", type=str, default=r"\\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade",
+    parser.add_argument("--netaddr", type=str, nargs='?',
+                        default=r"\\192.168.1.181\12_SupplyChain\07_MPS\MPS_Upgrade",
+                        const="",
                         help="网络输出根路径（SMB共享），留空则不同步到网络")
     args = parser.parse_args()
 
