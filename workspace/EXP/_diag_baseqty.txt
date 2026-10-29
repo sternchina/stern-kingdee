@@ -1,0 +1,21 @@
+Total API rows: 56924
+
+FQty=0, FBaseQty=0: 55701
+FQty!=0, FBaseQty=0: 0
+FQty=0, FBaseQty!=0: 1223
+FQty!=0, FBaseQty!=0: 0
+
+FBaseQty non-zero total: 1223
+FQty non-zero total: 0
+
+Sample FBaseQty=0 records (first 10):
+  mid=105924, sid=101000, lot=194120, base_qty=0, qty=0
+  mid=105964, sid=101000, lot=194121, base_qty=0, qty=0
+  mid=105816, sid=101000, lot=194051, base_qty=0, qty=0
+  mid=137323, sid=101000, lot=194049, base_qty=0, qty=0
+  mid=151027, sid=101000, lot=194052, base_qty=0, qty=0
+  mid=105816, sid=101000, lot=194051, base_qty=0, qty=0
+  mid=151027, sid=101000, lot=194052, base_qty=0, qty=0
+  mid=137323, sid=101000, lot=194049, base_qty=0, qty=0
+  mid=105816, sid=101000, lot=194051, base_qty=0, qty=0
+  mid=109759, sid=101006, lot=194029, base_qty=0, qty=0

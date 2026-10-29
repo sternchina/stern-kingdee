@@ -1,0 +1,3 @@
+full IBC quantity: non-zero values=['0.0'], empty=0
+Manufacturing Policy: non-zero values=['MTS10(考虑库存)'], empty=0
+Inspection Scheme: non-zero values=['胭脂虫红5% Cochineal carmine 5%', '胭脂虫红50% Cochineal carmine 50%', 'Wheat flour for pastry 糕点粉', 'Vit A Palmitate(NHU)棕榈酸视黄酯 SP02-06', 'TCP 磷酸三钙', 'Alphamalt HC 14090 conc（5.0x）', '乙酰化双淀粉己二酸酯（RESISTAMYL 347）Acetylated distarch adipate', '结晶海藻糖trehalose', 'wheat bran食用小麦麸皮', 'EFX Sky'], empty=92

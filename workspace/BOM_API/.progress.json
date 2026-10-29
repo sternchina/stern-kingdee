@@ -1,1 +1,1 @@
-{"running": false, "progress": 100, "step": "完成!", "total_steps": 2, "completed_steps": 2, "forms": ["PLN_FORECAST"], "langs": ["EN", "CN"], "start_time": "2026-06-10T12:18:37.156958", "end_time": "2026-06-10T12:20:29.999344", "error": null}
+{"running": false, "progress": 100, "step": "完成!", "total_steps": 1, "completed_steps": 1, "forms": ["PLN_PLANORDER"], "langs": ["EN"], "start_time": "2026-09-10T11:13:46.806205", "end_time": "2026-09-10T11:14:07.016964", "error": null}

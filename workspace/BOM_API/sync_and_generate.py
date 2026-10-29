@@ -1,4 +1,4 @@
-"""
+﻿"""
 Kingdee Master Data 数据同步与导入 Excel 生成工具
 
 用法（在项目根目录运行）：
@@ -45,6 +45,7 @@ Kingdee Master Data 数据同步与导入 Excel 生成工具
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
 
 # 避免编码问题导致输出被抑制
@@ -77,6 +78,26 @@ TEMPLATE_DIR = WORKSPACE / "template"
 DATA_DIR     = WORKSPACE / "data"
 OUTPUT_DIR   = WORKSPACE / "output"
 MAP_DIR      = WORKSPACE / "map"
+LOG_DIR      = WORKSPACE / "log"
+
+# ── 日志配置 ──────────────────────────────────────────────────────────────────
+LOG_DIR.mkdir(exist_ok=True)
+_log_file = LOG_DIR / f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+
+logger = logging.getLogger("sync_and_generate")
+logger.setLevel(logging.DEBUG)
+
+# 文件handler：记录所有级别
+_fh = logging.FileHandler(_log_file, encoding="utf-8")
+_fh.setLevel(logging.DEBUG)
+_fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s"))
+logger.addHandler(_fh)
+
+# 控制台handler：只记录WARNING以上
+_ch = logging.StreamHandler(sys.stderr)
+_ch.setLevel(logging.WARNING)
+_ch.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
+logger.addHandler(_ch)
 
 ORG_ID   = "100"
 ORG_NAME = "斯顿食品原料（苏州）有限公司"
@@ -94,6 +115,165 @@ PO_FORM_ID = "PUR_PurchaseOrder"
 INSTOCK_FORM_ID = "PRD_INSTOCK"
 INV_FORM_ID = "STK_Inventory"
 PICKMTRL_FORM_ID = "PRD_PickMtrl"
+SAL_OUTSTOCK_FORM_ID = "SAL_OUTSTOCK"
+
+# ── 销售出库单 ────────────────────────────────────────────────────────────────
+# 说明：这里直接使用「点号字段」（如 FCustomerID.FName）让金蝶把基础资料翻译好再返回，
+# 因此不需要像其他表单那样维护 map/ 下的 ID→编码 缓存，实现更简单也更不易出错。
+OUTSTOCK_FIELDS = [
+    "FBillNo",                      # 单据编号
+    "FDocumentStatus",              # 单据状态
+    "FDate",                        # 日期
+    "FSaleOrgId.FName",             # 销售组织
+    "FSaleDeptID.FName",            # 销售部门
+    "FSalesManID.FName",            # 销售员
+    "FLinkPhone",                   # 联系电话
+    "FCustomerID.FNumber",          # 客户编码
+    "FCustomerID.FName",            # 客户名称
+    "FCustomerID.FCOUNTRY",         # 客户国家
+    "FSettleCurrID.FCODE",          # 结算币别代码
+    "FReceiptConditionID.FName",    # 收款条件
+    "F_PALW_Assistant1.FDataValue", # 货运公司（自定义辅助资料；系统标准字段「承运商」基本没维护）
+    "FBillAmount",                  # 整单金额
+    "FMaterialID.FNumber",          # 物料编码
+    "FMaterialID.FName",            # 物料名称
+    "FMaterialID.FSpecification",   # 规格型号
+    "FUnitID.FNumber",              # 库存单位
+    "FRealQty",                     # 实发数量
+    "FTaxPrice",                    # 含税单价
+    "FAllAmount",                   # 价税合计（行）
+    "FSalCostPrice",                # 销售成本价
+    "FEntryCostAmount",             # 总成本（行）
+    "FLot.FNumber",                 # 批号
+    "FSoorDerno",                   # 订单单号
+    "FStockID.FName",               # 仓库
+]
+
+# 模板表头 → 金蝶字段（英文/中文表头都兼容）
+OUTSTOCK_HEADER_MAP = {
+    "Sales Dept": "FSaleDeptID.FName",
+    "销售部门": "FSaleDeptID.FName",
+    "Material Code": "FMaterialID.FNumber",
+    "物料编码": "FMaterialID.FNumber",
+    "Material Name": "FMaterialID.FName",
+    "物料名称": "FMaterialID.FName",
+    "Total Cost": "FEntryCostAmount",
+    "总成本": "FEntryCostAmount",
+    "Doc No.": "FBillNo",
+    "单据编号": "FBillNo",
+    "SKU": "FUnitID.FNumber",
+    "库存单位": "FUnitID.FNumber",
+    "Sales Cost Price": "FSalCostPrice",
+    "销售成本价": "FSalCostPrice",
+    "Warehouse": "FStockID.FName",
+    "仓库": "FStockID.FName",
+    "Customer": "FCustomerID.FName",
+    "客户": "FCustomerID.FName",
+    "Specification": "FMaterialID.FSpecification",
+    "规格型号": "FMaterialID.FSpecification",
+    "Order No.": "FSoorDerno",
+    "订单单号": "FSoorDerno",
+    "Lot No.": "FLot.FNumber",
+    "批号": "FLot.FNumber",
+    "Date": "FDate",
+    "日期": "FDate",
+    "Doc Status": "FDocumentStatus",
+    "单据状态": "FDocumentStatus",
+    "Actual Ship Qty": "FRealQty",
+    "实发数量": "FRealQty",
+    "Collection Terms": "FReceiptConditionID.FName",
+    "收款条件": "FReceiptConditionID.FName",
+    "Tax-inclusive U/P": "FTaxPrice",
+    "含税单价": "FTaxPrice",
+    "Tax-inclusive Price": "FAllAmount",
+    "价税合计": "FAllAmount",
+    "Seller": "FSalesManID.FName",
+    "销售员": "FSalesManID.FName",
+    "Contact No.": "FLinkPhone",
+    "联系电话": "FLinkPhone",
+    "Country": "FCustomerID.FCOUNTRY",
+    "国家": "FCustomerID.FCOUNTRY",
+    "Freight Company": "F_PALW_Assistant1.FDataValue",
+    "货运公司": "F_PALW_Assistant1.FDataValue",
+    "承运商": "F_PALW_Assistant1.FDataValue",
+    "Settlement Currency": "FSettleCurrID.FCODE",
+    "结算币别": "FSettleCurrID.FCODE",
+    "Amt (Fcn. Curr.)": "FBillAmount",
+    "金额": "FBillAmount",
+    "Customer Code": "FCustomerID.FNumber",
+    "客户编码": "FCustomerID.FNumber",
+    "Sales Org.": "FSaleOrgId.FName",
+    "销售组织": "FSaleOrgId.FName",
+}
+
+# 需要按数值写入的列（其余按文本写入，避免物料编码等丢失前导零）
+OUTSTOCK_NUMERIC_FIELDS = {
+    "FEntryCostAmount", "FSalCostPrice", "FRealQty",
+    "FTaxPrice", "FAllAmount", "FBillAmount",
+}
+
+# ── 供应商列表 ────────────────────────────────────────────────────────────────
+# 同样使用「点号字段」：国家用 .FDataValue（辅助资料）、Combined Code 用 .FNumber、
+# 付款条件/分组/审核人用 .FName，全部由金蝶翻译后返回。
+BD_SUPPLIER_FORM_ID = "BD_Supplier"
+
+SUPPLIER_FIELDS = [
+    "FNumber",                      # 编码
+    "FUseOrgId.FName",              # 使用组织
+    "FName",                        # 名称
+    "FShortName",                   # 简称
+    "FGroup.FName",                 # 供应商分组
+    "FAuditorId.FName",             # 审核人
+    "FAuditDate",                   # 审核日期
+    "FDocumentStatus",              # 数据状态
+    "FForbidStatus",                # 禁用状态
+    "F_PALW_Text_qtr",              # 英文名称（自定义字段）
+    "FCountry.FDataValue",          # 国家/地区（辅助资料）
+    "FAddress",                     # 通讯地址
+    "FZip",                         # 邮政编码
+    "F_PALW_Base_6oq.FNumber",      # Combined Code（自定义基础资料，取编码）
+    "FPayCondition.FName",          # 付款条件
+]
+
+# 模板表头 → 金蝶字段（英文/中文表头都兼容）
+SUPPLIER_HEADER_MAP = {
+    "Code": "FNumber",
+    "编码": "FNumber",
+    "Use Org.": "FUseOrgId.FName",
+    "使用组织": "FUseOrgId.FName",
+    "Name": "FName",
+    "名称": "FName",
+    "Short Name": "FShortName",
+    "简称": "FShortName",
+    "Supplier Group": "FGroup.FName",
+    "供应商分组": "FGroup.FName",
+    "Approved by": "FAuditorId.FName",
+    "审核人": "FAuditorId.FName",
+    "Approved on": "FAuditDate",
+    "审核日期": "FAuditDate",
+    "Data Status": "FDocumentStatus",
+    "数据状态": "FDocumentStatus",
+    "Disabling Status": "FForbidStatus",
+    "禁用状态": "FForbidStatus",
+    "English name": "F_PALW_Text_qtr",
+    "英文名称": "F_PALW_Text_qtr",
+    "Country/Region": "FCountry.FDataValue",
+    "国家/地区": "FCountry.FDataValue",
+    "Address": "FAddress",
+    "通讯地址": "FAddress",
+    "Postal Code": "FZip",
+    "邮政编码": "FZip",
+    "Combined Code": "F_PALW_Base_6oq.FNumber",
+    "组合编码": "F_PALW_Base_6oq.FNumber",
+    "Payment Terms": "FPayCondition.FName",
+    "付款条件": "FPayCondition.FName",
+}
+
+# 供应商单据状态（模板样例使用英文取值，故保持英文）
+SUPPLIER_STATUS_MAP = {
+    "FDocumentStatus": {"A": "Approved", "B": "Draft", "C": "Approved", "D": "Re-approving"},
+    "FForbidStatus": {"A": "No", "B": "Yes"},
+}
 
 BILL_TYPE_MAPPING = {
     "683e2791298b4e79974ef3d2adc187ff": "WLQD01_SYS",
@@ -199,6 +379,7 @@ def _convert_id_to_code(df: pd.DataFrame, client: KingdeeClient = None, material
                         mapping[id_str] = code
                         print(f"  [API查询] {field_name}: {id_str} -> {code}")
                 except Exception as e:
+                    logger.error("查询%s编码映射失败: %s", field_name, e, exc_info=True)
                     pass
         
         df[field_name] = df[field_name].apply(
@@ -251,9 +432,8 @@ def _convert_id_to_code(df: pd.DataFrame, client: KingdeeClient = None, material
                     if code:
                         material_mapping[id_str] = code
                 except Exception as e:
+                    logger.error("查询物料编码映射失败: %s", e, exc_info=True)
                     pass
-        
-        if material_mapping:
             df["FMATERIALID"] = df["FMATERIALID"].apply(
                 lambda x: material_mapping.get(str(int(x)) if isinstance(x, (int, float)) and x == int(x) else str(x).strip(), str(x).strip())
             ).astype(str)
@@ -290,6 +470,7 @@ def _convert_id_to_code_with_mapping(df: pd.DataFrame, client: KingdeeClient = N
                         mapping[id_str] = code
                         print(f"  [API查询] {field_name}: {id_str} -> {code}")
                 except Exception as e:
+                    logger.error("查询%s编码映射失败: %s", field_name, e, exc_info=True)
                     pass
         
         df[field_name] = df[field_name].apply(
@@ -355,9 +536,8 @@ def _convert_id_to_code_with_mapping(df: pd.DataFrame, client: KingdeeClient = N
                             if name:
                                 api_material_name_mapping[id_str] = name
                 except Exception as e:
+                    logger.error("API查询物料编码和名称映射失败: %s", e, exc_info=True)
                     pass
-            
-            if api_material_mapping:
                 df["FMATERIALID"] = df["FMATERIALID"].apply(
                     lambda x: api_material_mapping.get(str(int(x)) if isinstance(x, (int, float)) and x == int(x) else str(x).strip(), str(x).strip())
                 ).astype(str)
@@ -427,6 +607,15 @@ def _clean_string(s):
     return ''.join(result)
 
 
+def _save_workbook(workbook, output_path) -> None:
+    """保存工作簿，文件被占用时跳过并提示。"""
+    try:
+        workbook.save(output_path)
+    except PermissionError:
+        logger.warning("文件被占用，保存失败: %s", output_path.name)
+        print(f"  [警告] 文件被占用，保存失败: {output_path.name}（请关闭 Excel 后重试）")
+
+
 def _format_date(s: str):
     """将金蝶日期格式 '2023-12-01T00:00:00' 转换为 datetime 对象，Excel 按单元格格式自动显示。"""
     if not s:
@@ -483,6 +672,7 @@ def _load_material_mapping() -> tuple[dict[str, str], dict[str, str]]:
                 material_code_mapping = json.load(f)
             print(f"    [缓存] 已加载 {len(material_code_mapping)} 个物料编码映射")
         except Exception as e:
+            logger.error("加载物料编码映射失败: %s", e, exc_info=True)
             print(f"    [警告] 加载物料编码映射失败: {e}")
     
     if name_map_path.exists():
@@ -492,6 +682,7 @@ def _load_material_mapping() -> tuple[dict[str, str], dict[str, str]]:
                 material_name_mapping = json.load(f)
             print(f"    [缓存] 已加载 {len(material_name_mapping)} 个物料名称映射")
         except Exception as e:
+            logger.error("加载物料名称映射失败: %s", e, exc_info=True)
             print(f"    [警告] 加载物料名称映射失败: {e}")
     
     return material_code_mapping, material_name_mapping
@@ -509,6 +700,7 @@ def _save_material_mapping(material_code_mapping: dict[str, str], material_name_
             json.dump(material_code_mapping, f, ensure_ascii=False, indent=2)
         print(f"    [缓存] 已保存 {len(material_code_mapping)} 个物料编码映射")
     except Exception as e:
+        logger.error("保存物料编码映射失败: %s", e, exc_info=True)
         print(f"    [警告] 保存物料编码映射失败: {e}")
     
     try:
@@ -517,6 +709,7 @@ def _save_material_mapping(material_code_mapping: dict[str, str], material_name_
             json.dump(material_name_mapping, f, ensure_ascii=False, indent=2)
         print(f"    [缓存] 已保存 {len(material_name_mapping)} 个物料名称映射")
     except Exception as e:
+        logger.error("保存物料名称映射失败: %s", e, exc_info=True)
         print(f"    [警告] 保存物料名称映射失败: {e}")
 
 
@@ -532,6 +725,7 @@ def _load_generic_mapping(map_name: str) -> dict[str, str]:
                 mapping = json.load(f)
             print(f"    [缓存] 已加载 {len(mapping)} 个 {map_name} 映射")
         except Exception as e:
+            logger.error("加载 %s 映射失败: %s", map_name, e, exc_info=True)
             print(f"    [警告] 加载 {map_name} 映射失败: {e}")
     return mapping
 
@@ -546,6 +740,7 @@ def _save_generic_mapping(map_name: str, mapping: dict[str, str]) -> None:
             json.dump(mapping, f, ensure_ascii=False, indent=2)
         print(f"    [缓存] 已保存 {len(mapping)} 个 {map_name} 映射")
     except Exception as e:
+        logger.error("保存 %s 映射失败: %s", map_name, e, exc_info=True)
         print(f"    [警告] 保存 {map_name} 映射失败: {e}")
 
 
@@ -595,6 +790,7 @@ def fetch_generic_mapping(client: KingdeeClient, form_id: str, id_field: str, nu
                             if f_id and f_number:
                                 mapping[f_id] = f_number
             except Exception as e:
+                logger.error("查询 %s ID=%s 失败: %s", map_name, mid, e, exc_info=True)
                 print(f"    [警告] 查询 {map_name} ID={mid} 失败: {e}")
     else:
         field_keys_csv = f"{id_field},{number_field}"
@@ -771,6 +967,7 @@ def fetch_material_mapping(client: KingdeeClient, required_material_ids: list[st
         print(f"    ExecuteBillQuery 获取到 {len(material_code_mapping)} 个物料映射")
         
     except Exception as e:
+        logger.error("ExecuteBillQuery获取物料映射失败: %s", e, exc_info=True)
         print(f"    ExecuteBillQuery 获取失败: {e}")
     
     # 步骤2: 如果ExecuteBillQuery没有获取到足够的映射，使用client.view逐个查询
@@ -800,6 +997,7 @@ def fetch_material_mapping(client: KingdeeClient, required_material_ids: list[st
                 print("    警告: 无法从ExecuteBillQuery获取物料ID列表")
                 
             except Exception as e:
+                logger.error("获取物料ID列表失败: %s", e, exc_info=True)
                 print(f"    获取物料ID列表失败: {e}")
         
         # 如果没有指定需要的物料ID，使用一些默认测试ID
@@ -833,13 +1031,40 @@ def fetch_material_mapping(client: KingdeeClient, required_material_ids: list[st
                         if name:
                             material_name_mapping[id_str] = name
             except Exception as e:
+                logger.error("API逐个查询物料编码和名称失败: %s", e, exc_info=True)
                 pass
-            
-            # 显示进度条
             _print_progress(idx, total_count, prefix="    查询进度", suffix=f"已完成 {success_count} 个")
         
         print()  # 换行
         print(f"    API查询获取到 {len(material_code_mapping)} 个物料映射")
+
+    # 步骤2.5: 如果仍有未解析的ID，用view API逐个查询
+    if required_material_ids:
+        still_missing = [mid for mid in required_material_ids if mid not in material_code_mapping or not material_code_mapping[mid]]
+        if still_missing:
+            print(f"    [步骤2.5] 逐个查询 {len(still_missing)} 个仍未解析的物料ID")
+            import time as _time
+            for mid in still_missing:
+                try:
+                    result = client.view("BD_MATERIAL", {"Id": int(mid), "Number": "", "CreateOrgId": 0})
+                    inner = result.get("Result", {}).get("Result", {})
+                    code = inner.get("Number", "")
+                    if code:
+                        material_code_mapping[mid] = code
+                    name_raw = inner.get("Name", "")
+                    if isinstance(name_raw, list) and len(name_raw) > 0:
+                        fname = name_raw[0].get("Value", "") if isinstance(name_raw[0], dict) else str(name_raw[0])
+                    elif name_raw:
+                        fname = str(name_raw).strip()
+                    else:
+                        fname = ""
+                    if fname:
+                        material_name_mapping[mid] = fname
+                except Exception:
+                    pass
+                _time.sleep(0.1)
+            resolved_count = sum(1 for mid in still_missing if mid in material_code_mapping and material_code_mapping[mid])
+            print(f"    逐个查询后解析了 {resolved_count}/{len(still_missing)} 个")
     
     # 步骤3: 保存缓存（包括新查询到的数据）
     new_count = len(material_code_mapping) - initial_count
@@ -850,11 +1075,12 @@ def fetch_material_mapping(client: KingdeeClient, required_material_ids: list[st
     return material_code_mapping, material_name_mapping
 
 
-def fetch_form_data(client: KingdeeClient, form_id: str, specific_fields: list[str] = None) -> pd.DataFrame:
+def fetch_form_data(client: KingdeeClient, form_id: str, specific_fields: list[str] = None, filter_string: str = "") -> pd.DataFrame:
     """
     1. QueryBusinessInfo → 取主表 FieldKeys
     2. ExecuteBillQuery 分页拉全量数据
     如果指定了specific_fields，则只查询这些字段
+    如果指定了filter_string，则按条件过滤
     """
     print(f"  [字段] {form_id} ...", end=" ", flush=True)
     
@@ -874,7 +1100,7 @@ def fetch_form_data(client: KingdeeClient, form_id: str, specific_fields: list[s
         rows = client.execute_bill_query({
             "FormId":      form_id,
             "FieldKeys":   field_keys_csv,
-            "FilterString": "",
+            "FilterString": filter_string,
             "OrderString":  "",
             "TopRowCount":  0,
             "StartRow":     start_row,
@@ -922,8 +1148,14 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
         print(f"\n[步骤1] 导出 {MATERIAL_FORM_ID}（物料基础资料）")
         # 获取字段信息
         field_info = client.get_form_field_keys(MATERIAL_FORM_ID)
-        entry = _first_entry(field_info.get("entries", []))
-        field_keys = entry["field_keys"] if entry else field_info["field_keys"]
+        # BD_MATERIAL 数据分布在多个 entry 中，合并主表和需要的子表字段
+        # Entry 0: FBillHead(主表), Entry 4-9: SubHeadEntity(计划/采购/质检等), Entry 13: SubHeadEntity6
+        entries = field_info.get("entries", [])
+        needed_entry_keys = {0, 4, 5, 6, 7, 8, 9, 13}
+        field_keys = []
+        for i, entry in enumerate(entries):
+            if i in needed_entry_keys:
+                field_keys.extend(entry.get("field_keys", []))
         
         # 分页查询所有数据
         all_rows = []
@@ -962,7 +1194,14 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
     # 步骤2: 导出 ENG_BOM（物料清单）
     if form == "all" or form == "ENG_BOM":
         print(f"\n[步骤2] 导出 {FORM_ID}（物料清单）")
-        df = fetch_form_data(client, FORM_ID)
+        # 追加 SWG 字段（父项物料的 F_PALW_Assistant_qtr）
+        field_info = client.get_form_field_keys(FORM_ID)
+        all_fields = field_info.get("field_keys", [])
+        extra_fields = ["FMATERIALID.F_PALW_Assistant_qtr"]
+        for ef in extra_fields:
+            if ef not in all_fields:
+                all_fields.append(ef)
+        df = fetch_form_data(client, FORM_ID, specific_fields=all_fields)
         
         # 获取物料ID映射（需要BD_MATERIAL数据）
         print(f"\n[步骤3] 获取物料ID映射")
@@ -987,12 +1226,13 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
     if form == "all" or form == "PLN_FORECAST":
         print(f"\n[步骤3] 导出 {PLN_FORECAST_FORM_ID}（预测单）")
         try:
-            forecast_df = fetch_form_data(client, PLN_FORECAST_FORM_ID)
+            forecast_df = fetch_form_data(client, PLN_FORECAST_FORM_ID, filter_string="FCloseStatus = 'B'")
             forecast_csv_path = DATA_DIR / f"{PLN_FORECAST_FORM_ID}_{RUN_TS}.csv"
             forecast_df.to_csv(forecast_csv_path, index=False, encoding="utf-8-sig", quoting=1)
             print(f"  [保存] {forecast_csv_path.name}")
             print(f"  [数据] 共 {len(forecast_df)} 行")
         except Exception as e:
+            logger.error("PLN_FORECAST 数据拉取失败: %s", e, exc_info=True)
             print(f"  [错误] PLN_FORECAST 数据拉取失败: {e}")
             import traceback
             traceback.print_exc()
@@ -1010,6 +1250,7 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
             print(f"  [保存] {planorder_csv_path.name}")
             print(f"  [数据] 共 {len(planorder_df)} 行")
         except Exception as e:
+            logger.error("PLN_PLANORDER 数据拉取失败: %s", e, exc_info=True)
             print(f"  [错误] PLN_PLANORDER 数据拉取失败: {e}")
             import traceback
             traceback.print_exc()
@@ -1037,6 +1278,7 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
             print(f"  [保存] {mo_csv_path.name}")
             print(f"  [数据] 共 {len(mo_df)} 行")
         except Exception as e:
+            logger.error("PRD_MO 数据拉取失败: %s", e, exc_info=True)
             print(f"  [错误] PRD_MO 数据拉取失败: {e}")
             import traceback
             traceback.print_exc()
@@ -1058,12 +1300,13 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
                     seen.add(f)
                     po_fields.append(f)
             print(f"  [字段] 合并基本信息({len(header_fields)})+明细信息({len(detail_fields)}) = {len(po_fields)} 个字段")
-            po_df = fetch_form_data(client, PO_FORM_ID, specific_fields=po_fields)
+            po_df = fetch_form_data(client, PO_FORM_ID, specific_fields=po_fields, filter_string="FCloseStatus = 'A'")
             po_csv_path = DATA_DIR / f"{PO_FORM_ID}_{RUN_TS}.csv"
             po_df.to_csv(po_csv_path, index=False, encoding="utf-8-sig", quoting=1)
             print(f"  [保存] {po_csv_path.name}")
             print(f"  [数据] 共 {len(po_df)} 行")
         except Exception as e:
+            logger.error("PUR_PurchaseOrder 数据拉取失败: %s", e, exc_info=True)
             print(f"  [错误] PUR_PurchaseOrder 数据拉取失败: {e}")
             import traceback
             traceback.print_exc()
@@ -1089,6 +1332,7 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
             print(f"  [保存] {instock_csv_path.name}")
             print(f"  [数据] 共 {len(instock_df)} 行")
         except Exception as e:
+            logger.error("PRD_INSTOCK 数据拉取失败: %s", e, exc_info=True)
             print(f"  [错误] PRD_INSTOCK 数据拉取失败: {e}")
             import traceback
             traceback.print_exc()
@@ -1099,8 +1343,8 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
         # STK_Inventory 不需要预拉取CSV，导出函数直接查询API
         print("  [跳过] STK_Inventory 导出时直接查询API，无需预拉取CSV")
 
-    # 步骤9: 导出 PRD_PickMtrl（生产领料单）
-    if form == "all" or form == "PRD_PickMtrl":
+    # 步骤9: 导出 PRD_PickMtrl（生产领料单）— 默认不拉取，需显式指定
+    if form == "PRD_PickMtrl":
         print(f"\n[步骤9] 导出 {PICKMTRL_FORM_ID}（生产领料单）")
         try:
             field_info = client.get_form_field_keys(PICKMTRL_FORM_ID)
@@ -1120,7 +1364,86 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
             print(f"  [保存] {pickmtrl_csv_path.name}")
             print(f"  [数据] 共 {len(pickmtrl_df)} 行")
         except Exception as e:
+            logger.error("PRD_PickMtrl 数据拉取失败: %s", e, exc_info=True)
             print(f"  [错误] PRD_PickMtrl 数据拉取失败: {e}")
+            import traceback
+            traceback.print_exc()
+
+    # 步骤10: 导出 SAL_OUTSTOCK（销售出库单）
+    if form == "all" or form == SAL_OUTSTOCK_FORM_ID:
+        print(f"\n[步骤10] 导出 {SAL_OUTSTOCK_FORM_ID}（销售出库单）")
+        try:
+            all_rows = []
+            start_row, limit = 0, 2000
+            total_fetched = 0
+            print(f"  [字段] {len(OUTSTOCK_FIELDS)} 个（含基础资料点号字段）")
+            print("  [数据] 正在分页查询...")
+            while True:
+                rows = client.execute_bill_query({
+                    "FormId": SAL_OUTSTOCK_FORM_ID,
+                    "FieldKeys": ",".join(OUTSTOCK_FIELDS),
+                    "FilterString": "",
+                    "OrderString": "",
+                    "TopRowCount": 0,
+                    "StartRow": start_row,
+                    "Limit": limit,
+                })
+                if not rows:
+                    break
+                all_rows.extend(rows)
+                total_fetched += len(rows)
+                print(f"    已获取 {total_fetched} 行...")
+                if len(rows) < limit:
+                    break
+                start_row += limit
+
+            outstock_df = pd.DataFrame(all_rows, columns=OUTSTOCK_FIELDS)
+            outstock_csv_path = DATA_DIR / f"{SAL_OUTSTOCK_FORM_ID}_{RUN_TS}.csv"
+            outstock_df.to_csv(outstock_csv_path, index=False, encoding="utf-8-sig", quoting=1)
+            print(f"  [保存] {outstock_csv_path.name}")
+            print(f"  [数据] 共 {len(outstock_df)} 行")
+        except Exception as e:
+            logger.error("SAL_OUTSTOCK 数据拉取失败: %s", e, exc_info=True)
+            print(f"  [错误] SAL_OUTSTOCK 数据拉取失败: {e}")
+            import traceback
+            traceback.print_exc()
+
+    # 步骤11: 导出 BD_Supplier（供应商）
+    if form == "all" or form == BD_SUPPLIER_FORM_ID:
+        print(f"\n[步骤11] 导出 {BD_SUPPLIER_FORM_ID}（供应商）")
+        try:
+            all_rows = []
+            start_row, limit = 0, 2000
+            total_fetched = 0
+            print(f"  [字段] {len(SUPPLIER_FIELDS)} 个（含基础资料点号字段）")
+            print("  [数据] 正在分页查询...")
+            while True:
+                rows = client.execute_bill_query({
+                    "FormId": BD_SUPPLIER_FORM_ID,
+                    "FieldKeys": ",".join(SUPPLIER_FIELDS),
+                    "FilterString": "",
+                    "OrderString": "",
+                    "TopRowCount": 0,
+                    "StartRow": start_row,
+                    "Limit": limit,
+                })
+                if not rows:
+                    break
+                all_rows.extend(rows)
+                total_fetched += len(rows)
+                print(f"    已获取 {total_fetched} 行...")
+                if len(rows) < limit:
+                    break
+                start_row += limit
+
+            supplier_df = pd.DataFrame(all_rows, columns=SUPPLIER_FIELDS)
+            supplier_csv_path = DATA_DIR / f"{BD_SUPPLIER_FORM_ID}_{RUN_TS}.csv"
+            supplier_df.to_csv(supplier_csv_path, index=False, encoding="utf-8-sig", quoting=1)
+            print(f"  [保存] {supplier_csv_path.name}")
+            print(f"  [数据] 共 {len(supplier_df)} 行")
+        except Exception as e:
+            logger.error("BD_Supplier 数据拉取失败: %s", e, exc_info=True)
+            print(f"  [错误] BD_Supplier 数据拉取失败: {e}")
             import traceback
             traceback.print_exc()
 
@@ -1203,6 +1526,7 @@ def _match_field(tpl_field: str, data_cols: list[str]) -> int | None:
 
 
 def generate_material_excel(lang: str = "CN") -> None:
+    import time as _time
     lang_label = "中文" if lang == "CN" else "英文"
     print(f"[开始] 生成物料基础资料 Excel ({lang_label})")
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -1212,6 +1536,29 @@ def generate_material_excel(lang: str = "CN") -> None:
     if not template_files:
         print(f"  [错误] 找不到物料基础资料{lang_label}模板文件")
         return
+
+    # ── 辅助函数：递归搜索View API返回结果中的F_PALW_Assistant5品牌名称 ──
+    def _find_brand_name(obj, target_guid, result_map):
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == "F_PALW_Assistant5" and isinstance(v, dict):
+                    aid = v.get("Id", "")
+                    if aid == target_guid:
+                        fdata_values = v.get("FDataValue", [])
+                        for item in fdata_values:
+                            if item.get("Key") == 1033:  # English
+                                result_map[target_guid] = item.get("Value", "")
+                                return True
+                        result_map[target_guid] = v.get("FNumber", "")
+                        return True
+                elif isinstance(v, (dict, list)):
+                    if _find_brand_name(v, target_guid, result_map):
+                        return True
+        elif isinstance(obj, list):
+            for item in obj:
+                if _find_brand_name(item, target_guid, result_map):
+                    return True
+        return False
 
     template_path = template_files[0]
     print(f"  [模板] {template_path.name}")
@@ -1238,6 +1585,21 @@ def generate_material_excel(lang: str = "CN") -> None:
     data_cols = df.columns.tolist()
     print(f"  [数据] {len(df)} 行, {len(data_cols)} 列")
 
+    # ── 去重：同一FNumber可能有多行（不同使用组织），FForbidStatus=B(已禁用)优先 ──
+    if "FNumber" in data_cols and "FForbidStatus" in data_cols:
+        before_dedup = len(df)
+        # 按FForbidStatus排序，B(已禁用)排在前面，然后取每个FNumber的第一行
+        df["_sort_key"] = df["FForbidStatus"].apply(lambda x: 0 if str(x).strip() == "B" else 1)
+        df = df.sort_values("_sort_key").drop_duplicates(subset=["FNumber"], keep="first").drop(columns=["_sort_key"])
+        df = df.reset_index(drop=True)
+        if len(df) < before_dedup:
+            print(f"  [去重] FNumber去重: {before_dedup} → {len(df)} 行 (保留FForbidStatus=B的行)")
+        # 过滤掉已禁用的物料（只保留Disabling Status=No）
+        before_filter = len(df)
+        df = df[df["FForbidStatus"].apply(lambda x: str(x).strip() != "B")].reset_index(drop=True)
+        if len(df) < before_filter:
+            print(f"  [过滤] 移除已禁用物料: {before_filter} → {len(df)} 行")
+
     material_field_map = {
         "使用组织": "FUseOrgId", "Use Org.": "FUseOrgId",
         "编码": "FNumber", "Code": "FNumber",
@@ -1246,12 +1608,51 @@ def generate_material_excel(lang: str = "CN") -> None:
         "助记码": "FMnemonicCode", "Mnemocode": "FMnemonicCode",
         "数据状态": "FDocumentStatus", "Data Status": "FDocumentStatus",
         "禁用状态": "FForbidStatus", "Disabling Status": "FForbidStatus",
+        "物料属性": "FErpClsID", "Material Property": "FErpClsID",
+        "存货类别": "FCategoryID", "Inventory Category": "FCategoryID",
+        "基本单位": "FBaseUnitId", "BUoM": "FBaseUnitId",
+        "启用保质期管理": "FIsKFPeriod", "Enable guarantee period management": "FIsKFPeriod",
         "旧物料编码": "FOldNumber", "Old Material Code": "FOldNumber",
+        "保质期": "FExpPeriod", "Guarantee Period": "FExpPeriod",
+        "最小库存": "FMinStock", "Min. Stock": "FMinStock",
+        "安全库存": "FSafeStock", "Safety Stock": "FSafeStock",
+        "最大库存": "FMaxStock", "Max. Inventory": "FMaxStock",
+        "采购单位": "FPurchaseUnitId", "Purchase Unit": "FPurchaseUnitId",
+        "采购组织": "FPurchaseOrgId", "Purchase Org.": "FPurchaseOrgId",
+        "计划策略": "FPlanningStrategy", "Planning Strategy": "FPlanningStrategy",
+        "制造策略": "FMfgPolicyId", "Manufacturing Policy": "FMfgPolicyId",
+        "订货策略": "FOrderPolicy", "Order Policy": "FOrderPolicy",
+        "最小订货量": "FMinPOQty", "Min. Order Qty": "FMinPOQty",
+        "固定/经济批量": "FEOQ", "FOQ/EOQ": "FEOQ",
+        "预计入库允许部分提前": "FAllowPartAhead", "Partial Advance Allowed for Scheduled Receipt": "FAllowPartAhead",
+        "时间紧迫系数": "FTimeFactorId", "Time Urgent Coefficient": "FTimeFactorId",
+        "预计入库允许部分延后": "FAllowPartDelay", "Partial Delay Allowed for Scheduled Receipt": "FAllowPartDelay",
+        "数量负荷系数": "FQtyFactorId", "Qty Load Coefficient": "FQtyFactorId",
+        "标准人员准备工时": "FStdLaborPrePareTime", "Standard Labor Setup Time": "FStdLaborPrePareTime",
+        "标准人员实作工时": "FStdLaborProcessTime", "Standard Actual Labor Hours": "FStdLaborProcessTime",
+        "标准机器准备工时": "FStdMachinePrepareTime", "Standard Machine Setup Time": "FStdMachinePrepareTime",
+        "标准机器实作工时": "FStdMachineProcessTime", "Standard Actual Machine Hours": "FStdMachineProcessTime",
         "辅助属性": "F_WTRM_Combo", "Secondary Property": "F_WTRM_Combo",
-        "固定损耗": "F_PALW_Decimal_qtr", "Fixed Loss": "F_PALW_Decimal_qtr",
+        "来料检验": "FCheckIncoming", "Incoming Material Inspection": "FCheckIncoming",
+        "库存检验": "FCheckStock", "Inventory Inspection": "FCheckStock",
+        "产品检验": "FCheckProduct", "Product Inspection": "FCheckProduct",
+        "抽样方案": "FIncSampSchemeId", "Sampling Scheme": "FIncSampSchemeId",
+        "质检方案": "FIncQcSchemeId", "Inspection Scheme": "FIncQcSchemeId",
+        "启用库存周期复检": "FEnableCyclistQCSTK", "Enable inventory cycle reinspection": "FEnableCyclistQCSTK",
+        "复检周期": "FStockCycle", "Reinspection Cycle": "FStockCycle",
+        "启用库存周期复检提醒": "FEnableCyclistQCSTKEW", "Enable reinspection reminder of inventory cycle": "FEnableCyclistQCSTKEW",
+        "提醒提前期": "FEWLeadDay", "Alert Lead Time": "FEWLeadDay",
+        "质检组": "FInspectGroupId", "Inspection Team": "FInspectGroupId",
+        "固定损耗": "FFIXLOSS", "Fixed Loss": "FFIXLOSS",
         "已使用": "FRefStatus", "Used": "FRefStatus",
         "排产识别码": "F_WTRM_Text211111", "Sequence": "F_WTRM_Text211111",
-        "文件要求": "F_PALW_Text_qtr8", "Documents need": "F_PALW_Text_qtr8",
+        "密度": "F_WTRM_Text31", "Density": "F_WTRM_Text31",
+        "品牌": "F_PALW_Assistant5", "Brand": "F_PALW_Assistant5",
+        "文件要求": "", "Documents need": "",
+        "Blending Key": "", "BlendingKey": "",
+        "订货间隔期": "FOrderIntervalTime", "Order Interval": "FOrderIntervalTime",
+        "Packaging Key": "F_WTRM_Text3111", "Packaging Key": "F_WTRM_Text3111",
+        "最大订货量": "FMaxPOQty", "Max. Order Qty": "FMaxPOQty",
         "高乳化剂含量产品": "F_PALW_CheckBox_apv1", "High Eumlsifier": "F_PALW_CheckBox_apv1",
         "Premix Product（预拌粉）": "F_PALW_CheckBox_tzk1", "Premix Product": "F_PALW_CheckBox_tzk1",
         "KG/carton": "F_PALW_Decimal_qtr2",
@@ -1259,7 +1660,28 @@ def generate_material_excel(lang: str = "CN") -> None:
         "饱和脂肪NRV%1": "F_baoheNRV",
         "糖每100g1": "F_tang100",
         "糖NRV%1": "F_tangNRV",
-        "满缸量": "F_PALW_Decimal_uky", "full IBC quantity": "F_PALW_Decimal_uky",
+        "满缸量": "F_PALW_Decimal_qtr6", "full IBC quantity": "F_PALW_Decimal_qtr6",
+        "市场价": "F_PALW_Decimal_re5", "Market price": "F_PALW_Decimal_re5",
+        "有效期至": "F_PALW_Date_apv", "Valid to:": "F_PALW_Date_apv",
+        "SWG": "F_PALW_Assistant_qtr",
+        "创建日期": "FCreateDate", "Created on": "FCreateDate",
+        "清真": "F_PALW_Assistant1", "Halal": "F_PALW_Assistant1",
+        "犹太": "F_PALW_Assistant3", "Kosher": "F_PALW_Assistant3",
+        "ingredients category_en": "F_PALW_Text_WLFLYW",
+        "ingredients category_code": "F_PALW_Text_WLFLDM",
+        "ingredients group_cn": "F_PALW_Text_WLFLZB",
+        "ingredients group_en": "F_PALW_Text_WLFLZBYW",
+        "ingredients code_cn": "F_PALW_Base_qtr1",
+        "过敏原代码": "F_PALW_Assistant2", "Allergen Code": "F_PALW_Assistant2",
+        "color code": "F_PALW_Base_apv1",
+        "odor": "",
+        "color": "F_PALW_Base_apv1",
+        "odor code": "F_PALW_Base_tzk",
+        "Density(kg/L)": "F_PALW_Text_w5c1",
+        "Non-GMO clarified": "F_PALW_CheckBox_uky",
+        "GB 2760 Code": "F_PALW_Text_tzk2",
+        "SC": "F_PALW_Text_qtr12",
+        "German material No.": "F_WTRM_Text",
     }
 
     field_mapping = {}
@@ -1272,6 +1694,8 @@ def generate_material_excel(lang: str = "CN") -> None:
                 field_mapping[tpl_idx] = data_field
 
     print(f"  [映射] 找到 {len(field_mapping)} 个字段映射")
+
+    date_cols = {"FCreateDate", "F_PALW_Date_apv"}
 
     client = KingdeeClient()
 
@@ -1295,6 +1719,159 @@ def generate_material_excel(lang: str = "CN") -> None:
                 ids.append(id_str)
         return list(set(ids))
 
+    import json
+
+    # ── Base字段解析：提取DataValue和Description（用于F_PALW_Base_*字段）──
+    def _resolve_base_field(field_name, guid_ids, cache_filename):
+        """Base字段GUID→(name, code, desc)解析器。返回三个字典。"""
+        resolved_names = _load_generic_mapping(cache_filename)
+        resolved_codes = _load_generic_mapping(cache_filename + "_code")
+        resolved_descs = _load_generic_mapping(cache_filename + "_desc")
+        for k, v in list(resolved_names.items()):
+            if isinstance(v, dict):
+                resolved_names[k] = v.get("cn", str(v))
+        missing = [g for g in guid_ids if g not in resolved_names]
+        if missing:
+            print(f"    查询 {len(missing)} 个未知 {field_name} GUID...")
+            for gid in missing[:50]:
+                try:
+                    sample_rows = client.execute_bill_query({
+                        "FormId": "BD_MATERIAL",
+                        "FieldKeys": "FMATERIALID",
+                        "FilterString": f"{field_name} = '{gid}'",
+                        "OrderString": "", "TopRowCount": 0, "StartRow": 0, "Limit": 1,
+                    })
+                    if sample_rows:
+                        result = client.view("BD_MATERIAL", {"Id": sample_rows[0][0]})
+                        if isinstance(result, str):
+                            result = json.loads(result)
+                        def _find_base_value(obj, target_field, target_guid, out_name, out_code, out_desc):
+                            if isinstance(obj, dict):
+                                for k, v in obj.items():
+                                    if k == target_field and isinstance(v, dict) and v.get("Id") == target_guid:
+                                        fnum = v.get("FNumber", "") or v.get("Number", "")
+                                        if fnum:
+                                            out_code[target_guid] = str(fnum)
+                                        name = ""
+                                        mlt = v.get("MultiLanguageText", [])
+                                        for item in mlt:
+                                            if isinstance(item, dict) and item.get("LocaleId") == 1033:
+                                                name = item.get("FDataValue", "") or item.get("DataValue", "")
+                                                desc = item.get("Description", "")
+                                                if desc and desc.strip() and desc.strip() != " ":
+                                                    out_desc[target_guid] = desc.strip()
+                                                if name:
+                                                    break
+                                        if not name:
+                                            fdvs = v.get("FDataValue", []) or v.get("DataValue", [])
+                                            for item in fdvs:
+                                                if isinstance(item, dict) and item.get("Key") == 1033:
+                                                    name = item.get("Value", "")
+                                                    if name:
+                                                        break
+                                        if not name:
+                                            name = fnum
+                                        if target_guid not in out_desc:
+                                            descs = v.get("Description", [])
+                                            for item in descs:
+                                                if isinstance(item, dict) and item.get("Key") == 1033:
+                                                    d = item.get("Value", "")
+                                                    if d and d.strip() and d.strip() != " ":
+                                                        out_desc[target_guid] = d.strip()
+                                                        break
+                                        out_name[target_guid] = str(name) if name else ""
+                                        if not fnum and name:
+                                            out_code[target_guid] = str(name)
+                                        return True
+                                    elif isinstance(v, (dict, list)):
+                                        if _find_base_value(v, target_field, target_guid, out_name, out_code, out_desc):
+                                            return True
+                            elif isinstance(obj, list):
+                                for item in obj:
+                                    if _find_base_value(item, target_field, target_guid, out_name, out_code, out_desc):
+                                        return True
+                            return False
+                        _find_base_value(result, field_name, gid, resolved_names, resolved_codes, resolved_descs)
+                except Exception:
+                    pass
+                _time.sleep(0.15)
+            _save_generic_mapping(cache_filename, resolved_names)
+            _save_generic_mapping(cache_filename + "_code", resolved_codes)
+            _save_generic_mapping(cache_filename + "_desc", resolved_descs)
+        return resolved_names, resolved_codes, resolved_descs
+
+    # ── 通用GUID解析：查询View API获取Assistant字段的显示名称 ──
+    def _resolve_assistant_guids(field_name, guid_ids, cache_filename):
+        """通用GUID→名称+编码映射解析器，用于F_PALW_Assistant*字段。
+        返回 (name_map, code_map) 两个字典。"""
+        resolved_names = _load_generic_mapping(cache_filename)
+        resolved_codes = _load_generic_mapping(cache_filename + "_code")
+        # 兼容旧格式
+        for k, v in list(resolved_names.items()):
+            if isinstance(v, dict):
+                resolved_names[k] = v.get("cn", str(v))
+        missing = [g for g in guid_ids if g not in resolved_names]
+        if missing:
+            print(f"    查询 {len(missing)} 个未知 {field_name} GUID...")
+            for gid in missing[:50]:  # 限制最多50个View API查询
+                try:
+                    sample_rows = client.execute_bill_query({
+                        "FormId": "BD_MATERIAL",
+                        "FieldKeys": "FMATERIALID",
+                        "FilterString": f"{field_name} = '{gid}'",
+                        "OrderString": "", "TopRowCount": 0, "StartRow": 0, "Limit": 1,
+                    })
+                    if sample_rows:
+                        result = client.view("BD_MATERIAL", {"Id": sample_rows[0][0]})
+                        if isinstance(result, str):
+                            result = json.loads(result)
+                        def _find_field_value(obj, target_field, target_guid, out_name_map, out_code_map):
+                            if isinstance(obj, dict):
+                                for k, v in obj.items():
+                                    if k == target_field and isinstance(v, dict) and v.get("Id") == target_guid:
+                                        fnum = v.get("FNumber", "")
+                                        if fnum:
+                                            out_code_map[target_guid] = str(fnum)
+                                        name = ""
+                                        mlt = v.get("MultiLanguageText", [])
+                                        for item in mlt:
+                                            if isinstance(item, dict) and item.get("LocaleId") == 1033:
+                                                name = item.get("FDataValue", "")
+                                                if name:
+                                                    break
+                                        if not name:
+                                            fdvs = v.get("FDataValue", [])
+                                            for item in fdvs:
+                                                if isinstance(item, dict) and item.get("Key") == 1033:
+                                                    name = item.get("Value", "")
+                                                    if name:
+                                                        break
+                                        if not name:
+                                            name = fnum
+                                        if not name:
+                                            name_list = v.get("Name", "")
+                                            if isinstance(name_list, list) and len(name_list) > 0:
+                                                name = name_list[0].get("Value", str(name_list[0])) if isinstance(name_list[0], dict) else str(name_list[0])
+                                        out_name_map[target_guid] = str(name) if name else ""
+                                        if not fnum and name:
+                                            out_code_map[target_guid] = str(name)
+                                        return True
+                                    elif isinstance(v, (dict, list)):
+                                        if _find_field_value(v, target_field, target_guid, out_name_map, out_code_map):
+                                            return True
+                            elif isinstance(obj, list):
+                                for item in obj:
+                                    if _find_field_value(item, target_field, target_guid, out_name_map, out_code_map):
+                                        return True
+                            return False
+                        _find_field_value(result, field_name, gid, resolved_names, resolved_codes)
+                except Exception:
+                    pass
+                _time.sleep(0.15)
+            _save_generic_mapping(cache_filename, resolved_names)
+            _save_generic_mapping(cache_filename + "_code", resolved_codes)
+        return resolved_names, resolved_codes
+
     org_ids = _collect_ids("FUseOrgId")
     org_code_map = {}
     org_name_map = {}
@@ -1303,28 +1880,309 @@ def generate_material_excel(lang: str = "CN") -> None:
         org_code_map = fetch_generic_mapping(client, "ORG_Organizations", "FOrgId", "FNumber", "org_code_map", org_ids)
         org_name_map = _fetch_name_map(client, "ORG_Organizations", list(set(org_code_map.values())), "org_name_map")
 
+    # 解析基本单位ID
+    base_unit_ids = _collect_ids("FBaseUnitId")
+    base_unit_code_map = {}
+    if base_unit_ids:
+        print(f"  [解析] 需要解析 {len(base_unit_ids)} 个基本单位ID")
+        base_unit_code_map = fetch_generic_mapping(client, "BD_UNIT", "FUnitId", "FNumber", "unit_code_map", base_unit_ids)
+
+    # 解析采购单位ID
+    pur_unit_ids = _collect_ids("FPurchaseUnitId")
+    pur_unit_code_map = {}
+    if pur_unit_ids:
+        print(f"  [解析] 需要解析 {len(pur_unit_ids)} 个采购单位ID")
+        pur_unit_code_map = fetch_generic_mapping(client, "BD_UNIT", "FUnitId", "FNumber", "unit_code_map", pur_unit_ids)
+
+    # 单位编码 → 名称映射（用于将L→Liter等）
+    all_unit_codes = list(set(list(base_unit_code_map.values()) + list(pur_unit_code_map.values())))
+    unit_name_map = {}
+    if all_unit_codes:
+        unit_name_map = _fetch_name_map(client, "BD_UNIT", all_unit_codes, "unit_name_map")
+
+    # 解析采购组织ID
+    pur_org_ids = _collect_ids("FPurchaseOrgId")
+    pur_org_code_map = {}
+    if pur_org_ids:
+        print(f"  [解析] 需要解析 {len(pur_org_ids)} 个采购组织ID")
+        pur_org_code_map = fetch_generic_mapping(client, "ORG_Organizations", "FOrgId", "FNumber", "org_code_map", pur_org_ids)
+
+    # 解析存货类别ID → 名称（而非编码）
+    category_ids = _collect_ids("FCategoryID")
+    category_name_map = {}
+    if category_ids:
+        print(f"  [解析] 需要解析 {len(category_ids)} 个存货类别ID")
+        category_code_map = fetch_generic_mapping(client, "BD_MATERIALCATEGORY", "FCategoryId", "FNumber", "category_code_map", category_ids)
+        category_name_map = _fetch_name_map(client, "BD_MATERIALCATEGORY", list(set(category_code_map.values())), "category_name_map")
+
+    # 解析品牌ID (F_PALW_Assistant5 → 内部品牌MC/DB/SV等)
+    brand_ids = _collect_ids("F_PALW_Assistant5", id_type="guid")
+    brand_name_map = {}
+    if brand_ids:
+        print(f"  [解析] 需要解析 {len(brand_ids)} 个品牌ID (F_PALW_Assistant5)")
+        # 已知的GUID→品牌名称映射
+        _known_brand_map = {
+            "64dee90e2beea9": "DB", "64dee90e2beea12": "MC", "64dee90e2beea18": "SV",
+            "64dee90e2beea16": "SE", "64dee90e2beea11": "HY", "64dee90e2beea14": "PL",
+            "64dee90e2beea13": "OA", "64dee90e2beea15": "SC",
+        }
+        # 对已知GUID直接映射，未知GUID通过View API获取
+        unknown_guids = []
+        for gid in brand_ids:
+            if gid in _known_brand_map:
+                brand_name_map[gid] = _known_brand_map[gid]
+            else:
+                unknown_guids.append(gid)
+        if unknown_guids:
+            print(f"  [解析] {len(unknown_guids)} 个未知品牌GUID，通过View API获取...")
+            for gid in unknown_guids:
+                try:
+                    # 找到一个使用此GUID的物料
+                    sample_rows = client.execute_bill_query({
+                        "FormId": "BD_MATERIAL",
+                        "FieldKeys": "FMATERIALID",
+                        "FilterString": f"F_PALW_Assistant5 = '{gid}'",
+                        "OrderString": "", "TopRowCount": 0, "StartRow": 0, "Limit": 1,
+                    })
+                    if sample_rows:
+                        result = client.view("BD_MATERIAL", {"Id": sample_rows[0][0]})
+                        if isinstance(result, str):
+                            result = json.loads(result)
+                        _find_brand_name(result, gid, brand_name_map)
+                except Exception as e:
+                    logger.error("获取品牌GUID %s 名称失败: %s", gid, e, exc_info=True)
+                    print(f"  [警告] 获取品牌GUID {gid} 名称失败: {e}")
+                _time.sleep(0.2)
+        print(f"  [解析] 品牌映射完成: {brand_name_map}")
+
+    # 解析制造策略ID
+    mfg_policy_ids = _collect_ids("FMfgPolicyId")
+    mfg_policy_name_map = {}
+    if mfg_policy_ids:
+        print(f"  [解析] 需要解析 {len(mfg_policy_ids)} 个制造策略ID")
+        mfg_policy_code_map = fetch_generic_mapping(client, "PLN_MANUFACTUREPOLICY", "FId", "FNumber", "mfg_policy_code_map", mfg_policy_ids)
+        mfg_policy_name_map = _fetch_name_map(client, "PLN_MANUFACTUREPOLICY", list(set(mfg_policy_code_map.values())), "mfg_policy_name_map")
+
+    # 解析质检方案ID
+    qc_scheme_ids = _collect_ids("FIncQcSchemeId")
+    qc_scheme_name_map = {}
+    if qc_scheme_ids:
+        print(f"  [解析] 需要解析 {len(qc_scheme_ids)} 个质检方案ID")
+        qc_scheme_code_map = fetch_generic_mapping(client, "QM_QCScheme", "FId", "FNumber", "qc_scheme_code_map", qc_scheme_ids)
+        qc_scheme_name_map = _fetch_name_map(client, "QM_QCScheme", list(set(qc_scheme_code_map.values())), "qc_scheme_name_map")
+
+    # 解析 SWG (F_PALW_Assistant_qtr)
+    swg_ids = _collect_ids("F_PALW_Assistant_qtr", id_type="guid")
+    swg_name_map = {}
+    if swg_ids:
+        print(f"  [解析] 需要解析 {len(swg_ids)} 个 SWG ID (F_PALW_Assistant_qtr)")
+        swg_name_map, _ = _resolve_assistant_guids("F_PALW_Assistant_qtr", swg_ids, "material_swg_map")
+
+    # 解析 Kosher (F_PALW_Assistant3)
+    kosher_ids = _collect_ids("F_PALW_Assistant3", id_type="guid")
+    kosher_name_map = {}
+    if kosher_ids:
+        print(f"  [解析] 需要解析 {len(kosher_ids)} 个 Kosher ID (F_PALW_Assistant3)")
+        kosher_name_map, _ = _resolve_assistant_guids("F_PALW_Assistant3", kosher_ids, "material_kosher_map")
+
+    # 解析 Allergen (F_PALW_Assistant2)
+    allergen_ids = _collect_ids("F_PALW_Assistant2", id_type="guid")
+    allergen_name_map = {}
+    if allergen_ids:
+        print(f"  [解析] 需要解析 {len(allergen_ids)} 个 Allergen ID (F_PALW_Assistant2)")
+        allergen_name_map, _ = _resolve_assistant_guids("F_PALW_Assistant2", allergen_ids, "material_allergen_map")
+
+    # 构建 Allergen 缩写映射 (EGG/GLU/WST/MLK/SOY/N.A.)
+    _ALLERGEN_COMPONENT_MAP = {
+        "soy bean": "SOY", "大豆": "SOY",
+        "gluten": "GLU", "麸质": "GLU",
+        "milk": "MLK", "牛奶": "MLK",
+        "egg": "EGG", "鸡蛋": "EGG",
+        "不属于": "N.A.", "N.A.": "N.A.", "不属于/N.A.": "N.A.",
+        "麸质（小麦淀粉）": "WST",
+    }
+    def _abbreviate_allergen(name: str) -> str:
+        """将过敏原全名转为缩写。复合值如'麸质、大豆、牛奶'→'GLU, SOY, MLK'"""
+        if not name:
+            return ""
+        if name in _ALLERGEN_COMPONENT_MAP:
+            return _ALLERGEN_COMPONENT_MAP[name]
+        import re
+        parts = re.split(r'[、，]', name)
+        abbrevs = []
+        for part in parts:
+            part = part.strip()
+            if part in _ALLERGEN_COMPONENT_MAP:
+                abbrevs.append(_ALLERGEN_COMPONENT_MAP[part])
+            else:
+                abbrevs.append(part)
+        return ", ".join(abbrevs) if abbrevs else name
+
+    allergen_abbrev_map = {}
+    if allergen_name_map:
+        allergen_abbrev_map = {gid: _abbreviate_allergen(name) for gid, name in allergen_name_map.items()}
+        print(f"  [缩写] Allergen 缩写映射: {len(allergen_abbrev_map)} 条")
+
+    # 解析 Halal (F_PALW_Assistant1)
+    halal_ids = _collect_ids("F_PALW_Assistant1", id_type="guid")
+    halal_name_map = {}
+    if halal_ids:
+        print(f"  [解析] 需要解析 {len(halal_ids)} 个 Halal ID (F_PALW_Assistant1)")
+        halal_name_map, _ = _resolve_assistant_guids("F_PALW_Assistant1", halal_ids, "material_halal_map")
+
+    # 解析 color — 新字段 F_PALW_Base_apv1
+    color_ids = _collect_ids("F_PALW_Base_apv1", id_type="guid")
+    color_name_map = {}
+    color_code_map = {}
+    color_desc_map = {}
+    if color_ids:
+        print(f"  [解析] 需要解析 {len(color_ids)} 个 Color ID (F_PALW_Base_apv1)")
+        color_name_map, color_code_map, color_desc_map = _resolve_base_field("F_PALW_Base_apv1", color_ids, "material_color_base_map")
+
+    # 解析 odor code — 新字段 F_PALW_Base_tzk
+    odor_ids = _collect_ids("F_PALW_Base_tzk", id_type="guid")
+    odor_name_map = {}
+    odor_code_map = {}
+    if odor_ids:
+        print(f"  [解析] 需要解析 {len(odor_ids)} 个 Odor Code ID (F_PALW_Base_tzk)")
+        odor_name_map, odor_code_map, _ = _resolve_base_field("F_PALW_Base_tzk", odor_ids, "material_odor_base_map")
+
+    # 解析 ingredients code_cn (F_PALW_Base_qtr1 → View API解析)
+    ingred_base_ids = _collect_ids("F_PALW_Base_qtr1")
+    ingred_name_map = {}
+    if ingred_base_ids:
+        print(f"  [解析] 需要解析 {len(ingred_base_ids)} 个 Ingredients Code ID (F_PALW_Base_qtr1)")
+        ingred_name_map = _load_generic_mapping("material_ingred_name_map")
+        for k, v in list(ingred_name_map.items()):
+            if isinstance(v, dict):
+                ingred_name_map[k] = v.get("cn", str(v))
+        missing = [g for g in ingred_base_ids if g not in ingred_name_map]
+        if missing:
+            print(f"    查询 {len(missing)} 个未知 Ingredients Code...")
+            for gid in missing[:50]:
+                try:
+                    sample_rows = client.execute_bill_query({
+                        "FormId": "BD_MATERIAL",
+                        "FieldKeys": "FMATERIALID",
+                        "FilterString": f"F_PALW_Base_qtr1 = '{gid}'",
+                        "StartRow": 0, "Limit": 1,
+                    })
+                    if sample_rows:
+                        result = client.view("BD_MATERIAL", {"Id": sample_rows[0][0]})
+                        if isinstance(result, str):
+                            result = json.loads(result)
+                        def _find_base_value(obj, target_field, target_id, out_map):
+                            if isinstance(obj, dict):
+                                for k, v in obj.items():
+                                    if k == target_field and isinstance(v, dict) and str(v.get("Id")) == str(target_id):
+                                        name = v.get("Name", "")
+                                        if isinstance(name, list):
+                                            for item in name:
+                                                if isinstance(item, dict) and item.get("Key") in (2052, 1033):
+                                                    out_map[target_id] = str(item.get("Value", ""))
+                                                    return True
+                                        out_map[target_id] = str(name) if name else ""
+                                        return True
+                                    elif isinstance(v, (dict, list)):
+                                        if _find_base_value(v, target_field, target_id, out_map):
+                                            return True
+                            elif isinstance(obj, list):
+                                for item in obj:
+                                    if _find_base_value(item, target_field, target_id, out_map):
+                                        return True
+                            return False
+                        _find_base_value(result, "F_PALW_Base_qtr1", gid, ingred_name_map)
+                except Exception:
+                    pass
+                _time.sleep(0.15)
+            _save_generic_mapping("material_ingred_name_map", ingred_name_map)
+
     if lang == "CN":
         status_map = {
             "FDocumentStatus": {"A": "已审核", "B": "暂存", "C": "已审核", "D": "重新审核"},
             "FForbidStatus": {"A": "否", "B": "是"},
+            "FErpClsID": {"1": "外购", "2": "自制", "3": "委外", "4": "特征", "5": "虚拟", "6": "服务", "7": "一次性", "9": "配置", "10": "资产", "11": "费用", "12": "模型", "13": "产品系列"},
+            "FPlanningStrategy": {"0": "MPS", "1": "MRP", "2": "无"},
+            "FOrderPolicy": {"0": "LFL(批对批)", "1": "POQ(期间订货)", "2": "FOQ(固定批量)", "3": "ROP(再订货点)"},
+            "FRefStatus": {"0": "否", "1": "是"},
         }
         bool_map = {"True": "是", "False": "否", "true": "是", "false": "否", "1": "是", "0": "否"}
+        # 辅助属性中文映射：所有非空值都输出RM Specification（对标模板）
+        aux_prop_map_cn = {"贸易": "RM specification", "生产": "RM specification", "无特殊": "RM specification", "共用": "RM specification", "出口": "RM specification", "仅供出口用原料": "RM specification"}
     else:
         status_map = {
             "FDocumentStatus": {"A": "Approved", "B": "Draft", "C": "Approved", "D": "Re-audit"},
             "FForbidStatus": {"A": "No", "B": "Yes"},
+            "FErpClsID": {"1": "Purchase", "2": "Self-made", "3": "Subcontracted", "4": "Feature", "5": "Virtual", "6": "Service", "7": "One-time", "9": "Configured", "10": "Asset", "11": "Expense", "12": "Model", "13": "Product Family"},
+            "FPlanningStrategy": {"0": "MPS", "1": "MRP", "2": "None"},
+            "FOrderPolicy": {"0": "LFL", "1": "POQ", "2": "FOQ", "3": "ROP"},
+            "FRefStatus": {"0": "No", "1": "Yes"},
         }
         bool_map = {"True": "Yes", "False": "No", "true": "Yes", "false": "No", "1": "Yes", "0": "No"}
+        # 辅助属性英文映射：所有非空值都输出RM Specification（对标模板）
+        aux_prop_map_en = {"贸易": "RM Specification", "生产": "RM Specification", "无特殊": "RM Specification", "共用": "RM Specification", "出口": "RM Specification", "仅供出口用原料": "RM Specification"}
+        # 制造策略英文映射（FNumber→英文名）
+        mfg_policy_en_map = {"ZZCL001_SYS": "MTS10(Include inventory)"}
+        # 存货类别英文映射
+        category_en_map = {"原材料": "Raw material", "自制半成品": "Semi-finished product", "产成品": "Finished product", "辅料": "Auxiliary material", "资产": "Asset", "服务": "Service", "委外半成品": "Subcontracted semi-finished product"}
+        # 单位中文名→英文名映射
+        unit_en_map = {"千克": "kg", "个": "Pcs", "ppm": "ppm", "Pcs": "Pcs", "套": "Set", "台": "Unit", "升": "Liter", "L": "Liter", "ge": "ge", "tao": "Set"}
 
     id_to_code_map = {
         "FUseOrgId": org_code_map,
+        "FBaseUnitId": base_unit_code_map,
+        "FPurchaseUnitId": pur_unit_code_map,
+        "FPurchaseOrgId": pur_org_code_map,
+        "FCategoryID": category_code_map if 'category_code_map' in dir() else {},
+        "F_PALW_Assistant5": brand_name_map,
+        "F_PALW_Assistant_qtr": swg_name_map,
+        "F_PALW_Assistant1": halal_name_map,
+        "F_PALW_Assistant2": allergen_name_map,
+        "F_PALW_Assistant3": kosher_name_map,
+        "F_PALW_Base_apv1": color_name_map,
+        "F_PALW_Base_tzk": odor_name_map,
+        "F_PALW_Base_qtr1": ingred_name_map,
+        "FMfgPolicyId": mfg_policy_code_map if 'mfg_policy_code_map' in dir() else {},
+        "FIncQcSchemeId": qc_scheme_code_map if 'qc_scheme_code_map' in dir() else {},
+    }
+
+    # 模板字段级别的解析器覆盖（同一金蝶字段需要区分code/name时使用）
+    per_field_resolver = {
+        "color code": color_desc_map,
+        "odor": {},
+        "color": color_name_map,
+        "odor code": odor_name_map,
+        "Allergen Code": allergen_abbrev_map,
+        "过敏原代码": allergen_abbrev_map,
     }
 
     special_cols = {}
     for tpl_idx, tpl_field in enumerate(h0):
         if tpl_field in ("使用组织", "Use Org."):
             special_cols[tpl_idx] = "org_name"
-        elif tpl_field in ("高乳化剂含量产品", "Premix Product（预拌粉）", "High Eumlsifier", "Premix Product"):
+        elif tpl_field in ("基本单位", "BUoM"):
+            special_cols[tpl_idx] = "unit_name"
+        elif tpl_field in ("采购单位", "Purchase Unit"):
+            special_cols[tpl_idx] = "unit_name"
+        elif tpl_field in ("制造策略", "Manufacturing Policy"):
+            special_cols[tpl_idx] = "mfg_policy_name"
+        elif tpl_field in ("质检方案", "Inspection Scheme"):
+            special_cols[tpl_idx] = "qc_scheme_name"
+        elif tpl_field in ("存货类别", "Inventory Category"):
+            special_cols[tpl_idx] = "category_name"
+        elif tpl_field in ("辅助属性", "Secondary Property"):
+            special_cols[tpl_idx] = "aux_prop"
+        elif tpl_field in ("Non-GMO clarified",):
+            special_cols[tpl_idx] = "non_gmo"
+        elif tpl_field in ("高乳化剂含量产品", "Premix Product（预拌粉）", "High Eumlsifier", "Premix Product",
+                           "启用保质期管理", "Enable guarantee period management",
+                           "来料检验", "Incoming Material Inspection",
+                           "库存检验", "Inventory Inspection",
+                           "产品检验", "Product Inspection",
+                           "启用库存周期复检", "Enable inventory cycle reinspection",
+                           "启用库存周期复检提醒", "Enable reinspection reminder of inventory cycle",
+                           "预计入库允许部分提前", "Partial Advance Allowed for Scheduled Receipt",
+                           "预计入库允许部分延后", "Partial Delay Allowed for Scheduled Receipt"):
             special_cols[tpl_idx] = "bool"
 
     if lang == "CN":
@@ -1354,14 +2212,21 @@ def generate_material_excel(lang: str = "CN") -> None:
         for tpl_idx, data_col in field_mapping.items():
             val = row[data_col]
             if pd.isna(val) or str(val).strip() == "":
+                # 辅助属性列即使为空也需要输出RM Specification（对标模板）
+                if tpl_idx in special_cols and special_cols[tpl_idx] == "aux_prop":
+                    str_val = "RM Specification" if lang != "CN" else "RM specification"
+                    output_row[tpl_idx] = _clean_string(str_val)
                 continue
 
             str_val = str(val).strip()
 
-            if str_val in ("0", "0.0") and data_col in ("FUseOrgId", "FRefStatus"):
+            if str_val in ("0", "0.0") and data_col in ("FUseOrgId", "FBaseUnitId", "FPurchaseUnitId", "FPurchaseOrgId", "FCategoryID", "F_PALW_Assistant5", "FBomId", "FInspectGroupId", "FIncSampSchemeId", "FIncQcSchemeId", "FMfgPolicyId"):
                 continue
 
-            if data_col in id_to_code_map and id_to_code_map[data_col]:
+            tpl_field = h0[tpl_idx]
+            if tpl_field in per_field_resolver and per_field_resolver[tpl_field]:
+                str_val = _resolve_id(str_val, per_field_resolver[tpl_field])
+            elif data_col in id_to_code_map and id_to_code_map[data_col]:
                 str_val = _resolve_id(str_val, id_to_code_map[data_col])
 
             if data_col in status_map:
@@ -1371,14 +2236,52 @@ def generate_material_excel(lang: str = "CN") -> None:
                 sc = special_cols[tpl_idx]
                 if sc == "org_name":
                     str_val = org_name_map.get(str_val, str_val)
+                elif sc == "unit_name":
+                    # 单位编码 → 名称（如 L→Liter, kg→千克），英文版再映射为英文名
+                    str_val = unit_name_map.get(str_val, str_val)
+                    if lang != "CN":
+                        str_val = unit_en_map.get(str_val, str_val)
+                elif sc == "mfg_policy_name":
+                    # str_val已经是FNumber编码（经过id_to_code_map转换）
+                    if lang != "CN":
+                        # 英文版：先查mfg_policy_en_map(FNumber→英文)，回退到中文名
+                        en_name = mfg_policy_en_map.get(str_val)
+                        if en_name:
+                            str_val = en_name
+                        else:
+                            str_val = mfg_policy_name_map.get(str_val, str_val)
+                    else:
+                        str_val = mfg_policy_name_map.get(str_val, str_val)
+                elif sc == "qc_scheme_name":
+                    str_val = qc_scheme_name_map.get(str_val, str_val)
+                elif sc == "category_name":
+                    # FCategoryID → category_code_map → category_name_map → category_en_map
+                    cn_name = category_name_map.get(str_val, str_val)
+                    if lang != "CN":
+                        str_val = category_en_map.get(cn_name, cn_name)
+                    else:
+                        str_val = cn_name
+                elif sc == "aux_prop":
+                    # F_WTRM_Combo → RM Specification（对标模板：所有物料都输出RM Specification）
+                    if str_val and str_val.strip():
+                        mapped = aux_prop_map_en.get(str_val, "RM Specification") if lang != "CN" else aux_prop_map_cn.get(str_val, "RM specification")
+                        str_val = mapped
+                    else:
+                        str_val = "RM Specification" if lang != "CN" else "RM specification"
                 elif sc == "bool":
                     str_val = bool_map.get(str_val, str_val)
+                elif sc == "non_gmo":
+                    str_val = "Non-GMO with statement" if str_val in ("True", "true", "1") else ""
+
+            if data_col in date_cols and str_val:
+                str_val = _format_date(str_val)
 
             output_row[tpl_idx] = _clean_string(str_val)
 
         ws_out.append(output_row)
 
-    workbook.save(output_path)
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成物料基础资料 Excel ({lang_label})")
 
@@ -1432,6 +2335,7 @@ def generate_import_excel(lang: str = "CN") -> None:
         "数据状态": "FDocumentStatus", "Data Status": "FDocumentStatus",
         "禁用状态": "FForbidStatus", "Disabling Status": "FForbidStatus",
         "项次": "FEntryRowId", "Item": "FEntryRowId",
+        "子项类型": "FMATERIALTYPE", "Subitem Type": "FMATERIALTYPE",
         "子项物料编码": "FMATERIALIDCHILD", "Subitem Code": "FMATERIALIDCHILD",
         "子项物料名称": "FMATERIALIDCHILD", "Subitem Name": "FMATERIALIDCHILD",
         "子项规格型号": "FMATERIALIDCHILD", "Subitem Specification": "FMATERIALIDCHILD",
@@ -1440,6 +2344,9 @@ def generate_import_excel(lang: str = "CN") -> None:
         "供应组织": "FSUPPLYORG", "Supply Org.": "FSUPPLYORG",
         "用量:分子": "FNUMERATOR", "Consumption: Numerator": "FNUMERATOR",
         "用量:分母": "FDENOMINATOR", "Consumption: Denominator": "FDENOMINATOR",
+        "创建日期": "FCreateDate", "Created on": "FCreateDate",
+        "变动损耗率": "FSCRAPRATE", "Variable Loss Rate": "FSCRAPRATE",
+        "SWG": "FMATERIALID.F_PALW_Assistant_qtr",
     }
 
     field_mapping = {}
@@ -1452,6 +2359,8 @@ def generate_import_excel(lang: str = "CN") -> None:
                 field_mapping[tpl_idx] = data_field
 
     print(f"  [映射] 找到 {len(field_mapping)} 个字段映射")
+
+    date_cols = {"FCreateDate"}
 
     client = KingdeeClient()
 
@@ -1498,9 +2407,10 @@ def generate_import_excel(lang: str = "CN") -> None:
             if code and name:
                 material_code_to_name[code] = name
 
+        # 补充查询缺少名称的子项物料编码
         missing_name_codes = [c for c in set(material_code_map.values()) if c not in material_code_to_name]
         if missing_name_codes:
-            print(f"    需要解析 {len(missing_name_codes)} 个子项物料编码的中文名")
+            print(f"    需要解析 {len(missing_name_codes)} 个子项物料编码的名称")
             batch_size = 50
             for i in range(0, len(missing_name_codes), batch_size):
                 batch = missing_name_codes[i:i + batch_size]
@@ -1537,6 +2447,43 @@ def generate_import_excel(lang: str = "CN") -> None:
                 except Exception:
                     pass
 
+            # 对于批量查询仍未获取到名称的编码，用view API逐个查询
+            still_missing = [c for c in missing_name_codes if c not in material_code_to_name]
+            if still_missing:
+                print(f"    需要逐个查询 {len(still_missing)} 个仍未获取名称的物料编码")
+                # 先找到编码对应的ID
+                code_to_id = {v: k for k, v in material_code_map.items()}
+                for code in still_missing:
+                    mid = code_to_id.get(code, "")
+                    if mid:
+                        try:
+                            result = client.view("BD_MATERIAL", {"Id": int(mid), "Number": "", "CreateOrgId": 0})
+                            inner = result.get("Result", {}).get("Result", {})
+                            name_raw = inner.get("Name", "")
+                            if isinstance(name_raw, list) and len(name_raw) > 0:
+                                fname = name_raw[0].get("Value", "") if isinstance(name_raw[0], dict) else str(name_raw[0])
+                            elif name_raw:
+                                fname = str(name_raw).strip()
+                            else:
+                                fname = ""
+                            if fname:
+                                material_code_to_name[code] = fname
+                        except Exception:
+                            pass
+                        import time as _time
+                        _time.sleep(0.1)
+
+            # 将新获取的名称保存到material_name_map缓存
+            new_name_count = 0
+            for mid, code in material_code_map.items():
+                name = material_code_to_name.get(code, "")
+                if name and mid not in material_name_map:
+                    material_name_map[mid] = name
+                    new_name_count += 1
+            if new_name_count > 0:
+                _save_material_mapping(material_code_map, material_name_map)
+                print(f"    已保存 {new_name_count} 个新名称到缓存")
+
         material_spec_map = _load_generic_mapping("material_spec_map")
         missing_spec_codes = [c for c in set(material_code_map.values()) if c not in material_spec_map]
         if missing_spec_codes:
@@ -1565,6 +2512,24 @@ def generate_import_excel(lang: str = "CN") -> None:
         parent_id_to_code_map, _ = fetch_material_mapping(client, parent_material_ids)
         resolved = sum(1 for v in parent_id_to_code_map.values() if v)
         print(f"    已解析 {resolved}/{len(parent_material_ids)} 个")
+
+        # 用view API逐个查询未解析的父项物料ID
+        unresolved_parent_ids = [pid for pid in parent_material_ids if pid not in parent_id_to_code_map or not parent_id_to_code_map[pid]]
+        if unresolved_parent_ids:
+            print(f"    需要逐个查询 {len(unresolved_parent_ids)} 个未解析的父项物料ID")
+            for pid in unresolved_parent_ids:
+                try:
+                    result = client.view("BD_MATERIAL", {"Id": int(pid), "Number": "", "CreateOrgId": 0})
+                    inner = result.get("Result", {}).get("Result", {})
+                    code = inner.get("Number", "")
+                    if code:
+                        parent_id_to_code_map[pid] = code
+                except Exception:
+                    pass
+                import time as _time
+                _time.sleep(0.1)
+            resolved2 = sum(1 for v in parent_id_to_code_map.values() if v)
+            print(f"    逐个查询后已解析 {resolved2}/{len(parent_material_ids)} 个")
 
     parent_spec_map = _load_generic_mapping("material_spec_map")
     missing_pspec = [c for c in parent_material_codes if c not in parent_spec_map]
@@ -1598,12 +2563,14 @@ def generate_import_excel(lang: str = "CN") -> None:
             "FDocumentStatus": {"A": "已审核", "B": "暂存", "C": "已审核", "D": "重新审核"},
             "FForbidStatus": {"A": "否", "B": "是"},
             "FISSUETYPE": {"1": "倒冲", "2": "领料", "3": "发料"},
+            "FMATERIALTYPE": {"1": "标准件", "2": "返还件", "3": "替代件"},
         }
     else:
         status_map = {
             "FDocumentStatus": {"A": "Approved", "B": "Draft", "C": "Approved", "D": "Re-audit"},
             "FForbidStatus": {"A": "No", "B": "Yes"},
             "FISSUETYPE": {"1": "Backflush", "2": "Picking", "3": "Issuing"},
+            "FMATERIALTYPE": {"1": "Standard Parts", "2": "Return Parts", "3": "Substitution"},
         }
 
     id_to_code_map = {
@@ -1691,7 +2658,8 @@ def generate_import_excel(lang: str = "CN") -> None:
                     else:
                         str_val = ""
                 elif sc == "unit_name":
-                    str_val = unit_name_map.get(str_val, str_val)
+                    if lang == "CN":
+                        str_val = unit_name_map.get(str_val, str_val)
                 elif sc == "child_name":
                     name = material_code_to_name.get(str_val, "")
                     if name and name != str_val:
@@ -1705,6 +2673,9 @@ def generate_import_excel(lang: str = "CN") -> None:
                     else:
                         str_val = ""
 
+            if data_col in date_cols and str_val:
+                str_val = _format_date(str_val)
+
             output_row[tpl_idx] = _clean_string(str_val)
 
         if "S/N" in h0:
@@ -1716,7 +2687,8 @@ def generate_import_excel(lang: str = "CN") -> None:
 
         ws_out.append(output_row)
 
-    workbook.save(output_path)
+    _apply_date_formats(ws_out, h0, date_cols, field_mapping)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成物料清单 Excel ({lang_label})")
 
@@ -1791,6 +2763,78 @@ def _fetch_name_map(client: KingdeeClient, form_id: str, codes: list[str], map_n
                         name_map[fnumber] = fname
         except Exception:
             pass
+    _save_generic_mapping(map_name, name_map)
+    return name_map
+
+
+def _resolve_aux_prop_names(
+    client: KingdeeClient,
+    form_id: str,
+    df,
+    aux_ids: list[str],
+    map_name: str,
+    bill_no_field: str = "FBillNo",
+) -> dict[str, dict[str, str]]:
+    """将辅助属性ID解析为包装规格名称（cn/en）。
+
+    辅助属性在不同表单中的位置不同（表头或分录），这里通过 View API
+    递归查找 Id 匹配且包含 F100001 的 AuxPropId 节点。
+    """
+    name_map = _load_generic_mapping(map_name)
+    for k, v in list(name_map.items()):
+        if isinstance(v, str):
+            name_map[k] = {"cn": v, "en": v}
+
+    missing = [aid for aid in aux_ids if aid not in name_map]
+    if not missing:
+        return name_map
+
+    bill_map = {}
+    for _, row in df.iterrows():
+        aid = str(row.get("FAuxPropId", "")).strip()
+        if aid in missing and aid not in bill_map:
+            bill_no = str(row.get(bill_no_field, "")).strip()
+            if bill_no:
+                bill_map[aid] = bill_no
+
+    def _find(node, aid: str) -> dict[str, str] | None:
+        if isinstance(node, dict):
+            if str(node.get("Id", "")).strip() == aid:
+                f100001 = node.get("F100001", {})
+                if isinstance(f100001, dict):
+                    cn_spec = ""
+                    en_spec = ""
+                    for dv in f100001.get("FDataValue", []):
+                        if isinstance(dv, dict):
+                            if dv.get("Key") == 2052:
+                                cn_spec = dv.get("Value", "")
+                            elif dv.get("Key") == 1033:
+                                en_spec = dv.get("Value", "")
+                    cn_spec = cn_spec.strip().rstrip(".").strip()
+                    en_spec = en_spec.strip().rstrip(".").strip()
+                    if cn_spec or en_spec:
+                        return {"cn": cn_spec, "en": en_spec if en_spec else cn_spec}
+            for v in node.values():
+                found = _find(v, aid)
+                if found:
+                    return found
+        elif isinstance(node, list):
+            for v in node:
+                found = _find(v, aid)
+                if found:
+                    return found
+        return None
+
+    for aid, bill_no in bill_map.items():
+        try:
+            result = client.view(form_id, {"Id": 0, "Number": bill_no, "CreateOrgId": 0})
+            inner = result.get("Result", {}).get("Result", {})
+            found = _find(inner, aid)
+            if found:
+                name_map[aid] = found
+        except Exception:
+            pass
+
     _save_generic_mapping(map_name, name_map)
     return name_map
 
@@ -1916,6 +2960,7 @@ def generate_forecast_excel(lang: str = "CN") -> None:
     creator_ids = _collect_ids("FCreatorId")
     approver_ids = _collect_ids("FApproverId")
     forecast_person_ids = _collect_ids("FForecastPersonId")
+    aux_prop_ids = _collect_ids("FAuxPropId")
 
     all_org_ids = list(set(org_ids + stock_org_ids + supply_org_ids))
     all_unit_ids = list(set(unit_ids + base_unit_ids))
@@ -2067,6 +3112,15 @@ def generate_forecast_excel(lang: str = "CN") -> None:
                 pass
         _save_generic_mapping("user_name_map", user_name_map)
 
+    # 辅助属性映射（包装规格名称）
+    aux_prop_name_map = (
+        _resolve_aux_prop_names(
+            client, "PLN_FORECAST", df, aux_prop_ids, "forecast_aux_prop_name_map"
+        )
+        if aux_prop_ids
+        else {}
+    )
+
     if lang == "CN":
         status_map = {
             "FDocumentStatus": {"A": "已审核", "B": "暂存", "C": "已审核", "D": "重新审核"},
@@ -2114,6 +3168,8 @@ def generate_forecast_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "unit_name"
         elif tpl_field in ("客户名称", "Customer Name"):
             special_cols[tpl_idx] = "cust_name"
+        elif tpl_field in ("辅助属性", "Secondary Property"):
+            special_cols[tpl_idx] = "aux_prop_name"
 
     date_cols = {"FDate", "FStartDate", "FEndDate", "FCreateDate", "FApproveDate"}
 
@@ -2147,6 +3203,7 @@ def generate_forecast_excel(lang: str = "CN") -> None:
                 continue
 
             str_val = str(val).strip()
+            original_val = str_val
 
             if str_val in ("0", "0.0") and data_col in zero_to_empty_cols:
                 continue
@@ -2178,9 +3235,18 @@ def generate_forecast_excel(lang: str = "CN") -> None:
                     else:
                         str_val = ""
                 elif sc == "unit_name":
-                    str_val = unit_name_map.get(str_val, str_val)
+                    if lang == "CN":
+                        str_val = unit_name_map.get(str_val, str_val)
                 elif sc == "cust_name":
                     str_val = cust_name_map.get(str_val, str_val)
+                elif sc == "aux_prop_name":
+                    info = aux_prop_name_map.get(original_val, {})
+                    if isinstance(info, dict):
+                        str_val = info.get("cn" if lang == "CN" else "en", info.get("cn", ""))
+                    elif isinstance(info, str):
+                        str_val = info
+                    else:
+                        str_val = ""
 
             if data_col in date_cols and str_val:
                 str_val = _format_date(str_val)
@@ -2190,12 +3256,13 @@ def generate_forecast_excel(lang: str = "CN") -> None:
         ws_out.append(output_row)
 
     _apply_date_formats(ws_out, h0, date_cols, field_mapping)
-    workbook.save(output_path)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成预测单 Excel ({lang_label})")
 
 
 def generate_planorder_excel(lang: str = "CN") -> None:
+    import time as _time
     lang_label = "中文" if lang == "CN" else "英文"
     print(f"[开始] 生成计划订单 Excel ({lang_label})")
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -2228,11 +3295,17 @@ def generate_planorder_excel(lang: str = "CN") -> None:
 
     print(f"  [数据] {data_path.name}")
     df = pd.read_csv(data_path, encoding="utf-8-sig", dtype=str)
-    before_filter = len(df)
-    df = df[df["FReleaseStatus"] == "3"].reset_index(drop=True)
-    print(f"  [过滤] 业务状态=供应确认: {before_filter} -> {len(df)} 行")
+    print(f"  [数据] {len(df)} 行")
     data_cols = df.columns.tolist()
     print(f"  [数据] {len(df)} 行, {len(data_cols)} 列")
+
+    # 只导出业务状态为"供应确认"（FReleaseStatus = 2）的计划订单
+    if "FReleaseStatus" in data_cols:
+        before_count = len(df)
+        df = df[df["FReleaseStatus"] == "2"].copy()
+        print(f"  [过滤] 业务状态=供应确认: {before_count} → {len(df)} 行")
+    else:
+        print("  [警告] 数据中缺少 FReleaseStatus 字段，无法过滤")
 
     date_cols = {"FPlanStartDate", "FFirmStartDate", "FPlanFinishDate", "FFirmFinishDate", "FDemandDate"}
 
@@ -2268,12 +3341,12 @@ def generate_planorder_excel(lang: str = "CN") -> None:
         "需求单据编号": "FSaleOrderNo", "Requirement Doc No.": "FSaleOrderNo",
         "需求单据行号": "FSaleOrderEntrySeq", "Row No. of Requirement Doc": "FSaleOrderEntrySeq",
         "需求来源": "FDemandType", "Requirement Source": "FDemandType",
-        "物料属性": "F_PALW_CheckBox_apv", "Material property": "F_PALW_CheckBox_apv",
+        "物料属性": "FMaterialId", "Material property": "FMaterialId",
         "订货策略": "F_PALW_Text_qtr", "Order Policy": "F_PALW_Text_qtr",
-        "排产识别码汇总": "F_PALW_Assistant_83g", "Master Data Property": "F_PALW_Assistant_83g",
-        "国家": "F_PALW_Base", "Country": "F_PALW_Base",
+        "排产识别码汇总": "FMaterialId", "Master Data Property": "FMaterialId",
+        "国家": "F_PALW_Assistant_83g", "Country": "F_PALW_Assistant_83g",
         "需求客户": "F_PALW_Base_qtr", "Customer": "F_PALW_Base_qtr",
-        "客户星级": "F_PALW_Decimal_uky", "Customer Segment": "F_PALW_Decimal_uky",
+        "客户星级": "F_PALW_Base_qtr", "Customer Segment": "F_PALW_Base_qtr",
     }
 
     field_mapping = {}
@@ -2393,6 +3466,88 @@ def generate_planorder_excel(lang: str = "CN") -> None:
         print(f"    需要解析 {len(missing_spec_codes)} 个物料编码的规格型号")
         _fetch_batch_spec(client, missing_spec_codes, material_spec_map)
         _save_generic_mapping("material_spec_map", material_spec_map)
+
+    # 物料属性映射（Purchase/Self-made）：从BD_MATERIAL的FIsPurchase/FIsProduce获取
+    # 只查询当前数据中实际出现的物料编码
+    _planorder_material_codes = set()
+    if "FMaterialId" in data_cols:
+        for mid in df["FMaterialId"].dropna().unique():
+            s = str(mid).strip()
+            if s and s not in ("0", "0.0"):
+                code = material_code_map.get(s, "")
+                if code:
+                    _planorder_material_codes.add(code)
+    material_attr_map = _load_generic_mapping("material_attr_map")
+    missing_attr_codes = [c for c in _planorder_material_codes if c and c not in material_attr_map]
+    if missing_attr_codes:
+        print(f"    需要解析 {len(missing_attr_codes)} 个物料编码的物料属性")
+        batch_size = 50
+        for i in range(0, len(missing_attr_codes), batch_size):
+            batch = missing_attr_codes[i:i + batch_size]
+            filter_parts = [f"FNumber = '{code}'" for code in batch]
+            filter_str = " or ".join(filter_parts)
+            try:
+                rows = client.execute_bill_query({
+                    "FormId": "BD_MATERIAL",
+                    "FieldKeys": "FNumber,FIsPurchase,FIsProduce",
+                    "FilterString": filter_str,
+                    "OrderString": "",
+                    "TopRowCount": 0,
+                    "StartRow": 0,
+                    "Limit": len(batch) + 10,
+                })
+                if rows:
+                    for row in rows:
+                        code = str(row[0]).strip() if row[0] else ""
+                        is_purchase = row[1] if len(row) > 1 else False
+                        is_produce = row[2] if len(row) > 2 else False
+                        if code:
+                            if is_produce:
+                                material_attr_map[code] = "Self-made"
+                            elif is_purchase:
+                                material_attr_map[code] = "Purchase"
+                            else:
+                                material_attr_map[code] = ""
+            except Exception:
+                pass
+            _time.sleep(0.2)
+        _save_generic_mapping("material_attr_map", material_attr_map)
+    print(f"    物料属性映射: {len(material_attr_map)} 个")
+
+    # 物料排产代码映射：从BOM TreeEntity的F_PALW_Text_83g获取（如V/D/M等），汇总显示
+    material_schedule_code_map = _load_generic_mapping("material_schedule_code_map")
+    # 获取当前数据中涉及的BOM ID
+    bom_ids_in_data = set()
+    if "FBomId" in data_cols:
+        for bid in df["FBomId"].dropna().unique():
+            s = str(bid).strip()
+            if s and s not in ("0", "0.0"):
+                bom_ids_in_data.add(s)
+    missing_sched_boms = [b for b in bom_ids_in_data if b not in material_schedule_code_map]
+    if missing_sched_boms:
+        print(f"    需要解析 {len(missing_sched_boms)} 个BOM的排产代码")
+        for bom_id in missing_sched_boms:
+            try:
+                bid_int = int(float(bom_id))
+                result = client.view("ENG_BOM", {"Id": bid_int, "Number": "", "CreateOrgId": 0})
+                inner = result.get("Result", {}).get("Result", {})
+                tree = inner.get("TreeEntity", [])
+                # 收集所有子项的F_PALW_Text_83g值，去重后用逗号连接
+                sched_vals = set()
+                for entry in tree:
+                    txt83g = entry.get("F_PALW_Text_83g", "")
+                    if txt83g and str(txt83g).strip():
+                        sched_vals.add(str(txt83g).strip())
+                if sched_vals:
+                    # 按字母排序后用逗号连接
+                    material_schedule_code_map[bom_id] = ",".join(sorted(sched_vals))
+                else:
+                    material_schedule_code_map[bom_id] = ""
+            except Exception:
+                material_schedule_code_map[bom_id] = ""
+            _time.sleep(0.2)
+        _save_generic_mapping("material_schedule_code_map", material_schedule_code_map)
+    print(f"    物料排产代码映射: {len(material_schedule_code_map)} 个")
 
     if all_unit_ids:
         print(f"    需要解析 {len(all_unit_ids)} 个单位ID")
@@ -2568,6 +3723,46 @@ def generate_planorder_excel(lang: str = "CN") -> None:
                     pass
             _save_generic_mapping("cust_name_map", cust_base_name_map)
 
+    # 客户星级映射：从BD_Customer的F_PALW_Assistant_83g获取Star/Contributor/Questionmark
+    # 直接用Number映射：01=Star, 02=Contributor, 04=Questionmark
+    _cust_seg_number_map = {"01": "Star", "02": "Contributor", "04": "Questionmark"}
+    customer_segment_map = {}
+    if cust_base_ids:
+        customer_segment_map = _load_generic_mapping("customer_segment_map")
+        # 获取客户编码列表
+        cust_codes_for_seg = list(set(cust_base_code_map_local.values()))
+        missing_seg_codes = [c for c in cust_codes_for_seg if c and c not in customer_segment_map]
+        if missing_seg_codes:
+            print(f"    需要解析 {len(missing_seg_codes)} 个客户编码的客户星级")
+            batch_size = 50
+            for i in range(0, len(missing_seg_codes), batch_size):
+                batch = missing_seg_codes[i:i + batch_size]
+                filter_parts = [f"FNumber = '{code}'" for code in batch]
+                filter_str = " or ".join(filter_parts)
+                try:
+                    rows = client.execute_bill_query({
+                        "FormId": "BD_Customer",
+                        "FieldKeys": "FNumber,F_PALW_Assistant_83g.FNumber",
+                        "FilterString": filter_str,
+                        "OrderString": "",
+                        "TopRowCount": 0,
+                        "StartRow": 0,
+                        "Limit": len(batch) + 10,
+                    })
+                    if rows:
+                        for r in rows:
+                            fnumber = str(r[0]).strip() if r[0] else ""
+                            seg_number = str(r[1]).strip() if len(r) > 1 and r[1] else ""
+                            if fnumber and seg_number:
+                                seg_val = _cust_seg_number_map.get(seg_number, "")
+                                if seg_val:
+                                    customer_segment_map[fnumber] = seg_val
+                except Exception:
+                    pass
+                _time.sleep(0.2)
+            _save_generic_mapping("customer_segment_map", customer_segment_map)
+        print(f"    客户星级映射: {len(customer_segment_map)} 个")
+
     schedule_name_map = {}
     if schedule_ids:
         print(f"    需要解析 {len(schedule_ids)} 个排产识别码ID")
@@ -2601,11 +3796,45 @@ def generate_planorder_excel(lang: str = "CN") -> None:
                     pass
             _save_generic_mapping("schedule_name_map", schedule_name_map)
 
+    # 国家简写映射：从PLN_PLANORDER的F_PALW_Assistant_83g获取Number（如RU/AR/BD）
+    country_abbr_map = {}
+    if schedule_ids:
+        country_abbr_map = _load_generic_mapping("country_abbr_map")
+        missing_abbr = [sid for sid in schedule_ids if sid not in country_abbr_map]
+        if missing_abbr:
+            print(f"    需要查询 {len(missing_abbr)} 个国家简写")
+            for sid in missing_abbr:
+                try:
+                    sid_str = str(sid).strip()
+                    try:
+                        sid_int = int(float(sid_str))
+                        view_params = {"Id": sid_int, "Number": "", "CreateOrgId": 0}
+                    except (ValueError, OverflowError):
+                        view_params = {"Id": sid_str, "Number": "", "CreateOrgId": 0}
+                    result = client.view("BOS_ASSISTANTDATA_Detail", view_params)
+                    inner = result.get("Result", {}).get("Result", {})
+                    if inner:
+                        fnumber = inner.get("Number", "") or inner.get("FNumber", "")
+                        if fnumber:
+                            country_abbr_map[sid] = fnumber
+                except Exception:
+                    pass
+            _save_generic_mapping("country_abbr_map", country_abbr_map)
+
+    # 辅助属性映射（包装规格名称）
+    aux_prop_name_map = (
+        _resolve_aux_prop_names(
+            client, "PLN_PLANORDER", df, aux_prop_ids, "planorder_aux_prop_name_map"
+        )
+        if aux_prop_ids
+        else {}
+    )
+
     if lang == "CN":
         status_map = {
             "FDocumentStatus": {"A": "已审核", "B": "暂存", "C": "已审核", "D": "重新审核"},
             "FReleaseType": {"1": "生产订单类", "2": "采购申请类", "3": "委外订单类"},
-            "FReleaseStatus": {"0": "未投放", "1": "部分投放", "2": "全部投放", "3": "供应确认", "4": "手工关闭", "5": "强制关闭", "6": "部分投放手工关闭"},
+            "FReleaseStatus": {"0": "计划", "1": "需求确认", "2": "供应确认", "3": "手工投放关闭", "4": "手工关闭", "5": "自动投放关闭", "6": "合并关闭", "7": "拆分关闭", "8": "自动关闭"},
             "FDataSource": {"1": "手工录入", "2": "MRP运算", "3": "MPS运算"},
             "FDemandType": {"1": "预测", "2": "销售订单", "7": "其他"},
         }
@@ -2613,9 +3842,9 @@ def generate_planorder_excel(lang: str = "CN") -> None:
         status_map = {
             "FDocumentStatus": {"A": "Approved", "B": "Draft", "C": "Approved", "D": "Re-audit"},
             "FReleaseType": {"1": "MO Type", "2": "Purchase Request Type", "3": "Subcontract Order Type"},
-            "FReleaseStatus": {"0": "Unreleased", "1": "Partially Released", "2": "Fully Released", "3": "Supply Confirmation", "4": "Manual Close", "5": "Forced Close", "6": "Partial Manual Close"},
+            "FReleaseStatus": {"0": "Plan", "1": "Requirement Confirmation", "2": "Supply Confirmation", "3": "Manually Release Closed", "4": "Manually Closed", "5": "Auto Release Closed", "6": "Merged and Closed", "7": "Split and Closed", "8": "Auto Closed"},
             "FDataSource": {"1": "Manually Input", "2": "MRP Calculation", "3": "MPS Calculation"},
-            "FDemandType": {"1": "Forecast", "2": "Sales Order", "7": "Other"},
+            "FDemandType": {"1": "Forecast", "2": "Sales Order", "7": "Other", "": "Forecast"},
         }
 
     id_to_code_map = {
@@ -2631,7 +3860,7 @@ def generate_planorder_excel(lang: str = "CN") -> None:
         "FPurDeptId": dept_code_map,
         "F_PALW_Base": country_code_map_local,
         "F_PALW_Base_qtr": cust_base_code_map_local,
-        "F_PALW_Assistant_83g": schedule_name_map if schedule_name_map else {},
+        "F_PALW_Assistant_83g": country_abbr_map if country_abbr_map else {},
     }
 
     zero_to_empty_cols = {"FBomId", "FAuxPropId", "FPrdDeptId", "FPurDeptId", "FSupplierId", "FPlanerId", "FBuyerId", "F_PALW_Base", "F_PALW_Base_qtr", "F_PALW_Decimal_uky"}
@@ -2652,6 +3881,8 @@ def generate_planorder_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "unit_name"
         elif tpl_field in ("物料属性", "Material property"):
             special_cols[tpl_idx] = "material_attr"
+        elif tpl_field in ("辅助属性", "Secondary Property"):
+            special_cols[tpl_idx] = "aux_prop_name"
         elif tpl_field in ("生产车间", "Production Workshop"):
             special_cols[tpl_idx] = "dept_name"
         elif tpl_field in ("采购申请部门", "Purchase Request Dept"):
@@ -2662,6 +3893,10 @@ def generate_planorder_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "cust_base_name"
         elif tpl_field in ("排产识别码汇总", "Master Data Property"):
             special_cols[tpl_idx] = "schedule_name"
+        elif tpl_field in ("订货策略", "Order Policy"):
+            special_cols[tpl_idx] = "order_policy_lfl"
+        elif tpl_field in ("客户星级", "Customer Segment"):
+            special_cols[tpl_idx] = "cust_segment"
 
     if lang == "CN":
         output_name = "计划订单列表.xlsx"
@@ -2689,13 +3924,53 @@ def generate_planorder_excel(lang: str = "CN") -> None:
 
         for tpl_idx, data_col in field_mapping.items():
             val = row[data_col]
-            if pd.isna(val) or str(val).strip() == "":
+            is_empty = pd.isna(val) or str(val).strip() == ""
+            is_zero = not is_empty and str(val).strip() in ("0", "0.0") and data_col in zero_to_empty_cols
+
+            # 对于某些special_cols字段，优先处理（如固定值LFL、映射查找等）
+            sc = special_cols.get(tpl_idx, "")
+            if sc == "order_policy_lfl":
+                output_row[tpl_idx] = "LFL"
+                continue
+            if sc == "material_attr":
+                if not is_empty and not is_zero:
+                    str_val = str(val).strip()
+                    if data_col in id_to_code_map and id_to_code_map[data_col]:
+                        str_val = _resolve_id(str_val, id_to_code_map[data_col])
+                    attr_val = material_attr_map.get(str_val, "")
+                    output_row[tpl_idx] = _clean_string(attr_val)
+                continue
+            if sc == "schedule_name":
+                # 排产代码从BOM获取，key是BOM ID
+                bom_id_raw = row.get("FBomId", "")
+                if pd.isna(bom_id_raw):
+                    bom_id_val = ""
+                else:
+                    bom_id_val = str(bom_id_raw).strip()
+                if bom_id_val and bom_id_val not in ("0", "0.0", "nan"):
+                    sched_code = material_schedule_code_map.get(bom_id_val, "")
+                    output_row[tpl_idx] = _clean_string(sched_code)
+                continue
+            if sc == "cust_segment":
+                if not is_empty and not is_zero:
+                    str_val = str(val).strip()
+                    if data_col in id_to_code_map and id_to_code_map[data_col]:
+                        str_val = _resolve_id(str_val, id_to_code_map[data_col])
+                    seg_val = customer_segment_map.get(str_val, "")
+                    output_row[tpl_idx] = _clean_string(seg_val)
+                continue
+
+            if is_empty:
+                # FDemandType空值需要映射为Forecast
+                if data_col == "FDemandType":
+                    output_row[tpl_idx] = "Forecast" if lang != "CN" else "预测"
+                continue
+
+            if is_zero:
                 continue
 
             str_val = str(val).strip()
-
-            if str_val in ("0", "0.0") and data_col in zero_to_empty_cols:
-                continue
+            original_val = str_val
 
             if data_col in id_to_code_map and id_to_code_map[data_col]:
                 str_val = _resolve_id(str_val, id_to_code_map[data_col])
@@ -2712,6 +3987,14 @@ def generate_planorder_excel(lang: str = "CN") -> None:
                     str_val = bill_type_name_map.get(str_val, str_val)
                 elif sc == "org_name":
                     str_val = org_name_map.get(str_val, str_val)
+                elif sc == "aux_prop_name":
+                    info = aux_prop_name_map.get(original_val, {})
+                    if isinstance(info, dict):
+                        str_val = info.get("cn" if lang == "CN" else "en", info.get("cn", ""))
+                    elif isinstance(info, str):
+                        str_val = info
+                    else:
+                        str_val = ""
                 elif sc == "release_type_name":
                     if lang == "CN":
                         release_names = {"生产订单类": "汇报入库-普通生产", "采购申请类": "采购申请-标准采购", "委外订单类": "委外订单-委外生产"}
@@ -2733,30 +4016,24 @@ def generate_planorder_excel(lang: str = "CN") -> None:
                     else:
                         str_val = ""
                 elif sc == "unit_name":
-                    str_val = unit_name_map.get(str_val, str_val)
-                elif sc == "material_attr":
                     if lang == "CN":
-                        str_val = "自制" if str_val in ("True", "true", "1") else ""
-                    else:
-                        str_val = "Self-made" if str_val in ("True", "true", "1") else ""
+                        str_val = unit_name_map.get(str_val, str_val)
                 elif sc == "dept_name":
                     str_val = dept_name_map.get(str_val, str_val)
                 elif sc == "country_name":
-                    name = country_name_map.get(str_val, "")
-                    str_val = name if name else str_val
+                    # _resolve_id已经把F_PALW_Assistant_83g的十六进制ID转成国家简写(如RU/BD)
+                    # str_val此时已经是国家简写，无需再查country_abbr_map
+                    pass
                 elif sc == "cust_base_name":
                     name = cust_base_name_map.get(str_val, "")
                     str_val = name if name else str_val
-                elif sc == "schedule_name":
-                    # 排产识别码已通过id_to_code_map直接映射为名称，无需二次处理
-                    pass
 
             output_row[tpl_idx] = _clean_string(str_val)
 
         ws_out.append(output_row)
 
     _apply_date_formats(ws_out, h0, date_cols, field_mapping)
-    workbook.save(output_path)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成计划订单 Excel ({lang_label})")
 
@@ -3015,6 +4292,15 @@ def generate_mo_excel(lang: str = "CN") -> None:
         bill_type_code_map = _load_generic_mapping("bill_type_map")
     bill_type_name_map.update(_load_generic_mapping("bill_type_name_map"))
 
+    # 辅助属性映射（包装规格名称）
+    aux_prop_name_map = (
+        _resolve_aux_prop_names(
+            client, "PRD_MO", df, aux_prop_ids, "mo_aux_prop_name_map"
+        )
+        if aux_prop_ids
+        else {}
+    )
+
     # 状态映射
     if lang == "CN":
         status_map = {
@@ -3060,6 +4346,8 @@ def generate_mo_excel(lang: str = "CN") -> None:
             special_cols[tpl_idx] = "unit_name"
         elif tpl_field in ("生产组织", "Production Org."):
             special_cols[tpl_idx] = "org_name"
+        elif tpl_field in ("辅助属性", "Secondary Property"):
+            special_cols[tpl_idx] = "aux_prop_name"
 
     if lang == "CN":
         output_name = "生产订单列表.xlsx"
@@ -3091,6 +4379,7 @@ def generate_mo_excel(lang: str = "CN") -> None:
                 continue
 
             str_val = str(val).strip()
+            original_val = str_val
 
             if str_val in ("0", "0.0") and data_col in zero_to_empty_cols:
                 continue
@@ -3125,16 +4414,25 @@ def generate_mo_excel(lang: str = "CN") -> None:
                 elif sc == "dept_name":
                     str_val = dept_name_map.get(str_val, str_val)
                 elif sc == "unit_name":
-                    str_val = unit_name_map.get(str_val, str_val)
+                    if lang == "CN":
+                        str_val = unit_name_map.get(str_val, str_val)
                 elif sc == "org_name":
                     str_val = org_name_map.get(str_val, str_val)
+                elif sc == "aux_prop_name":
+                    info = aux_prop_name_map.get(original_val, {})
+                    if isinstance(info, dict):
+                        str_val = info.get("cn" if lang == "CN" else "en", info.get("cn", ""))
+                    elif isinstance(info, str):
+                        str_val = info
+                    else:
+                        str_val = ""
 
             output_row[tpl_idx] = _clean_string(str_val)
 
         ws_out.append(output_row)
 
     _apply_date_formats(ws_out, h0, date_cols, field_mapping)
-    workbook.save(output_path)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成生产订单 Excel ({lang_label})")
 
@@ -3476,8 +4774,8 @@ def generate_purchaseorder_excel(lang: str = "CN") -> None:
     else:
         status_map = {
             "FDocumentStatus": {"A": "Approved", "B": "Draft", "C": "Approved", "D": "Re-audit"},
-            "FCloseStatus": {"A": "Open", "B": "Closed"},
-            "FMRPCloseStatus": {"0": "Open", "1": "Closed"},
+            "FCloseStatus": {"A": "Unclosed", "B": "Closed"},
+            "FMRPCloseStatus": {"0": "Unclosed", "1": "Closed"},
             "FGiveAway": {"0": "No", "1": "Yes"},
             "FConfirmStatus": {"A": "Unconfirmed", "B": "Confirmed", "C": "Rejected"},
         }
@@ -3594,7 +4892,8 @@ def generate_purchaseorder_excel(lang: str = "CN") -> None:
                 elif sc == "dept_name":
                     str_val = dept_name_map.get(str_val, str_val)
                 elif sc == "unit_name":
-                    str_val = unit_name_map.get(str_val, str_val)
+                    if lang == "CN":
+                        str_val = unit_name_map.get(str_val, str_val)
                 elif sc == "currency_name":
                     str_val = currency_name_map.get(str_val, str_val)
                 elif sc == "pay_condition_name":
@@ -3607,7 +4906,7 @@ def generate_purchaseorder_excel(lang: str = "CN") -> None:
         ws_out.append(output_row)
 
     _apply_date_formats(ws_out, h0, date_cols, field_mapping)
-    workbook.save(output_path)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成采购订单 Excel ({lang_label})")
 
@@ -4109,7 +5408,8 @@ def generate_instock_excel(lang: str = "CN") -> None:
                 elif sc == "stock_name":
                     str_val = stock_name_map.get(str_val, str_val)
                 elif sc == "unit_name":
-                    str_val = unit_name_map.get(str_val, str_val)
+                    if lang == "CN":
+                        str_val = unit_name_map.get(str_val, str_val)
                 elif sc == "stock_org_name":
                     str_val = org_name_map.get(str_val, str_val)
                 elif sc == "prd_org_name":
@@ -4138,7 +5438,7 @@ def generate_instock_excel(lang: str = "CN") -> None:
         ws_out.append(output_row)
 
     _apply_date_formats(ws_out, h0, date_cols, field_mapping)
-    workbook.save(output_path)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] 文件大小: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
     print(f"[完成] 生成生产入库单 Excel ({lang_label})")
 
@@ -4160,6 +5460,22 @@ def generate_inv_excel(lang: str = "CN") -> None:
     lang_label = "中文" if lang == "CN" else "英文"
     print(f"\n[开始] 生成即时库存 Excel ({lang_label})")
     OUTPUT_DIR.mkdir(exist_ok=True)
+
+    # 库存状态英文映射（FNumber → 英文名称）
+    _stock_status_en_map = {
+        "KCZT01_SYS": "Available",
+        "KCZT02_SYS": "Pending Inspection",
+        "KCZT03_SYS": "Pending Freeze",
+        "KCZT04_SYS": "Return Freeze",
+        "KCZT05_SYS": "In Transit",
+        "KCZT06_SYS": "Receipt Freeze",
+        "KCZT07_SYS": "Scrap",
+        "KCZT08_SYS": "Defective",
+        "KCZT001": "Not accounting",
+        "KCZT99_SYS": "On Loan",
+        "KCZT09_SYS": "Manual Freeze",
+        "KCZT002": "Defective",
+    }
 
     # 读取模板表头
     template_suffix = "中文模板.xlsx" if lang == "CN" else "英文模板.xlsx"
@@ -4245,6 +5561,7 @@ def generate_inv_excel(lang: str = "CN") -> None:
                 "Limit": 500,
             })
         except Exception as e:
+            logger.error("BD_FLEXVALUESDETAIL 查询失败 at %s: %s", start, e, exc_info=True)
             print(f"    [警告] BD_FLEXVALUESDETAIL 查询失败 at {start}: {e}")
             break
         if not rows:
@@ -4269,6 +5586,8 @@ def generate_inv_excel(lang: str = "CN") -> None:
         return dim_str
 
     detail_added = 0
+    # bin_detail_map: FId -> {"shelf": 成品仓位编码, "raw": 原料仓位编码}
+    bin_detail_map = {}
     for r in detail_rows:
         fid = str(r[0]).strip() if len(r) > 0 and r[0] else ""
         if not fid or fid in ("None", "0"):
@@ -4283,6 +5602,12 @@ def generate_inv_excel(lang: str = "CN") -> None:
         if combined and fid not in stock_loc_map:
             stock_loc_map[fid] = combined
             detail_added += 1
+        # 分别提取成品仓位(FF100001)和原料仓位(FF100003)的编码
+        shelf_dim = str(r[1]).strip() if len(r) > 1 and r[1] else ""
+        raw_dim = str(r[2]).strip() if len(r) > 2 and r[2] else ""
+        shelf_name = _resolve_dim(shelf_dim) if shelf_dim and shelf_dim not in ("0", "None", "") else ""
+        raw_name = _resolve_dim(raw_dim) if raw_dim and raw_dim not in ("0", "None", "") else ""
+        bin_detail_map[fid] = {"shelf": shelf_name, "raw": raw_name}
 
     print(f"    BD_FLEXVALUESDETAIL合并: 新增={detail_added}, 总计={len(stock_loc_map)}")
 
@@ -4308,6 +5633,7 @@ def generate_inv_excel(lang: str = "CN") -> None:
                     "Limit": limit,
                 })
             except Exception as e:
+                logger.error("查询失败 at %s: %s", start, e, exc_info=True)
                 print(f"    [警告] 查询失败 at {start}: {e}")
                 break
             if not rows:
@@ -4321,11 +5647,13 @@ def generate_inv_excel(lang: str = "CN") -> None:
             time.sleep(0.2)
         return all_rows
 
-    KEY_FIELDS = "FMaterialId,FStockId,FLot"
+    KEY_FIELDS = "FMaterialId,FStockId,FLot,FStockLocId"
 
     # 用主键构建数据字典
-    def _make_key(material_id, stock_id, lot_id):
-        return f"{material_id}|{stock_id}|{lot_id}"
+    # 主键: FMaterialId + FStockId + FLot + FStockLocId（仓位）
+    # 同一物料+仓库+批号可能分布在多个仓位，每个仓位各有不同库存量
+    def _make_key(material_id, stock_id, lot_id, stock_loc_id=""):
+        return f"{material_id}|{stock_id}|{lot_id}|{stock_loc_id}"
 
     data_dict = {}
 
@@ -4335,6 +5663,8 @@ def generate_inv_excel(lang: str = "CN") -> None:
     batch1_rows = _fetch_inv_page(batch1_fields)
     print(f"    批次1: {len(batch1_rows)} 条")
 
+    # 临时3-key dict（batch2获取FStockLocId后重建为4-key）
+    _tmp_dict = {}
     for r in batch1_rows:
         material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
         material_code = str(r[1]).strip() if len(r) > 1 and r[1] else ""
@@ -4346,9 +5676,9 @@ def generate_inv_excel(lang: str = "CN") -> None:
         lot_number = str(r[7]).strip() if len(r) > 7 and r[7] else ""
         qty = r[8] if len(r) > 8 else 0
 
-        key = _make_key(material_id, stock_id, lot_id)
-        if key not in data_dict:
-            data_dict[key] = {
+        key3 = f"{material_id}|{stock_id}|{lot_id}"
+        if key3 not in _tmp_dict:
+            _tmp_dict[key3] = {
                 "FMaterialId": material_id,
                 "material_code": material_code,
                 "material_name": material_name,
@@ -4371,12 +5701,13 @@ def generate_inv_excel(lang: str = "CN") -> None:
                 new_lot += 1
     print(f"    新增批号映射: {new_lot} 个，总计: {len(lot_map)} 个")
 
-    # 批次2: 库存组织 + 仓位（6字段）
-    batch2_fields = f"{KEY_FIELDS},FStockOrgId,FStockOrgId.FNumber,FStockLocId"
+    # 批次2: 库存组织 + 仓位（6字段）—— 先执行以获取FStockLocId
+    batch2_fields = "FMaterialId,FStockId,FLot,FStockOrgId,FStockOrgId.FNumber,FStockLocId"
     print(f"    批次2(组织+仓位): {len(batch2_fields.split(','))} 字段")
     batch2_rows = _fetch_inv_page(batch2_fields)
     print(f"    批次2: {len(batch2_rows)} 条")
 
+    # 用4-key（含FStockLocId）重建data_dict
     for r in batch2_rows:
         material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
         stock_id = str(r[1]).strip() if len(r) > 1 and r[1] else ""
@@ -4385,11 +5716,61 @@ def generate_inv_excel(lang: str = "CN") -> None:
         stock_org_code = str(r[4]).strip() if len(r) > 4 and r[4] else ""
         stock_loc_id = str(r[5]).strip() if len(r) > 5 and r[5] else ""
 
-        key = _make_key(material_id, stock_id, lot_id)
-        if key in data_dict:
-            data_dict[key]["FStockOrgId"] = stock_org_id
-            data_dict[key]["stock_org_code"] = stock_org_code
-            data_dict[key]["FStockLocId"] = stock_loc_id
+        key4 = _make_key(material_id, stock_id, lot_id, stock_loc_id)
+        if key4 not in data_dict:
+            # 从_tmp_dict复制基础信息
+            key3 = f"{material_id}|{stock_id}|{lot_id}"
+            base = _tmp_dict.get(key3, {})
+            data_dict[key4] = {
+                "FMaterialId": base.get("FMaterialId", material_id),
+                "material_code": base.get("material_code", ""),
+                "material_name": base.get("material_name", ""),
+                "FStockId": base.get("FStockId", stock_id),
+                "stock_code": base.get("stock_code", ""),
+                "stock_name": base.get("stock_name", ""),
+                "FLot": base.get("FLot", lot_id),
+                "lot_number": base.get("lot_number", ""),
+                "FQty": base.get("FQty", 0),
+                "FStockOrgId": stock_org_id,
+                "stock_org_code": stock_org_code,
+                "FStockLocId": stock_loc_id,
+            }
+
+    # 补充：batch2中可能有些3-key在_tmp_dict中但不在batch2中（FStockLocId为空的情况）
+    for key3, base in _tmp_dict.items():
+        # 检查这个3-key是否已经被batch2覆盖（即是否有对应的4-key在data_dict中）
+        found = any(k.startswith(key3 + "|") for k in data_dict)
+        if not found:
+            # 该3-key没有在batch2中出现，用空FStockLocId创建4-key
+            key4 = _make_key(base.get("FMaterialId", ""), base.get("FStockId", ""), base.get("FLot", ""), "")
+            if key4 not in data_dict:
+                data_dict[key4] = {
+                    **base,
+                    "FStockOrgId": "",
+                    "stock_org_code": "",
+                    "FStockLocId": "",
+                }
+
+    del _tmp_dict  # 释放临时dict
+    print(f"    4-key data_dict: {len(data_dict)} 条")
+
+    # 批次1b: 单独查询FQty（5字段，含FStockLocId）
+    batch1b_fields = f"{KEY_FIELDS},FQty"
+    print(f"    批次1b(FQty单独): {len(batch1b_fields.split(','))} 字段")
+    batch1b_rows = _fetch_inv_page(batch1b_fields)
+    print(f"    批次1b: {len(batch1b_rows)} 条")
+    qty_fixed_count = 0
+    for r in batch1b_rows:
+        material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
+        stock_id = str(r[1]).strip() if len(r) > 1 and r[1] else ""
+        lot_id = str(r[2]).strip() if len(r) > 2 and r[2] else ""
+        stock_loc_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
+        qty_val = r[4] if len(r) > 4 else 0
+        key = _make_key(material_id, stock_id, lot_id, stock_loc_id)
+        if key in data_dict and qty_val and qty_val != 0:
+            data_dict[key]["FQty"] = qty_val
+            qty_fixed_count += 1
+    print(f"    批次1b修复FQty: {qty_fixed_count} 条（从0恢复为真实值）")
 
     # 批次3: 库存主单位 + 基本单位（6字段）
     batch3_fields = f"{KEY_FIELDS},FStockUnitId,FStockUnitId.FNumber,FBaseUnitId,FBaseUnitId.FNumber"
@@ -4401,21 +5782,22 @@ def generate_inv_excel(lang: str = "CN") -> None:
         material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
         stock_id = str(r[1]).strip() if len(r) > 1 and r[1] else ""
         lot_id = str(r[2]).strip() if len(r) > 2 and r[2] else ""
-        stock_unit_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
-        stock_unit_code = str(r[4]).strip() if len(r) > 4 and r[4] else ""
-        base_unit_id = str(r[5]).strip() if len(r) > 5 and r[5] else ""
-        base_unit_code = str(r[6]).strip() if len(r) > 6 and r[6] else ""
+        stock_loc_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
+        stock_unit_id = str(r[4]).strip() if len(r) > 4 and r[4] else ""
+        stock_unit_code = str(r[5]).strip() if len(r) > 5 and r[5] else ""
+        base_unit_id = str(r[6]).strip() if len(r) > 6 and r[6] else ""
+        base_unit_code = str(r[7]).strip() if len(r) > 7 and r[7] else ""
 
-        key = _make_key(material_id, stock_id, lot_id)
+        key = _make_key(material_id, stock_id, lot_id, stock_loc_id)
         if key in data_dict:
             data_dict[key]["FStockUnitId"] = stock_unit_id
             data_dict[key]["stock_unit_code"] = stock_unit_code
             data_dict[key]["FBaseUnitId"] = base_unit_id
             data_dict[key]["base_unit_code"] = base_unit_code
 
-    # 批次4: 库存状态 + 辅助属性（6字段）
-    batch4_fields = f"{KEY_FIELDS},FStockStatusId,FAuxPropId,FBaseQty"
-    print(f"    批次4(状态+辅助+基本量): {len(batch4_fields.split(','))} 字段")
+    # 批次4: 库存状态（6字段，含状态子字段）
+    batch4_fields = f"{KEY_FIELDS},FStockStatusId,FStockStatusId.FNumber,FStockStatusId.FName"
+    print(f"    批次4(库存状态): {len(batch4_fields.split(','))} 字段")
     batch4_rows = _fetch_inv_page(batch4_fields)
     print(f"    批次4: {len(batch4_rows)} 条")
 
@@ -4423,19 +5805,50 @@ def generate_inv_excel(lang: str = "CN") -> None:
         material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
         stock_id = str(r[1]).strip() if len(r) > 1 and r[1] else ""
         lot_id = str(r[2]).strip() if len(r) > 2 and r[2] else ""
-        stock_status_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
-        aux_prop_id = str(r[4]).strip() if len(r) > 4 and r[4] else ""
-        base_qty = r[5] if len(r) > 5 else 0
+        stock_loc_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
+        stock_status_id = str(r[4]).strip() if len(r) > 4 and r[4] else ""
+        stock_status_number = str(r[5]).strip() if len(r) > 5 and r[5] else ""
+        stock_status_fname = str(r[6]).strip() if len(r) > 6 and r[6] else ""
 
-        key = _make_key(material_id, stock_id, lot_id)
+        key = _make_key(material_id, stock_id, lot_id, stock_loc_id)
         if key in data_dict:
             data_dict[key]["FStockStatusId"] = stock_status_id
-            data_dict[key]["FAuxPropId"] = aux_prop_id
-            data_dict[key]["FBaseQty"] = base_qty
+            data_dict[key]["FStockStatusNumber"] = stock_status_number
+            data_dict[key]["FStockStatusFName"] = stock_status_fname
 
-    # 批次5: 生产日期 + 有效期至（6字段）
-    batch5_fields = f"{KEY_FIELDS},FProduceDate,FExpiryDate,FAVBQty"
-    print(f"    批次5(日期+可用量): {len(batch5_fields.split(','))} 字段")
+    # 批次4b: 辅助属性 + 基本量（6字段）
+    batch4b_fields = f"{KEY_FIELDS},FAuxPropId,FBaseQty,FAVBQty"
+    print(f"    批次4b(辅助+基本量+可用量): {len(batch4b_fields.split(','))} 字段")
+    batch4b_rows = _fetch_inv_page(batch4b_fields)
+    print(f"    批次4b: {len(batch4b_rows)} 条")
+
+    for r in batch4b_rows:
+        material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
+        stock_id = str(r[1]).strip() if len(r) > 1 and r[1] else ""
+        lot_id = str(r[2]).strip() if len(r) > 2 and r[2] else ""
+        stock_loc_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
+        aux_prop_id = str(r[4]).strip() if len(r) > 4 and r[4] else ""
+        base_qty = r[5] if len(r) > 5 else 0
+        avb_qty = r[6] if len(r) > 6 else 0
+
+        key = _make_key(material_id, stock_id, lot_id, stock_loc_id)
+        if key in data_dict:
+            data_dict[key]["FAuxPropId"] = aux_prop_id
+            # FBaseQty/FAVBQty: 同一key可能有多条API记录，
+            # 部分记录返回0（API限制），部分返回真实值。
+            # 只用非0值更新，避免0覆盖真实值。
+            if base_qty and base_qty != 0:
+                old_base_qty = data_dict[key].get("FBaseQty", 0)
+                if not old_base_qty or old_base_qty == 0 or base_qty > old_base_qty:
+                    data_dict[key]["FBaseQty"] = base_qty
+            if avb_qty and avb_qty != 0:
+                old_avb_qty = data_dict[key].get("FAVBQty", 0)
+                if not old_avb_qty or old_avb_qty == 0 or avb_qty > old_avb_qty:
+                    data_dict[key]["FAVBQty"] = avb_qty
+
+    # 批次5: 生产日期 + 有效期至（5字段）
+    batch5_fields = f"{KEY_FIELDS},FProduceDate,FExpiryDate"
+    print(f"    批次5(日期): {len(batch5_fields.split(','))} 字段")
     batch5_rows = _fetch_inv_page(batch5_fields)
     print(f"    批次5: {len(batch5_rows)} 条")
 
@@ -4443,17 +5856,16 @@ def generate_inv_excel(lang: str = "CN") -> None:
         material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
         stock_id = str(r[1]).strip() if len(r) > 1 and r[1] else ""
         lot_id = str(r[2]).strip() if len(r) > 2 and r[2] else ""
-        produce_date = str(r[3]).strip() if len(r) > 3 and r[3] else ""
-        expiry_date = str(r[4]).strip() if len(r) > 4 and r[4] else ""
-        avb_qty = r[5] if len(r) > 5 else 0
+        stock_loc_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
+        produce_date = str(r[4]).strip() if len(r) > 4 and r[4] else ""
+        expiry_date = str(r[5]).strip() if len(r) > 5 and r[5] else ""
 
-        key = _make_key(material_id, stock_id, lot_id)
+        key = _make_key(material_id, stock_id, lot_id, stock_loc_id)
         if key in data_dict:
             data_dict[key]["FProduceDate"] = produce_date
             data_dict[key]["FExpiryDate"] = expiry_date
-            data_dict[key]["FAVBQty"] = avb_qty
 
-    # 批次6: 基本可用量（4字段）
+    # 批次6: 基本可用量（5字段）
     batch6_fields = f"{KEY_FIELDS},FBaseAVBQty"
     print(f"    批次6(基本可用量): {len(batch6_fields.split(','))} 字段")
     batch6_rows = _fetch_inv_page(batch6_fields)
@@ -4463,18 +5875,221 @@ def generate_inv_excel(lang: str = "CN") -> None:
         material_id = str(r[0]).strip() if len(r) > 0 and r[0] else ""
         stock_id = str(r[1]).strip() if len(r) > 1 and r[1] else ""
         lot_id = str(r[2]).strip() if len(r) > 2 and r[2] else ""
-        base_avb_qty = r[3] if len(r) > 3 else 0
+        stock_loc_id = str(r[3]).strip() if len(r) > 3 and r[3] else ""
+        base_avb_qty = r[4] if len(r) > 4 else 0
 
-        key = _make_key(material_id, stock_id, lot_id)
+        key = _make_key(material_id, stock_id, lot_id, stock_loc_id)
         if key in data_dict:
-            data_dict[key]["FBaseAVBQty"] = base_avb_qty
+            # FBaseAVBQty: 同一key可能有多条API记录，只用非0值更新
+            if base_avb_qty and base_avb_qty != 0:
+                old_val = data_dict[key].get("FBaseAVBQty", 0)
+                if not old_val or old_val == 0 or base_avb_qty > old_val:
+                    data_dict[key]["FBaseAVBQty"] = base_avb_qty
 
     print(f"    合并后总数据: {len(data_dict)} 条")
 
+    # ── 4a. 从BD_MATERIAL获取库存单位→基本单位的换算率 ──────────────────────
+    # 当FQty仍为0且stock_unit != base_unit时，需要换算率来计算FQty = FBaseQty / 换算率
+    # 收集需要查询换算率的物料ID
+    material_ids_needing_rate = set()
+    for key, d in data_dict.items():
+        qty = d.get("FQty", 0)
+        base_qty = d.get("FBaseQty", 0)
+        stock_unit_code = d.get("stock_unit_code", "")
+        base_unit_code = d.get("base_unit_code", "")
+        if (not qty or qty == 0) and base_qty and base_qty != 0 and stock_unit_code != base_unit_code:
+            material_ids_needing_rate.add(d.get("FMaterialId", ""))
+
+    unit_convert_map = {}  # material_id → convert_rate (stock_unit → base_unit)
+    if material_ids_needing_rate:
+        print(f"    查询单位换算率: {len(material_ids_needing_rate)} 个物料（stock_unit != base_unit 且 FQty=0）")
+        mid_list = sorted([m for m in material_ids_needing_rate if m and m not in ("0", "None", "")])
+        for i in range(0, len(mid_list), 100):
+            batch_mids = mid_list[i:i+100]
+            filter_str = " or ".join([f"FMaterialId = {mid}" for mid in batch_mids])
+            try:
+                rate_rows = client.execute_bill_query({
+                    "FormId": "BD_MATERIAL",
+                    "FieldKeys": "FMaterialId,FStoreUnitID.FConvertRate,FBaseUnitId.FNumber,FStoreUnitID.FNumber",
+                    "FilterString": filter_str,
+                    "OrderString": "",
+                    "TopRowCount": 0,
+                    "StartRow": 0,
+                    "Limit": 200,
+                })
+                if rate_rows:
+                    for rr in rate_rows:
+                        mid = str(rr[0]).strip() if rr[0] else ""
+                        convert_rate = rr[1] if len(rr) > 1 and rr[1] else None
+                        if mid and convert_rate:
+                            try:
+                                unit_convert_map[mid] = float(convert_rate)
+                            except (ValueError, TypeError):
+                                pass
+            except Exception as e:
+                logger.error("查询单位换算率失败: %s", e, exc_info=True)
+                print(f"    [警告] 查询单位换算率失败: {e}")
+            time.sleep(0.2)
+        print(f"    单位换算率: 获取到 {len(unit_convert_map)} 个")
+
+    # 应用换算率修复FQty
+    rate_fixed_count = 0
+    fallback_count = 0
+    for key, d in data_dict.items():
+        qty = d.get("FQty", 0)
+        base_qty = d.get("FBaseQty", 0)
+        stock_unit_code = d.get("stock_unit_code", "")
+        base_unit_code = d.get("base_unit_code", "")
+        if (not qty or qty == 0) and base_qty and base_qty != 0:
+            if stock_unit_code != base_unit_code:
+                mid = d.get("FMaterialId", "")
+                rate = unit_convert_map.get(mid)
+                if rate and rate != 0:
+                    d["FQty"] = base_qty / rate
+                    rate_fixed_count += 1
+                else:
+                    d["FQty"] = base_qty  # 兜底：用FBaseQty确保行不被过滤
+                    fallback_count += 1
+            else:
+                d["FQty"] = base_qty  # 单位相同时直接用FBaseQty
+                fallback_count += 1
+    if rate_fixed_count:
+        print(f"    换算率修复FQty: {rate_fixed_count} 条（FBaseQty / 换算率）")
+    if fallback_count:
+        print(f"    兜底修复FQty: {fallback_count} 条（FBaseQty直接赋值）")
+
+    # 统计FQty修复情况
+    fqty_zero_after_repair = sum(1 for d in data_dict.values() if not d.get("FQty", 0) or d.get("FQty", 0) == 0)
+    fqty_nonzero_after_repair = len(data_dict) - fqty_zero_after_repair
+    print(f"    FQty修复后: {fqty_nonzero_after_repair} 条非0, {fqty_zero_after_repair} 条仍为0")
+
+    # ── 4b. 通过 SAL_ExpectQtyQueryReport 获取真实可用量 ──────────────────────
+    # 金蝶 ExecuteBillQuery 对 STK_Inventory 的 FAVBQty/FBaseAVBQty 始终返回0，
+    # 但 SAL_ExpectQtyQueryReport（预计可发量查询报表）通过 GetSysReportData
+    # 可以返回真实的可用量数据，且按物料+仓库组维度分组。
+    # 关联方式：BD_STOCK.FName = 报表 FStockId（仓库组名），
+    #          BD_STOCK.FNumber = STK_Inventory FStockId.FNumber（仓库编码）
+    print("  [报表] 查询 SAL_ExpectQtyQueryReport 可用量数据...")
+    try:
+        sdk = client._ensure_sdk()
+        rpt_avb_rows = []
+        start = 0
+        while True:
+            result = sdk.GetSysReportData("SAL_ExpectQtyQueryReport", json.dumps({
+                "FieldKeys": "FMasterId,FMaterialName,FStockId,FAVBQTY",
+                "StartRow": start,
+                "Limit": 5000,
+                "FilterString": [],
+                "Model": {
+                    "FCheckStockId": "true",
+                    "FMulMaterialIds": [],
+                    "FMulStockIds": [],
+                    "FStockOrgIds": [],
+                }
+            }))
+            parsed = json.loads(result)
+            result_data = parsed.get("Result", {})
+            if not result_data.get("IsSuccess", False):
+                errors = result_data.get("ResponseStatus", {}).get("Errors", [])
+                err_msg = errors[0].get("Message", "") if errors else "unknown"
+                print(f"    [警告] GetSysReportData 失败: {err_msg}")
+                break
+            batch_rows = result_data.get("Rows", [])
+            rpt_avb_rows.extend(batch_rows)
+            if len(batch_rows) < 5000:
+                break
+            start += 5000
+            time.sleep(0.3)
+        print(f"    报表返回 {len(rpt_avb_rows)} 条可用量数据")
+
+        # 查询 BD_STOCK 建立 仓库编码→仓库组名(FName) 映射
+        stock_code_to_group = {}
+        stock_rows = client.execute_bill_query({
+            "FormId": "BD_STOCK",
+            "FieldKeys": "FNumber,FName",
+            "FilterString": "",
+            "OrderString": "",
+            "TopRowCount": 0,
+            "StartRow": 0,
+            "Limit": 200,
+        })
+        if stock_rows:
+            for sr in stock_rows:
+                s_code = str(sr[0]).strip() if sr[0] else ""
+                s_name = str(sr[1]).strip() if sr[1] else ""
+                if s_code and s_name:
+                    stock_code_to_group[s_code] = s_name
+        print(f"    仓库编码→仓库组名映射: {len(stock_code_to_group)} 个")
+
+        # 构建报表可用量索引: (物料编码, 仓库组名) → FAVBQTY
+        rpt_avb_map = {}
+        for row in rpt_avb_rows:
+            mat_no = str(row[0]).strip() if row[0] else ""
+            stock_group = str(row[2]).strip() if row[2] else ""
+            avb_str = str(row[3]).strip() if row[3] else "0"
+            try:
+                avb_val = float(avb_str.replace(",", "")) if avb_str and avb_str not in ("None", "") else 0
+            except (ValueError, TypeError):
+                avb_val = 0
+            if mat_no and stock_group:
+                rpt_key = f"{mat_no}|{stock_group}"
+                # 同一物料+仓库组可能有多条（不同辅助属性），取合计
+                if rpt_key not in rpt_avb_map:
+                    rpt_avb_map[rpt_key] = 0
+                rpt_avb_map[rpt_key] += avb_val
+        print(f"    报表可用量索引: {len(rpt_avb_map)} 条")
+
+        # 将报表可用量匹配到 data_dict
+        # 对于同一物料+仓库组下有多条库存记录（不同批号/仓位），
+        # 按各记录的 FBaseQty 占比分配可用量
+        avb_matched = 0
+        avb_not_matched = 0
+
+        # 先按 (物料编码, 仓库组名) 分组
+        group_items = {}
+        for key, d in data_dict.items():
+            mat_no = d.get("material_code", "")
+            stock_code = d.get("stock_code", "")
+            group_name = stock_code_to_group.get(stock_code, stock_code)
+            grp_key = f"{mat_no}|{group_name}"
+            if grp_key not in group_items:
+                group_items[grp_key] = []
+            group_items[grp_key].append(key)
+
+        for grp_key, keys in group_items.items():
+            if grp_key not in rpt_avb_map:
+                avb_not_matched += len(keys)
+                continue
+            total_avb = rpt_avb_map[grp_key]
+            if not total_avb or total_avb == 0:
+                avb_not_matched += len(keys)
+                continue
+
+            # 计算该组内各记录的 FBaseQty 合计，按比例分配可用量
+            total_base = sum(data_dict[k].get("FBaseQty", 0) or 0 for k in keys)
+            if not total_base or total_base == 0:
+                # FBaseQty 也为0，均匀分配
+                per_item = total_avb / len(keys)
+                for k in keys:
+                    data_dict[k]["_rpt_avb_qty"] = per_item
+                    data_dict[k]["_rpt_base_avb_qty"] = per_item
+                avb_matched += len(keys)
+            else:
+                for k in keys:
+                    item_base = data_dict[k].get("FBaseQty", 0) or 0
+                    ratio = item_base / total_base
+                    data_dict[k]["_rpt_avb_qty"] = total_avb * ratio
+                    data_dict[k]["_rpt_base_avb_qty"] = total_avb * ratio
+                avb_matched += len(keys)
+
+        print(f"    可用量匹配: {avb_matched} 条成功, {avb_not_matched} 条未匹配")
+    except Exception as e:
+        logger.error("SAL_ExpectQtyQueryReport 查询失败: %s", e, exc_info=True)
+        print(f"    [警告] SAL_ExpectQtyQueryReport 查询失败: {e}")
+
     # ── 5. 解析ID映射 ──────────────────────────────────────────────────────
-    # 收集需要映射的ID
+    # 收集需要映射的ID（库存状态已在批次4中直接查询FNumber/FName，无需额外映射）
     stock_org_ids = set()
-    stock_status_ids = set()
     stock_unit_ids = set()
     base_unit_ids = set()
     aux_prop_ids = set()
@@ -4482,8 +6097,6 @@ def generate_inv_excel(lang: str = "CN") -> None:
     for d in data_dict.values():
         if d.get("FStockOrgId") and d["FStockOrgId"] not in ("0", "0.0", "None", ""):
             stock_org_ids.add(d["FStockOrgId"])
-        if d.get("FStockStatusId") and d["FStockStatusId"] not in ("0", "0.0", "None", ""):
-            stock_status_ids.add(d["FStockStatusId"])
         if d.get("FStockUnitId") and d["FStockUnitId"] not in ("0", "0.0", "None", ""):
             stock_unit_ids.add(d["FStockUnitId"])
         if d.get("FBaseUnitId") and d["FBaseUnitId"] not in ("0", "0.0", "None", ""):
@@ -4502,11 +6115,8 @@ def generate_inv_excel(lang: str = "CN") -> None:
         new_org_names = _fetch_name_map(client, "ORG_Organizations", list(set(new_org_map.values())), "org_name_map")
         org_name_map.update(new_org_names)
 
-    # 库存状态映射
-    stock_status_map = {}
-    if stock_status_ids:
-        print(f"    需要解析 {len(stock_status_ids)} 个库存状态ID")
-        stock_status_map = fetch_generic_mapping(client, "BD_STOCKSTATUS", "FId", "FName", "inv_stock_status_map", list(stock_status_ids))
+    # 库存状态映射 - 已在批次4中直接查询 FStockStatusId.FNumber 和 FStockStatusId.FName
+    # 无需额外映射查询，直接使用 data_dict 中的 FStockStatusNumber 和 FStockStatusFName
 
     # 单位映射
     all_unit_ids = list(set(stock_unit_ids) | set(base_unit_ids))
@@ -4563,6 +6173,37 @@ def generate_inv_excel(lang: str = "CN") -> None:
     # 物料规格映射
     material_spec_map = _load_generic_mapping("material_spec_map")
 
+    # 物料保质期映射（从BD_MATERIAL获取FExpPeriod，而非动态计算）
+    material_expiry_period_map = _load_generic_mapping("material_expiry_period_map")
+    all_material_codes = set(d.get("material_code", "") for d in data_dict.values())
+    missing_expiry_codes = [c for c in all_material_codes if c and c not in material_expiry_period_map]
+    if missing_expiry_codes:
+        print(f"    查询物料保质期: {len(missing_expiry_codes)} 个物料")
+        for i in range(0, len(missing_expiry_codes), 100):
+            batch = missing_expiry_codes[i:i+100]
+            filter_str = " or ".join([f"FNumber = '{c}'" for c in batch])
+            try:
+                rows = client.execute_bill_query({
+                    "FormId": "BD_MATERIAL",
+                    "FieldKeys": "FNumber,FExpPeriod",
+                    "FilterString": filter_str,
+                    "OrderString": "",
+                    "TopRowCount": 0,
+                    "StartRow": 0,
+                    "Limit": 200,
+                })
+                if rows:
+                    for row in rows:
+                        code = str(row[0]).strip() if row[0] else ""
+                        exp_period = row[1] if len(row) > 1 and row[1] else ""
+                        if code:
+                            material_expiry_period_map[code] = str(exp_period) if exp_period else ""
+            except Exception:
+                pass
+            time.sleep(0.2)
+        _save_generic_mapping("material_expiry_period_map", material_expiry_period_map)
+    print(f"    物料保质期映射: {len(material_expiry_period_map)} 个")
+
     # ── 6. 构建字段映射 ──────────────────────────────────────────────────────
     # 模板22列到数据字段的映射
     inv_field_map = {
@@ -4595,17 +6236,65 @@ def generate_inv_excel(lang: str = "CN") -> None:
     # ── 7. 处理数据并应用映射 ────────────────────────────────────────────────
     print("  [处理] 应用映射...")
 
+    # 仓库名称英文映射（通过View API获取BD_STOCK的多语言名称）
+    stock_name_en_map = {}
+    if lang != "CN":
+        print("    获取仓库名称英文翻译...")
+        stock_name_en_map = _load_generic_mapping("stock_name_en_map")
+        # 收集所有仓库编码
+        all_stock_codes = set(d.get("stock_code", "") for d in data_dict.values())
+        missing_stock_codes = [c for c in all_stock_codes if c and c not in stock_name_en_map]
+        if missing_stock_codes:
+            import json as _json
+            for code in missing_stock_codes:
+                try:
+                    sid_rows = client.execute_bill_query({
+                        "FormId": "BD_STOCK",
+                        "FieldKeys": "FStockId,FNumber",
+                        "FilterString": f"FNumber = '{code}'",
+                        "OrderString": "", "TopRowCount": 0, "StartRow": 0, "Limit": 1,
+                    })
+                    if sid_rows:
+                        result = client.view("BD_STOCK", {"Id": sid_rows[0][0]})
+                        if isinstance(result, str):
+                            result = _json.loads(result)
+                        # 递归搜索Name字段中的英文值
+                        def _find_en_name(obj):
+                            if isinstance(obj, dict):
+                                if "Name" in obj and isinstance(obj["Name"], list):
+                                    for item in obj["Name"]:
+                                        if item.get("Key") == 1033:
+                                            return item.get("Value", "")
+                                for v in obj.values():
+                                    r = _find_en_name(v)
+                                    if r:
+                                        return r
+                            elif isinstance(obj, list):
+                                for item in obj:
+                                    r = _find_en_name(item)
+                                    if r:
+                                        return r
+                            return ""
+                        en_name = _find_en_name(result)
+                        if en_name:
+                            stock_name_en_map[code] = en_name
+                except Exception:
+                    pass
+            _save_generic_mapping("stock_name_en_map", stock_name_en_map)
+        print(f"    仓库名称英文映射: {len(stock_name_en_map)} 个")
+
     # 排序数据，按物料编码排序
     sorted_items = sorted(data_dict.items(), key=lambda x: x[1].get("material_code", ""))
 
-    lot_ok = lot_fail = bin_ok = bin_fail = 0
+    lot_ok = lot_fail = bin_ok = bin_fail = zero_qty_skip = 0
+    output_seq = 0  # 连续序号计数器
 
     workbook = openpyxl.Workbook()
     ws_out = workbook.active
     ws_out.title = sheet_title
     ws_out.append(h0)
 
-    for seq, (key, d) in enumerate(sorted_items, 1):
+    for key, d in sorted_items:
         output_row = [""] * len(h0)
 
         # 解析各字段值
@@ -4627,9 +6316,53 @@ def generate_inv_excel(lang: str = "CN") -> None:
         stock_unit_code = d.get("stock_unit_code", "")
         base_unit_id = d.get("FBaseUnitId", "")
         base_unit_code = d.get("base_unit_code", "")
+
+        # 修复金蝶API对STK_Inventory数量字段返回0的问题：
+        # ExecuteBillQuery 对 STK_Inventory 的 FQty/FAVBQty/FBaseAVBQty/FLockQty
+        # 全部返回0，仅 FBaseQty 有真实数据。
+        # 修复策略：
+        # 1. 当 stock_unit == base_unit 时，FQty = FBaseQty
+        # 2. 当 stock_unit != base_unit 时，通过BD_MATERIAL换算率计算 FQty = FBaseQty / rate
+        # 3. 若换算率不可用，仍用 FBaseQty 作为 FQty（保证行不被过滤）
+        if (not qty or qty == 0) and base_qty and base_qty != 0:
+            if stock_unit_code == base_unit_code:
+                qty = base_qty
+            else:
+                # 尝试用换算率计算，若不可用则用FBaseQty兜底
+                mid = d.get("FMaterialId", "")
+                rate = unit_convert_map.get(mid) if mid in unit_convert_map else None
+                if rate and rate != 0:
+                    qty = base_qty / rate
+                else:
+                    qty = base_qty  # 兜底：用FBaseQty确保行不被过滤
+        # 可用量修复：优先使用报表数据
+        rpt_avb = d.get("_rpt_avb_qty")
+        rpt_base_avb = d.get("_rpt_base_avb_qty")
+        if rpt_avb is not None and rpt_avb != 0:
+            avb_qty = rpt_avb
+        elif (not avb_qty or avb_qty == 0):
+            if stock_unit_code == base_unit_code:
+                avb_qty = qty  # FAVBQty = FQty（已修复的值）
+        if rpt_base_avb is not None and rpt_base_avb != 0:
+            base_avb_qty = rpt_base_avb
+        elif (not base_avb_qty or base_avb_qty == 0) and base_qty and base_qty != 0:
+            base_avb_qty = base_qty  # FBaseAVBQty = FBaseQty
+
+        # 过滤：库存量为0的行不需要输出
+        # 注意：FQty始终为0是API限制，应以FBaseQty为准判断是否有库存
+        if (not base_qty or base_qty == 0) and (not qty or qty == 0):
+            zero_qty_skip += 1
+            continue
+
         aux_prop_id = d.get("FAuxPropId", "")
         produce_date = d.get("FProduceDate", "")
         expiry_date = d.get("FExpiryDate", "")
+
+        # 仓库名称（英文版使用英文名称）
+        if lang != "CN" and stock_name_en_map:
+            en_stock_name = stock_name_en_map.get(stock_code, "")
+            if en_stock_name:
+                stock_name = en_stock_name
 
         # Lot映射
         lot_val = lot_number
@@ -4652,12 +6385,23 @@ def generate_inv_excel(lang: str = "CN") -> None:
         # 组织名称
         org_name = org_name_map.get(stock_org_code, stock_org_code) if stock_org_code else ""
 
-        # 库存状态名称
-        stock_status_name = stock_status_map.get(stock_status_id, "") if stock_status_id else ""
+        # 库存状态名称（英文版使用英文名称，中文版使用FName名称）
+        stock_status_name = ""
+        if stock_status_id and stock_status_id not in ("0", "0.0", "None", ""):
+            if lang == "CN":
+                stock_status_name = d.get("FStockStatusFName", "")
+            else:
+                # 英文版：将FNumber编码映射为英文名称
+                status_number = d.get("FStockStatusNumber", "")
+                stock_status_name = _stock_status_en_map.get(status_number, status_number)
 
-        # 单位名称
-        stock_unit_name = unit_name_map.get(stock_unit_code, stock_unit_code) if stock_unit_code else ""
-        base_unit_name = unit_name_map.get(base_unit_code, base_unit_code) if base_unit_code else ""
+        # 单位名称（英文版使用FNumber编码，中文版使用FName名称）
+        if lang == "CN":
+            stock_unit_name = unit_name_map.get(stock_unit_code, stock_unit_code) if stock_unit_code else ""
+            base_unit_name = unit_name_map.get(base_unit_code, base_unit_code) if base_unit_code else ""
+        else:
+            stock_unit_name = stock_unit_code if stock_unit_code else ""
+            base_unit_name = base_unit_code if base_unit_code else ""
 
         # 辅助属性名称
         aux_prop_name = aux_prop_name_map.get(aux_prop_id, "") if aux_prop_id else ""
@@ -4669,30 +6413,17 @@ def generate_inv_excel(lang: str = "CN") -> None:
         bin_shelf_code = ""
         bin_raw_code = ""
         if stock_loc_id and stock_loc_id not in ("None", "0", ""):
-            # 从 flex_entries 获取维度值
-            if stock_loc_id in flex_entries:
-                entry = flex_entries[stock_loc_id]
-                if isinstance(entry, dict):
-                    bin_shelf_code = entry.get("number", "")
-            # 尝试从 BD_FLEXVALUESDETAIL 获取子维度
-            # 成品仓位=FF100001, 原料仓位=FF100003
-            # 这些信息已在 stock_loc_map 的组合名称中
+            if stock_loc_id in bin_detail_map:
+                bin_shelf_code = bin_detail_map[stock_loc_id].get("shelf", "")
+                bin_raw_code = bin_detail_map[stock_loc_id].get("raw", "")
 
-        # 保质期（从生产日期和有效期至计算）
-        guarantee_period = ""
-        if produce_date and expiry_date and produce_date not in ("None", "") and expiry_date not in ("None", ""):
-            try:
-                pd_dt = _format_date(produce_date)
-                ed_dt = _format_date(expiry_date)
-                if isinstance(pd_dt, datetime) and isinstance(ed_dt, datetime):
-                    delta = ed_dt - pd_dt
-                    guarantee_period = str(delta.days)
-            except Exception:
-                pass
+        # 保质期：从BD_MATERIAL的FExpPeriod获取（物料主数据定义的保质期天数）
+        guarantee_period = material_expiry_period_map.get(material_code, "")
 
         # 构建字段值字典
+        output_seq += 1
         field_values = {
-            "_seq": seq,
+            "_seq": output_seq,
             "material_code": material_code,
             "material_name": material_name,
             "_spec": spec,
@@ -4716,6 +6447,9 @@ def generate_inv_excel(lang: str = "CN") -> None:
             "FBaseAVBQty": base_avb_qty,
         }
 
+        # 数值字段：始终输出（包括0.0）
+        numeric_data_keys = {"FQty", "FBaseQty", "FAVBQty", "FBaseAVBQty"}
+
         # 按模板映射填充
         for tpl_idx, tpl_field in enumerate(h0):
             if not tpl_field:
@@ -4723,11 +6457,15 @@ def generate_inv_excel(lang: str = "CN") -> None:
             if tpl_field in inv_field_map:
                 data_key = inv_field_map[tpl_field]
                 val = field_values.get(data_key, "")
-                if val is not None and str(val).strip() not in ("None", "0.0"):
-                    if isinstance(val, datetime):
-                        output_row[tpl_idx] = val
-                    elif val != "":
-                        output_row[tpl_idx] = _clean_string(str(val).strip())
+                if val is None:
+                    continue
+                # 数值字段始终输出
+                if isinstance(val, (int, float)):
+                    output_row[tpl_idx] = val
+                elif isinstance(val, datetime):
+                    output_row[tpl_idx] = val
+                elif str(val).strip() not in ("None", "0.0", ""):
+                    output_row[tpl_idx] = _clean_string(str(val).strip())
 
         ws_out.append(output_row)
 
@@ -4744,10 +6482,12 @@ def generate_inv_excel(lang: str = "CN") -> None:
                     if isinstance(cell.value, datetime):
                         cell.number_format = fmt
 
-    workbook.save(output_path)
+    _save_workbook(workbook, output_path)
     print(f"    Lot: {lot_ok} 映射成功, {lot_fail} 未映射")
     print(f"    Bin: {bin_ok} 映射成功, {bin_fail} 未映射")
-    print(f"  [完成] {output_path.name} ({len(data_dict)} 行)")
+    if zero_qty_skip:
+        print(f"    过滤FQty=0的行: {zero_qty_skip} 条（已跳过）")
+    print(f"  [完成] {output_path.name} ({len(data_dict) - zero_qty_skip} 行)")
 
     # ── 8. 保存映射 ──────────────────────────────────────────────────────────
     _save_generic_mapping("inv_lot_name_map", lot_map)
@@ -5232,7 +6972,8 @@ def generate_pickmtrl_excel(lang: str = "CN") -> None:
                 if sc == "org_name":
                     str_val = org_name_map.get(str_val, str_val)
                 elif sc == "unit_name":
-                    str_val = unit_name_map.get(str_val, str_val)
+                    if lang == "CN":
+                        str_val = unit_name_map.get(str_val, str_val)
                 elif sc == "stock_name":
                     str_val = stock_name_map.get(str_val, str_val)
                 elif sc == "dept_name":
@@ -5263,13 +7004,238 @@ def generate_pickmtrl_excel(lang: str = "CN") -> None:
 
     date_cols = {"FDate", "FProduceDate", "FExpiryDate"}
     _apply_date_formats(ws_out, h0, date_cols, field_mapping)
-    workbook.save(output_path)
+    _save_workbook(workbook, output_path)
     print(f"  [完成] {output_path.name} ({len(df)} 行)")
 
     # ── 7. 保存映射 ──────────────────────────────────────────────────────────
     _save_generic_mapping("inv_lot_name_map", lot_name_map)
 
     print(f"[完成] 生成生产领料单 Excel ({lang_label})")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 销售出库单（SAL_OUTSTOCK）
+# ══════════════════════════════════════════════════════════════════════════════
+
+def generate_outstock_excel(lang: str = "EN") -> None:
+    """生成销售出库单 Excel。
+
+    与其它表单不同，这里直接查询「点号字段」（如 FCustomerID.FName），
+    由金蝶把基础资料翻译成名称/编码后再返回，因此无需维护 map/ 下的 ID 映射缓存。
+    """
+    lang_label = "中文" if lang == "CN" else "英文"
+    print(f"[开始] 生成销售出库单 Excel ({lang_label})")
+    OUTPUT_DIR.mkdir(exist_ok=True)
+
+    # ── 1. 找模板（只认当前语言的模板；缺失时明确报错，避免产出表头语言不符的文件）
+    template_suffix = "中文模板.xlsx" if lang == "CN" else "英文模板.xlsx"
+    template_files = sorted(TEMPLATE_DIR.glob(f"{SAL_OUTSTOCK_FORM_ID}*{template_suffix}"))
+    if not template_files:
+        print(f"  [错误] 找不到{lang_label}模板：{TEMPLATE_DIR / (SAL_OUTSTOCK_FORM_ID + '*' + template_suffix)}")
+        print(f"         如需{lang_label}版，请把模板放进 template/ 目录，文件名需以 {SAL_OUTSTOCK_FORM_ID} 开头、以 {template_suffix} 结尾")
+        return
+    template_path = template_files[0]
+    print(f"  [模板] {template_path.name}")
+
+    # ── 2. 读模板表头（模板自带样例数据，只取第 1 行）──────────────────────
+    try:
+        # 注意：该模板用 read_only 模式读取时 dimension 信息不准（会只读到 1 列），
+        # 因此这里用普通模式加载后按 max_column 读取第一行。
+        wb_tpl = openpyxl.load_workbook(template_path, data_only=True)
+        ws_tpl = wb_tpl[wb_tpl.sheetnames[0]]
+        h0 = [
+            str(ws_tpl.cell(row=1, column=col).value).strip()
+            if ws_tpl.cell(row=1, column=col).value is not None else ""
+            for col in range(1, ws_tpl.max_column + 1)
+        ]
+        wb_tpl.close()
+    except Exception as e:
+        print(f"  [错误] 读取模板失败: {e}")
+        return
+    print(f"  [表头] {len(h0)} 列")
+
+    # ── 3. 读数据 ────────────────────────────────────────────────────────────
+    data_path = _resolve_local_csv(SAL_OUTSTOCK_FORM_ID)
+    if not data_path:
+        print("  [错误] 找不到销售出库单数据文件")
+        print("         请先运行一次不带 --skip-fetch 的同步以生成 data/SAL_OUTSTOCK_*.csv")
+        return
+    print(f"  [数据] {data_path.name}")
+    df = pd.read_csv(data_path, encoding="utf-8-sig", dtype=str)
+    data_cols = df.columns.tolist()
+    print(f"  [数据] {len(df)} 行, {len(data_cols)} 列")
+
+    # ── 4. 模板列 → 数据列 ──────────────────────────────────────────────────
+    field_mapping: dict[int, str] = {}
+    for tpl_idx, tpl_field in enumerate(h0):
+        if not tpl_field:
+            continue
+        data_col = OUTSTOCK_HEADER_MAP.get(tpl_field)
+        if data_col and data_col in data_cols:
+            field_mapping[tpl_idx] = data_col
+    mapped_headers = sum(1 for h in h0 if h)
+    print(f"  [映射] 命中 {len(field_mapping)}/{mapped_headers} 个模板列")
+    unmatched = [h for i, h in enumerate(h0) if h and i not in field_mapping]
+    if unmatched:
+        print(f"  [提醒] 以下模板列未匹配到数据字段: {', '.join(unmatched)}")
+
+    # ── 5. 单据状态翻译 ─────────────────────────────────────────────────────
+    if lang == "CN":
+        status_map = {"A": "已审核", "B": "暂存", "C": "已审核", "D": "重新审核"}
+    else:
+        status_map = {"A": "Approved", "B": "Draft", "C": "Approved", "D": "Re-audit"}
+
+    # ── 6. 输出文件 ─────────────────────────────────────────────────────────
+    output_name = "销售出库单列表.xlsx" if lang == "CN" else "K3_Sales_Deliveries.xlsx"
+    output_path = OUTPUT_DIR / output_name
+    for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
+        try:
+            old_file.unlink()
+        except PermissionError:
+            print(f"  [警告] 文件被占用，跳过: {old_file.name}")
+    print(f"  [输出] {output_path.name}")
+
+    # ── 7. 写入 ─────────────────────────────────────────────────────────────
+    workbook = openpyxl.Workbook()
+    ws = workbook.active
+    ws.title = "Sheet1"
+    ws.append(h0)
+
+    written = 0
+    for _, row in df.iterrows():
+        output_row: list[object] = [""] * len(h0)
+        for tpl_idx, data_col in field_mapping.items():
+            val = row[data_col]
+            if pd.isna(val):
+                continue
+            text = str(val).strip()
+            if not text or text.lower() in ("nan", "none"):
+                continue
+
+            if data_col == "FDocumentStatus":
+                output_row[tpl_idx] = status_map.get(text, text)
+            elif data_col == "FDate":
+                output_row[tpl_idx] = _clean_string(_format_date(text))
+            elif data_col in OUTSTOCK_NUMERIC_FIELDS:
+                try:
+                    output_row[tpl_idx] = float(text)
+                except (TypeError, ValueError):
+                    output_row[tpl_idx] = _clean_string(text)
+            else:
+                output_row[tpl_idx] = _clean_string(text)
+        ws.append(output_row)
+        written += 1
+
+    _save_workbook(workbook, output_path)
+    print(f"  [完成] 共写入 {written} 行")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 供应商列表（BD_Supplier）
+# ══════════════════════════════════════════════════════════════════════════════
+
+def generate_supplier_excel(lang: str = "CN") -> None:
+    """生成供应商列表 Excel。
+
+    同样直接查询「点号字段」由金蝶翻译基础资料，无需维护 map/ 缓存。
+    """
+    lang_label = "中文" if lang == "CN" else "英文"
+    print(f"[开始] 生成供应商列表 Excel ({lang_label})")
+    OUTPUT_DIR.mkdir(exist_ok=True)
+
+    # ── 1. 找模板 ────────────────────────────────────────────────────────────
+    template_suffix = "中文模板.xlsx" if lang == "CN" else "英文模板.xlsx"
+    template_files = sorted(TEMPLATE_DIR.glob(f"{BD_SUPPLIER_FORM_ID}*{template_suffix}"))
+    if not template_files:
+        print(f"  [错误] 找不到{lang_label}模板：{TEMPLATE_DIR / (BD_SUPPLIER_FORM_ID + '*' + template_suffix)}")
+        print(f"         如需{lang_label}版，请把模板放进 template/ 目录，文件名需以 {BD_SUPPLIER_FORM_ID} 开头、以 {template_suffix} 结尾")
+        return
+    template_path = template_files[0]
+    print(f"  [模板] {template_path.name}")
+
+    # ── 2. 读模板表头 ────────────────────────────────────────────────────────
+    try:
+        wb_tpl = openpyxl.load_workbook(template_path, data_only=True)
+        ws_tpl = wb_tpl[wb_tpl.sheetnames[0]]
+        h0 = [
+            str(ws_tpl.cell(row=1, column=col).value).strip()
+            if ws_tpl.cell(row=1, column=col).value is not None else ""
+            for col in range(1, ws_tpl.max_column + 1)
+        ]
+        wb_tpl.close()
+    except Exception as e:
+        print(f"  [错误] 读取模板失败: {e}")
+        return
+    print(f"  [表头] {len(h0)} 列")
+
+    # ── 3. 读数据 ────────────────────────────────────────────────────────────
+    data_path = _resolve_local_csv(BD_SUPPLIER_FORM_ID)
+    if not data_path:
+        print("  [错误] 找不到供应商数据文件")
+        print("         请先运行一次不带 --skip-fetch 的同步以生成 data/BD_Supplier_*.csv")
+        return
+    print(f"  [数据] {data_path.name}")
+    df = pd.read_csv(data_path, encoding="utf-8-sig", dtype=str).fillna("")
+    data_cols = df.columns.tolist()
+    print(f"  [数据] {len(df)} 行, {len(data_cols)} 列")
+
+    # ── 4. 模板列 → 数据列 ──────────────────────────────────────────────────
+    field_mapping: dict[int, str] = {}
+    for tpl_idx, tpl_field in enumerate(h0):
+        if not tpl_field:
+            continue
+        data_col = SUPPLIER_HEADER_MAP.get(tpl_field)
+        if data_col and data_col in data_cols:
+            field_mapping[tpl_idx] = data_col
+    mapped_headers = sum(1 for h in h0 if h)
+    print(f"  [映射] 命中 {len(field_mapping)}/{mapped_headers} 个模板列")
+    unmatched = [h for i, h in enumerate(h0) if h and i not in field_mapping]
+    if unmatched:
+        print(f"  [提醒] 以下模板列未匹配到数据字段: {', '.join(unmatched)}")
+
+    # ── 5. 输出文件 ─────────────────────────────────────────────────────────
+    output_name = "供应商列表.xlsx" if lang == "CN" else "K3_Supplier_Master.xlsx"
+    output_path = OUTPUT_DIR / output_name
+    for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
+        try:
+            old_file.unlink()
+        except PermissionError:
+            print(f"  [警告] 文件被占用，跳过: {old_file.name}")
+    print(f"  [输出] {output_path.name}")
+
+    # ── 6. 写入 ─────────────────────────────────────────────────────────────
+    workbook = openpyxl.Workbook()
+    ws = workbook.active
+    ws.title = "Sheet1"
+    ws.append(h0)
+
+    written = 0
+    for _, row in df.iterrows():
+        output_row: list[object] = [""] * len(h0)
+        for tpl_idx, data_col in field_mapping.items():
+            val = row[data_col]
+            if pd.isna(val):
+                continue
+            text = str(val).strip()
+            if not text or text.lower() in ("nan", "none"):
+                continue
+
+            if data_col in SUPPLIER_STATUS_MAP:
+                output_row[tpl_idx] = SUPPLIER_STATUS_MAP[data_col].get(text, text)
+            elif data_col == "FAuditDate":
+                # 模板中该列为纯文本日期（如 2024/7/16），不带前导零、不带时间
+                dt = _format_date(text)
+                if isinstance(dt, datetime):
+                    output_row[tpl_idx] = f"{dt.year}/{dt.month}/{dt.day}"
+                else:
+                    output_row[tpl_idx] = _clean_string(text)
+            else:
+                output_row[tpl_idx] = _clean_string(text)
+        ws.append(output_row)
+        written += 1
+
+    _save_workbook(workbook, output_path)
+    print(f"  [完成] 共写入 {written} 行")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -5307,6 +7273,10 @@ def _sync_to_network(network_root: str) -> None:
         "K3_Forecast.xlsx": "K3_Data_SalesForecast",
         "物料列表.xlsx": "K3_MaterialMaster",
         "K3_MaterialMaster.xlsx": "K3_MaterialMaster",
+        "销售出库单列表.xlsx": "K3_Sales_Deliveries",
+        "K3_Sales_Deliveries.xlsx": "K3_Sales_Deliveries",
+        "供应商列表.xlsx": "K3_Supplier_Master",
+        "K3_Supplier_Master.xlsx": "K3_Supplier_Master",
     }
 
     xlsx_files = list(OUTPUT_DIR.glob("*.xlsx"))
@@ -5316,33 +7286,83 @@ def _sync_to_network(network_root: str) -> None:
         print(f"[同步] 无 xlsx 文件需要复制")
         return
 
-    # 网络认证参数
+    # 网络认证参数（仅在无法直连时才用于 net use）
     parts = Path(network_root).parts
     share_root = parts[0].rstrip("\\") if parts else network_root
     net_user = r"STERN\shenjj"
     net_pass = r"zH820303."
     root_sub_path = str(Path(network_root)).replace(share_root, "").strip("\\")
 
-    # 生成临时批处理脚本：映射驱动器 → 创建子目录 → 复制 → 断开驱动器
-    bat_lines = [
-        f'net use * /delete /yes 2>nul',
-        f'timeout /t 1 /nobreak >nul',
-        f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
-    ]
+    # WSL 兼容：cmd.exe 不接受 UNC 作为工作目录，也不认识 /tmp 这类 POSIX 路径。
+    # 在 Windows 原生环境下 is_wsl 为 False，以下分支不生效，行为与原来完全一致。
+    def _is_wsl() -> bool:
+        try:
+            return "microsoft" in Path("/proc/version").read_text(encoding="utf-8", errors="ignore").lower()
+        except OSError:
+            return False
+
+    is_wsl = _is_wsl()
+
+    def _to_win_path(p) -> str:
+        if not is_wsl:
+            return str(p).replace("/", "\\")
+        try:
+            r = subprocess.run(["wslpath", "-w", str(p)], capture_output=True, text=True, timeout=10)
+            if r.returncode == 0 and r.stdout.strip():
+                return r.stdout.strip()
+        except Exception:
+            pass
+        return str(p).replace("/", "\\")
+
+    run_cwd = "/mnt/c" if (is_wsl and Path("/mnt/c").is_dir()) else None
+
+    def _target_accessible(path: str) -> bool:
+        """判断目标共享目录在当前凭据下能否直接访问（能直连就不必再 net use）。"""
+        if is_wsl and run_cwd is None:
+            return False
+        try:
+            # 用 dir 的返回码判断。注意两点（均与 WSL 相关）：
+            #  1) 不能加引号：WSL 传参时引号会让 cmd 解析出"指定的路径无效"
+            #  2) 不能用 >nul：会被 WSL 翻译成 /dev/null
+            r = subprocess.run(["cmd.exe" if is_wsl else "cmd", "/c", f'dir {path} /b'],
+                               cwd=run_cwd, capture_output=True, text=True,
+                               encoding="gbk", errors="replace", timeout=30)
+            return r.returncode == 0
+        except Exception:
+            return False
+
+    direct = _target_accessible(network_root)
+    if direct:
+        print(f"[同步] 目标可直接访问，跳过 net use 映射")
+        bat_lines = []
+    else:
+        print(f"[同步] 目标不可直连，使用驱动器映射方式")
+        # 生成临时批处理脚本：映射驱动器 → 创建子目录 → 复制 → 断开驱动器
+        bat_lines = [
+            f'net use * /delete /yes 2>nul',
+            f'timeout /t 1 /nobreak >nul',
+            f'net use Z: {share_root} {net_pass} /user:{net_user} /persistent:no',
+        ]
+
     for f in xlsx_files:
         sub_dir = FILE_NET_MAP.get(f.name)
         if not sub_dir:
             print(f"[同步] 跳过未映射文件: {f.name}")
             continue
-        src = str(f).replace("/", "\\")
-        if root_sub_path:
+        src = _to_win_path(f)
+        if direct:
+            dst_dir = f"{network_root.rstrip(chr(92))}\\{sub_dir}"
+        elif root_sub_path:
             dst_dir = f"Z:\\{root_sub_path}\\{sub_dir}"
         else:
             dst_dir = f"Z:\\{sub_dir}"
         bat_lines.append(f'if not exist "{dst_dir}" mkdir "{dst_dir}"')
         dst = f"{dst_dir}\\{f.name}"
         bat_lines.append(f'copy /Y "{src}" "{dst}"')
-    bat_lines.append(f'net use Z: /delete /yes')
+        # 复制失败时立即返回非零，避免"已复制 0 个文件"却被判定为成功
+        bat_lines.append('if errorlevel 1 exit /b 3')
+    if not direct:
+        bat_lines.append(f'net use Z: /delete /yes')
     bat_lines.append('exit /b 0')
 
     bat_content = "\r\n".join(bat_lines)
@@ -5350,9 +7370,16 @@ def _sync_to_network(network_root: str) -> None:
     bat_file.write_text(bat_content, encoding="gbk")
 
     print(f"[同步] 执行批处理同步")
+    run_cmd = ["cmd", "/c", str(bat_file)]
+    run_cwd = None
+    if is_wsl:
+        # WSL 下：bat 路径转 Windows 形式，并在 /mnt/c 下执行（避免 UNC 作为工作目录）
+        run_cmd = ["cmd.exe", "/c", _to_win_path(bat_file)]
+        run_cwd = "/mnt/c" if Path("/mnt/c").is_dir() else "/"
     try:
         result = subprocess.run(
-            ["cmd", "/c", str(bat_file)],
+            run_cmd,
+            cwd=run_cwd,
             capture_output=True, text=True, timeout=180,
             encoding="gbk", errors="replace",
         )
@@ -5370,6 +7397,7 @@ def _sync_to_network(network_root: str) -> None:
     except subprocess.TimeoutExpired:
         print(f"[同步] 批处理超时（180秒）")
     except Exception as e:
+        logger.error("批处理执行失败: %s", e, exc_info=True)
         print(f"[同步] 批处理执行失败: {e}")
     finally:
         try:
@@ -5382,8 +7410,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="ENG_BOM & PLN_FORECAST & PLN_PLANORDER & PRD_MO & PUR_PurchaseOrder 数据同步与导入 Excel 生成")
     parser.add_argument("--skip-fetch", action="store_true", help="跳过金蝶拉取")
     parser.add_argument("--form", type=str, default="all",
-                        choices=["all", "BD_MATERIAL", "ENG_BOM", "PLN_FORECAST", "PLN_PLANORDER", "PRD_MO", "PUR_PurchaseOrder", "PRD_INSTOCK", "STK_Inventory", "PRD_PickMtrl"],
-                        help="指定要处理的表单，支持: all(全部), BD_MATERIAL(物料基础资料), ENG_BOM(物料清单), PLN_FORECAST(预测单), PLN_PLANORDER(计划订单), PRD_MO(生产订单), PUR_PurchaseOrder(采购订单), PRD_INSTOCK(生产入库单), STK_Inventory(即时库存), PRD_PickMtrl(生产领料单)")
+                        choices=["all", "BD_MATERIAL", "ENG_BOM", "PLN_FORECAST", "PLN_PLANORDER", "PRD_MO", "PUR_PurchaseOrder", "PRD_INSTOCK", "STK_Inventory", "PRD_PickMtrl", "SAL_OUTSTOCK", "BD_Supplier"],
+                        help="指定要处理的表单，支持: all(全部), BD_MATERIAL(物料基础资料), ENG_BOM(物料清单), PLN_FORECAST(预测单), PLN_PLANORDER(计划订单), PRD_MO(生产订单), PUR_PurchaseOrder(采购订单), PRD_INSTOCK(生产入库单), STK_Inventory(即时库存), PRD_PickMtrl(生产领料单), SAL_OUTSTOCK(销售出库单), BD_Supplier(供应商)")
     parser.add_argument("--lang", type=str, default="EN",
                         choices=["ALL", "CN", "EN"],
                         help="输出语言版本: ALL(中英文都输出), CN(仅中文), EN(仅英文，默认)")
@@ -5399,6 +7427,7 @@ def main() -> None:
     print(f"ENG_BOM & PLN_FORECAST & PLN_PLANORDER & PRD_MO & PUR_PurchaseOrder 数据同步与导入 Excel 生成工具")
     print(f"时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"表单: {args.form}  语言: {'/'.join(langs)}")
+    print(f"日志: {_log_file}")
     print("══════════════════════════════════════════════════════════════════════")
 
     OUTPUT_DIR.mkdir(exist_ok=True)
@@ -5446,12 +7475,22 @@ def main() -> None:
         for lang in langs:
             generate_inv_excel(lang)
 
-    # 10. 生成生产领料单 Excel
-    if args.form == "all" or args.form == "PRD_PickMtrl":
+    # 10. 生成生产领料单 Excel（默认不生成，需显式指定 --form PRD_PickMtrl）
+    if args.form == "PRD_PickMtrl":
         for lang in langs:
             generate_pickmtrl_excel(lang)
 
-    # 11. 同步到网络地址
+    # 11. 生成销售出库单 Excel
+    if args.form == "all" or args.form == SAL_OUTSTOCK_FORM_ID:
+        for lang in langs:
+            generate_outstock_excel(lang)
+
+    # 12. 生成供应商列表 Excel
+    if args.form == "all" or args.form == BD_SUPPLIER_FORM_ID:
+        for lang in langs:
+            generate_supplier_excel(lang)
+
+    # 13. 同步到网络地址
     if args.netaddr:
         _sync_to_network(args.netaddr)
 
@@ -5461,4 +7500,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.exception("程序异常退出: %s", e)
+        print(f"\n程序异常退出，详见日志: {_log_file}", file=sys.stderr)
+        sys.exit(1)

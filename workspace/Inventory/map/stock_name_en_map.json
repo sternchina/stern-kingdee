@@ -1,0 +1,19 @@
+{
+  "P07": "Packaging Warehouse",
+  "A": "Ambient RM Warehousee",
+  "S04": "Semi-FG Warehouse",
+  "CK001": "斯顿贸易（苏州）有限公司",
+  "S04-2": "Semi-FG Warehouse",
+  "W10-2": "WIP",
+  "B03": "Blocked Warehouse",
+  "V09": "Zero Cost Warehouse",
+  "R02": "Minor inventory",
+  "W10": "WIP",
+  "W10-3": "WIP",
+  "S06": "Scrap Warehouse",
+  "S08": "Non-Physical Scrap Warehouse",
+  "B": "Ambient FG Warehouse",
+  "W101": "缓冲仓",
+  "M01": "贸易原料仓",
+  "W10-1": "WIP"
+}

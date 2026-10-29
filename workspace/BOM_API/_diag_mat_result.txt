@@ -1,0 +1,168 @@
+=== BD_MATERIAL 前50条关键字段 ===
+获取 50 条
+
+FNumber=01.0004.V0, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=02.0001.V5, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=02.0064.V0, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=02.0119.V15, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=03.0071.V0, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=04.0047.V0, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=05.0643.V1, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000101, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000101, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000200, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000200, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000203, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000203, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000300, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000300, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000400, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000400, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000402, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=生产, F_PALW_Decimal_qtr=20.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000402, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=生产, F_PALW_Decimal_qtr=20.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000500, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000500, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000601, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101000601, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001100, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001100, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001300, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001300, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001600, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=共用, F_PALW_Decimal_qtr=20.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001600, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=共用, F_PALW_Decimal_qtr=20.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001701, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001701, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001800, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001800, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001901, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101001901, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002102, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=生产, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002102, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=生产, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002103, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002300, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002300, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002401, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002401, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=贸易, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002700, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=共用, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002700, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=共用, F_PALW_Decimal_qtr=25.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002701, FForbidStatus=B, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002701, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo= , F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002900, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101002900, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101003000, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+FNumber=101003000, FForbidStatus=A, FErpClsID=1, FCategoryID=237/code=CHLB01_SYS/name=原材料, FPurchaseUnitId=10095/code=kg, FMfgPolicyId=40042/code=ZZCL001_SYS/name=MTS10(考虑库存), FOrderPolicy=0, F_WTRM_Combo=无特殊, F_PALW_Decimal_qtr=0.0, FRefStatus=0, FComBrandId_CMK=0/code=None/name=None, F_PALW_Text_qtr8=
+
+
+=== 102000401 详情 ===
+FForbidStatus=B, FErpClsID=1
+FForbidStatus=A, FErpClsID=1
+
+
+=== 101000101 详情 ===
+F_PALW_Decimal_qtr=25.0, FRefStatus=0
+F_PALW_Decimal_qtr=25.0, FRefStatus=0
+
+
+=== FErpClsID 分布 ===
+  1: 1808
+  10: 27
+  11: 157
+  2: 8006
+  3: 1
+  6: 1
+
+
+=== FCategoryID.FName 分布 ===
+  自制半成品: 6362
+  产成品: 1644
+  原材料: 1550
+  辅料: 256
+  资产: 129
+  服务: 58
+  委外半成品: 1
+
+
+=== F_WTRM_Combo 分布 ===
+  : 8335
+  无特殊: 1142
+  生产: 285
+  贸易: 120
+  出口: 51
+  共用: 38
+  仅供出口用原料: 29
+
+
+=== FRefStatus 分布 ===
+  0: 10000
+
+
+=== FComBrandId_CMK.FName 分布 ===
+  None: 10000
+
+
+=== F_PALW_Text_qtr8 分布 ===
+  None: 9963
+  骊骅,MD16-20: 4
+  SMAP: 2
+  Avebe: 2
+  molinos/UNIPEKTIN: 2
+  江西兄弟医药有限公司: 2
+  黑龙江新和成生物科技有限公司: 2
+  jinlongyu/wudeli: 2
+  QBM：QBM-MV-01/BENEFIT OCEAN：BOG03: 2
+  tianxin/Huazhong: 2
+  罗盖特, GLUCIDEX-2: 2
+  chengxin/kelunduo: 2
+  Meihua/BLG: 2
+  Dongguan YiHai Kerry/Shandong Qufeng: 2
+  tianfu: 2
+  NHY: 2
+  芜湖美诺营养科技有限公司: 1
+  KOLOD: 1
+  xuetian: 1
+  XinHongYing: 1
+
+
+=== FMfgPolicyId.FName 分布 ===
+  MTS10(考虑库存): 9972
+  None: 28
+
+
+=== FForbidStatus 分布 ===
+  A: 5222
+  B: 4778
+
+
+=== F_PALW_Decimal_qtr 非零值（前20） ===
+  101000101: 25.0
+  101000400: 25.0
+  101000402: 20.0
+  101002700: 25.0
+  101000200: 25.0
+  101000300: 25.0
+  101001300: 25.0
+  101000500: 25.0
+  101016000: 190.0
+  101001600: 20.0
+  101008500: 25.0
+  101016900: 25.0
+  101016601: 25.0
+  101016500: 20.0
+  101016400: 25.0
+  101016800: 20.0
+  101015400: 20.0
+  101015500: 25.0
+  101015600: 25.0
+  101017000: 25.0
+
+
+=== FPurchaseUnitId.FNumber 分布 ===
+  kg: 8817
+  ppm: 680
+  ge: 355
+  tao: 112
+  Pcs: 30
+  tai: 5
+  L: 1
+
+诊断完成!

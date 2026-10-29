@@ -50,6 +50,10 @@ FILE_NET_MAP = {
     "K3_Forecast.xlsx": "K3_Data_SalesForecast",
     "物料列表.xlsx": "K3_MaterialMaster",
     "K3_MaterialMaster.xlsx": "K3_MaterialMaster",
+    "销售出库单列表.xlsx": "K3_Sales_Deliveries",
+    "K3_Sales_Deliveries.xlsx": "K3_Sales_Deliveries",
+    "供应商列表.xlsx": "K3_Supplier_Master",
+    "K3_Supplier_Master.xlsx": "K3_Supplier_Master",
 }
 PROGRESS_FILE = WORKSPACE / ".progress.json"
 
@@ -72,7 +76,9 @@ FORM_DEFS = [
     {"id": "PUR_PurchaseOrder", "name": "采购订单", "desc": "采购订单"},
     {"id": "PRD_INSTOCK", "name": "生产入库单", "desc": "生产入库"},
     {"id": "STK_Inventory", "name": "即时库存", "desc": "库存查询"},
-    {"id": "PRD_PickMtrl", "name": "生产领料单", "desc": "生产领料"},
+    {"id": "PRD_PickMtrl", "name": "生产领料单", "desc": "生产领料（需单独选择）"},
+    {"id": "SAL_OUTSTOCK", "name": "销售出库单", "desc": "销售出库明细"},
+    {"id": "BD_Supplier", "name": "供应商列表", "desc": "供应商主数据"},
 ]
 
 LANG_DEFS = [

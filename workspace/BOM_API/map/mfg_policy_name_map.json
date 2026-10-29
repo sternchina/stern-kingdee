@@ -1,0 +1,7 @@
+{
+  "ZZCL001_SYS": "MTS10(考虑库存)",
+  "ZZCL005_SYS": "ATO",
+  "ZZCL003_SYS": "MTO",
+  "ZZCL002_SYS": "MTS20(不考虑库存)",
+  "ZZCL004_SYS": "IHT(继承BOM父件)"
+}

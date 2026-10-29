@@ -1,0 +1,1 @@
+{"running": true, "progress": 50, "step": "正在生成 即时库存（英文版）...", "total_steps": 2, "completed_steps": 1, "forms": ["PLN_PLANORDER", "STK_Inventory"], "langs": ["EN"], "start_time": "2026-07-17T16:18:10.325830", "end_time": null, "error": null}
