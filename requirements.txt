@@ -5,3 +5,4 @@ openpyxl>=3.1,<4
 flask>=3.0,<4
 urllib3>=2.0,<3
 requests>=2.31,<3
+pypinyin>=0.51,<1

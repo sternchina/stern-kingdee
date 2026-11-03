@@ -40,6 +40,10 @@ Kingdee Master Data 数据同步与导入 Excel 生成工具
     - PRD_INSTOCK: 生产入库单
     - STK_Inventory: 即时库存
     - PRD_PickMtrl: 生产领料单
+    - SAL_OUTSTOCK: 销售出库单
+    - BD_Supplier: 供应商列表
+    - BD_Customer: 客户列表
+    - STK_InStock: 采购入库单
 
 """
 from __future__ import annotations
@@ -60,6 +64,8 @@ except Exception:
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
+import configparser
+import tempfile
 
 import openpyxl
 import pandas as pd
@@ -70,7 +76,7 @@ PROJECT_ROOT = WORKSPACE.parent.parent                  # 项目根目录
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import get_settings
+from src.config import Settings, get_settings
 from src.kingdee_client import KingdeeClient
 
 
@@ -112,6 +118,8 @@ PLN_FORECAST_FORM_ID = "PLN_FORECAST"
 PLANORDER_FORM_ID = "PLN_PLANORDER"
 MO_FORM_ID = "PRD_MO"
 PO_FORM_ID = "PUR_PurchaseOrder"
+# 采购订单只导出 2026-01-01 及以后的数据（Purchase Date = FDate），并排除单号中包含 TR 的单据
+PO_DATE_FILTER = "FDate>='2026-01-01' and FBillNo not like '%TR%'"
 INSTOCK_FORM_ID = "PRD_INSTOCK"
 INV_FORM_ID = "STK_Inventory"
 PICKMTRL_FORM_ID = "PRD_PickMtrl"
@@ -189,6 +197,9 @@ OUTSTOCK_HEADER_MAP = {
     "价税合计": "FAllAmount",
     "Seller": "FSalesManID.FName",
     "销售员": "FSalesManID.FName",
+    "sales representative": "FSalesManID.FName",
+    "Sales Representative": "FSalesManID.FName",
+    "销售代表": "FSalesManID.FName",
     "Contact No.": "FLinkPhone",
     "联系电话": "FLinkPhone",
     "Country": "FCustomerID.FCOUNTRY",
@@ -273,6 +284,171 @@ SUPPLIER_HEADER_MAP = {
 SUPPLIER_STATUS_MAP = {
     "FDocumentStatus": {"A": "Approved", "B": "Draft", "C": "Approved", "D": "Re-approving"},
     "FForbidStatus": {"A": "No", "B": "Yes"},
+}
+
+# ── 客户列表 ──────────────────────────────────────────────────────────────────
+# 与供应商一致：直接查询「点号字段」由金蝶翻译基础资料，无需维护 map/ 缓存。
+BD_CUSTOMER_FORM_ID = "BD_Customer"
+
+CUSTOMER_FIELDS = [
+    "FNumber",                          # 客户编码
+    "FName",                            # 客户名称
+    "F_PALW_Text_qtr",                  # 英文名称（自定义字段）
+    "FGroup.FName",                     # 客户分组
+    "FShortName",                       # 简称
+    "FDocumentStatus",                  # 单据状态
+    "FForbidStatus",                    # 禁用状态
+    "FUseOrgId.FName",                  # 使用组织
+    "FRecConditionID.FName",            # 收款条件
+    "FApproverID.FName",                # 审核人
+    "FCOUNTRY.FNumber",                 # 国家/地区（基础资料编码）
+    "FApproveDate",                     # 审核日期
+    "FADDRESS",                         # 地址
+    "FZIP",                             # 邮政编码
+    "F_PALW_Assistant_83g.FDataValue",  # 客户星级（对应模板 Customer Segment）
+]
+
+# 模板表头 → 金蝶字段（英文/中文表头都兼容）
+CUSTOMER_HEADER_MAP = {
+    "Customer Code": "FNumber",
+    "客户编码": "FNumber",
+    "Customer Name": "FName",
+    "客户名称": "FName",
+    "Customer English Name": "F_PALW_Text_qtr",
+    "客户英文名称": "F_PALW_Text_qtr",
+    "Customer Group": "FGroup.FName",
+    "客户分组": "FGroup.FName",
+    "Short Name": "FShortName",
+    "简称": "FShortName",
+    "Doc Status": "FDocumentStatus",
+    "单据状态": "FDocumentStatus",
+    "Disabling Status": "FForbidStatus",
+    "禁用状态": "FForbidStatus",
+    "Use Org.": "FUseOrgId.FName",
+    "使用组织": "FUseOrgId.FName",
+    "Collection Terms": "FRecConditionID.FName",
+    "收款条件": "FRecConditionID.FName",
+    "Approved by": "FApproverID.FName",
+    "审核人": "FApproverID.FName",
+    "Country/Region": "FCOUNTRY.FNumber",
+    "国家/地区": "FCOUNTRY.FNumber",
+    "Approved on": "FApproveDate",
+    "审核日期": "FApproveDate",
+    "Address": "FADDRESS",
+    "地址": "FADDRESS",
+    "Postal Code": "FZIP",
+    "邮政编码": "FZIP",
+    "Customer Segment": "F_PALW_Assistant_83g.FDataValue",
+    "客户分层": "F_PALW_Assistant_83g.FDataValue",
+}
+
+# 客户单据状态（模板样例使用英文取值，故保持英文）
+CUSTOMER_STATUS_MAP = {
+    "FDocumentStatus": {
+        "A": "Draft", "B": "Under Review", "C": "Approved",
+        "D": "Re-approving", "Z": "Draft",
+    },
+    "FForbidStatus": {"A": "No", "B": "Yes"},
+}
+
+# ── 采购入库单 ────────────────────────────────────────────────────────────────
+# 模板文件名为 SCP_InStock，但当前账套未购买“供应商协同平台”模块
+# （直接查询 SCP_InStock 会报“模块/子系统未购买”），实际数据源为标准采购入库单 STK_InStock。
+PURCHASE_INSTOCK_FORM_ID = "STK_InStock"
+PURCHASE_INSTOCK_DATE_FILTER = "FDate>='2026-01-01' and FDate<'2027-01-01'"
+
+PURCHASE_INSTOCK_FIELDS = [
+    "FBillNo",                            # 单据编号
+    "FDate",                              # 入库日期
+    "FDocumentStatus",                    # 单据状态
+    "FPurchaseDeptId",                    # 采购部门 ID（1033 名称缺失时回填 2052）
+    "FPurchaseDeptId.FName",              # 采购部门（1033 语言：Supply Chain）
+    "FSupplierId.FName",                  # 供应商
+    "FSupplierId.FNumber",                # 供应商编码
+    "FPayConditionId.FName",              # 付款条件
+    "FSettleCurrId.FCODE",                # 结算币别代码
+    "FMaterialId",                        # 物料 ID（1033 名称缺失时回填 2052）
+    "FMaterialId.FNumber",                # 物料编码
+    "FMaterialId.FName",                  # 物料名称（1033 语言）
+    "FUnitID.FName",                      # 库存单位（1033 语言：Kg / ge）
+    "FRealQty",                           # 实收数量
+    "FCostPrice",                         # 成本价
+    "FEntryCostAmount",                   # 总成本
+    "FAmount_LC",                         # 金额（本位币，对应模板 Amt (Fcn. Curr.)）
+    "FLot.FNumber",                       # 批号
+    "FStockId",                           # 仓库 ID（1033 名称缺失时回填 2052）
+    "FStockId.FName",                     # 仓库（1033 语言：Ambient RM Warehousee）
+    "FCreatorId.FName",                   # 创建人
+    "FPOOrderNo",                         # 采购订单号
+    "FAuxPropId.FF100001.FDataValue",     # 辅助属性-包装规格（1033 语言）
+    "FStockLocId.FF100005.FNumber",       # 地面仓位编码
+    "FStockLocId.FF100005.FName",         # 地面仓位名称
+    "FStockLocId.FF100006.FNumber",       # 线边仓位编码
+    "FStockLocId.FF100006.FName",         # 线边仓位名称
+]
+
+# 模板表头 → 数据列（英文/中文表头都兼容）
+PURCHASE_INSTOCK_HEADER_MAP = {
+    "Purchase Dept": "FPurchaseDeptId.FName",
+    "采购部门": "FPurchaseDeptId.FName",
+    "Cost Price": "FCostPrice",
+    "成本价": "FCostPrice",
+    "Doc No.": "FBillNo",
+    "单据编号": "FBillNo",
+    "SKU": "FUnitID.FName",
+    "库存单位": "FUnitID.FName",
+    "Order No.": "FPOOrderNo",
+    "订单单号": "FPOOrderNo",
+    "Payment Terms": "FPayConditionId.FName",
+    "付款条件": "FPayConditionId.FName",
+    "Supplier": "FSupplierId.FName",
+    "供应商": "FSupplierId.FName",
+    "Secondary Property": "FAuxPropId.FF100001.FDataValue",
+    "辅助属性": "FAuxPropId.FF100001.FDataValue",
+    "Total Cost": "FEntryCostAmount",
+    "总成本": "FEntryCostAmount",
+    "Lot No.": "FLot.FNumber",
+    "批号": "FLot.FNumber",
+    "Warehouse Receipt Date": "FDate",
+    "入库日期": "FDate",
+    "Doc Status": "FDocumentStatus",
+    "单据状态": "FDocumentStatus",
+    "Qty Received": "FRealQty",
+    "实收数量": "FRealQty",
+    "Warehouse": "FStockId.FName",
+    "仓库": "FStockId.FName",
+    "Material Code": "FMaterialId.FNumber",
+    "物料编码": "FMaterialId.FNumber",
+    "Material Name": "FMaterialId.FName",
+    "物料名称": "FMaterialId.FName",
+    "Created by": "FCreatorId.FName",
+    "创建人": "FCreatorId.FName",
+    "Bin.地面仓位.Code": "FStockLocId.FF100005.FNumber",
+    "Bin.地面仓位.Name": "FStockLocId.FF100005.FName",
+    "Bin.线边仓位.Code": "FStockLocId.FF100006.FNumber",
+    "Bin.线边仓位.Name": "FStockLocId.FF100006.FName",
+    "Amt (Fcn. Curr.)": "FAmount_LC",
+    "金额": "FAmount_LC",
+    "Settlement Currency": "FSettleCurrId.FCODE",
+    "结算币别": "FSettleCurrId.FCODE",
+    "Supplier Code": "FSupplierId.FNumber",
+    "供应商编码": "FSupplierId.FNumber",
+}
+
+# 采购入库单单据状态（模板样例使用英文取值）
+PURCHASE_INSTOCK_STATUS_MAP = {
+    "FDocumentStatus": {
+        "A": "Draft", "B": "Under Review", "C": "Approved",
+        "D": "Re-approving", "Z": "Draft",
+    },
+}
+
+# 数值列及模板中的显示格式
+PURCHASE_INSTOCK_NUMBER_FORMATS = {
+    "FCostPrice": "#,##0.000000",
+    "FEntryCostAmount": "#,##0.00",
+    "FRealQty": "#,##0.0000",
+    "FAmount_LC": "#,##0.00",
 }
 
 BILL_TYPE_MAPPING = {
@@ -605,6 +781,105 @@ def _clean_string(s):
         result.append(char)
     
     return ''.join(result)
+
+
+_SELLER_ABBR_CACHE: dict[str, str] = {}
+
+
+def _seller_abbr(name: str) -> str:
+    """把销售员姓名转成拼音首字母缩写（如 邹祥伟 -> ZXW，朱鹏 -> ZP）。
+
+    已是英文/缩写的值原样返回；转换失败时回退为原文，避免数据丢失。
+    """
+    text = _clean_string(name).strip()
+    if not text:
+        return ""
+    cached = _SELLER_ABBR_CACHE.get(text)
+    if cached is not None:
+        return cached
+    if all(ord(ch) < 128 for ch in text):
+        _SELLER_ABBR_CACHE[text] = text
+        return text
+    try:
+        from pypinyin import Style, lazy_pinyin
+    except ImportError:
+        logger.error("缺少 pypinyin，无法生成销售员缩写（%s）；请执行 pip install pypinyin", text)
+        _SELLER_ABBR_CACHE[text] = text
+        return text
+
+    parts = lazy_pinyin(text, style=Style.FIRST_LETTER, errors="default")
+    abbr = "".join(part for part in parts if part.isalpha()).upper()
+    result = abbr or text
+    _SELLER_ABBR_CACHE[text] = result
+    return result
+
+
+def _client_with_locale(locale_id: int) -> KingdeeClient:
+    """基于现有 conf.ini 生成指定语言（LCID）的临时配置，并返回新的金蝶客户端。
+
+    采购入库单模板是英文语言环境（1033）导出的，部门/仓库/单位/物料名称/包装规格
+    等字段需要 1033 语言值（如 常温原料组 -> Ambient RM Warehousee）。
+    """
+    base = get_settings()
+    parser = configparser.ConfigParser()
+    parser.read(base.resolved_kingdee_config_path, encoding="utf-8")
+    parser.set(base.kingdee_config_node, "X-KDApi-LCID", str(locale_id))
+    temp_path = Path(tempfile.gettempdir()) / f"kingdee_conf_{locale_id}.ini"
+    with temp_path.open("w", encoding="utf-8") as fh:
+        parser.write(fh)
+    settings = Settings(
+        kingdee_config_path=temp_path,
+        kingdee_config_node=base.kingdee_config_node,
+    )
+    return KingdeeClient(settings)
+
+
+def _id_str(value) -> str:
+    """把金蝶内码统一转成字符串（兼容 100008 / 100008.0 / None）。"""
+    text = str(value).strip()
+    if text.endswith(".0"):
+        text = text[:-2]
+    return "" if text.lower() in ("", "nan", "none", "0") else text
+
+
+def _resolve_display_name(client, form_id: str, record_id, locale_key: int = 2052) -> str:
+    """通过 View 读取基础资料指定语言的名称，失败返回空串。"""
+    rid = _id_str(record_id)
+    if not rid:
+        return ""
+    try:
+        result = client.view(form_id, {"Id": rid, "Number": "", "CreateOrgId": 0})
+        inner = (result.get("Result") or {}).get("Result") or {}
+        for item in inner.get("Name") or []:
+            if isinstance(item, dict) and item.get("Key") == locale_key:
+                return str(item.get("Value") or "").strip()
+    except Exception as exc:
+        logger.warning("解析 %s(%s) 名称失败: %s", form_id, rid, exc)
+    return ""
+
+
+def _fill_blank_names(df, name_col: str, id_col: str, form_id: str, client, label: str) -> None:
+    """1033 名称缺失时，用 2052（中文）名称回填，避免整列空白。"""
+    def _blank(value) -> bool:
+        return str(value).strip().lower() in ("", "nan", "none")
+
+    missing_ids = {
+        _id_str(v) for v in df.loc[df[name_col].map(_blank), id_col].unique() if _id_str(v)
+    }
+    if not missing_ids:
+        return
+    mapping = {rid: _resolve_display_name(client, form_id, rid, 2052) for rid in missing_ids}
+    mapping = {k: v for k, v in mapping.items() if v}
+    if not mapping:
+        return
+    filled = 0
+    for idx in df.index[df[name_col].map(_blank)]:
+        value = mapping.get(_id_str(df.at[idx, id_col]), "")
+        if value:
+            df.at[idx, name_col] = value
+            filled += 1
+    if filled:
+        print(f"  [兜底] {label} 空值回填 {filled} 行（2052 名称）")
 
 
 def _save_workbook(workbook, output_path) -> None:
@@ -1300,7 +1575,8 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
                     seen.add(f)
                     po_fields.append(f)
             print(f"  [字段] 合并基本信息({len(header_fields)})+明细信息({len(detail_fields)}) = {len(po_fields)} 个字段")
-            po_df = fetch_form_data(client, PO_FORM_ID, specific_fields=po_fields, filter_string="FCloseStatus = 'A'")
+            # 不再限制 FCloseStatus，导出 2026-01-01 起的全部采购订单（含已关闭）
+            po_df = fetch_form_data(client, PO_FORM_ID, specific_fields=po_fields, filter_string=PO_DATE_FILTER)
             po_csv_path = DATA_DIR / f"{PO_FORM_ID}_{RUN_TS}.csv"
             po_df.to_csv(po_csv_path, index=False, encoding="utf-8-sig", quoting=1)
             print(f"  [保存] {po_csv_path.name}")
@@ -1446,6 +1722,102 @@ def fetch_all_from_kingdee(skip_fetch: bool = False, form: str = "all") -> None:
             print(f"  [错误] BD_Supplier 数据拉取失败: {e}")
             import traceback
             traceback.print_exc()
+
+    # 步骤12: 导出 BD_Customer（客户）
+    if form == "all" or form == BD_CUSTOMER_FORM_ID:
+        print(f"\n[步骤12] 导出 {BD_CUSTOMER_FORM_ID}（客户）")
+        try:
+            all_rows = []
+            start_row, limit = 0, 2000
+            total_fetched = 0
+            print(f"  [字段] {len(CUSTOMER_FIELDS)} 个（含基础资料点号字段）")
+            print("  [数据] 正在分页查询...")
+            while True:
+                rows = client.execute_bill_query({
+                    "FormId": BD_CUSTOMER_FORM_ID,
+                    "FieldKeys": ",".join(CUSTOMER_FIELDS),
+                    "FilterString": "",
+                    "OrderString": "",
+                    "TopRowCount": 0,
+                    "StartRow": start_row,
+                    "Limit": limit,
+                })
+                if not rows:
+                    break
+                all_rows.extend(rows)
+                total_fetched += len(rows)
+                print(f"    已获取 {total_fetched} 行...")
+                if len(rows) < limit:
+                    break
+                start_row += limit
+
+            customer_df = pd.DataFrame(all_rows, columns=CUSTOMER_FIELDS)
+            customer_csv_path = DATA_DIR / f"{BD_CUSTOMER_FORM_ID}_{RUN_TS}.csv"
+            customer_df.to_csv(customer_csv_path, index=False, encoding="utf-8-sig", quoting=1)
+            print(f"  [保存] {customer_csv_path.name}")
+            print(f"  [数据] 共 {len(customer_df)} 行")
+        except Exception as e:
+            logger.error("BD_Customer 数据拉取失败: %s", e, exc_info=True)
+            print(f"  [错误] BD_Customer 数据拉取失败: {e}")
+            import traceback
+            traceback.print_exc()
+
+    # 步骤13: 导出 STK_InStock（采购入库单）
+    if form == "all" or form == PURCHASE_INSTOCK_FORM_ID:
+        print(f"\n[步骤13] 导出 {PURCHASE_INSTOCK_FORM_ID}（采购入库单）")
+        en_client = None
+        try:
+            # 模板是英文语言环境（LCID 1033）导出的：部门/仓库/单位/物料名称/包装规格
+            # 都需要英文语言值，因此单独建一个 1033 客户端取数。
+            en_client = _client_with_locale(1033)
+            all_rows = []
+            start_row, limit = 0, 2000
+            total_fetched = 0
+            print(f"  [字段] {len(PURCHASE_INSTOCK_FIELDS)} 个（含弹性域维度）")
+            print(f"  [过滤] {PURCHASE_INSTOCK_DATE_FILTER}")
+            print("  [语言] LCID 1033（英文名称）")
+            print("  [数据] 正在分页查询...")
+            while True:
+                rows = en_client.execute_bill_query({
+                    "FormId": PURCHASE_INSTOCK_FORM_ID,
+                    "FieldKeys": ",".join(PURCHASE_INSTOCK_FIELDS),
+                    "FilterString": PURCHASE_INSTOCK_DATE_FILTER,
+                    "OrderString": "FBillNo ASC",
+                    "TopRowCount": 0,
+                    "StartRow": start_row,
+                    "Limit": limit,
+                })
+                if not rows:
+                    break
+                all_rows.extend(rows)
+                total_fetched += len(rows)
+                print(f"    已获取 {total_fetched} 行...")
+                if len(rows) < limit:
+                    break
+                start_row += limit
+
+            purchase_df = pd.DataFrame(all_rows, columns=PURCHASE_INSTOCK_FIELDS)
+
+            # 1033 名称缺失时用 2052 名称兜底（如“仓库”没有英文名）
+            _fill_blank_names(purchase_df, "FPurchaseDeptId.FName", "FPurchaseDeptId", "BD_Department", client, "采购部门")
+            _fill_blank_names(purchase_df, "FStockId.FName", "FStockId", "BD_STOCK", client, "仓库")
+            _fill_blank_names(purchase_df, "FMaterialId.FName", "FMaterialId", "BD_MATERIAL", client, "物料名称")
+
+            purchase_csv_path = DATA_DIR / f"{PURCHASE_INSTOCK_FORM_ID}_{RUN_TS}.csv"
+            purchase_df.to_csv(purchase_csv_path, index=False, encoding="utf-8-sig", quoting=1)
+            print(f"  [保存] {purchase_csv_path.name}")
+            print(f"  [数据] 共 {len(purchase_df)} 行")
+        except Exception as e:
+            logger.error("STK_InStock 数据拉取失败: %s", e, exc_info=True)
+            print(f"  [错误] STK_InStock 数据拉取失败: {e}")
+            import traceback
+            traceback.print_exc()
+        finally:
+            if en_client is not None:
+                try:
+                    en_client.close()
+                except Exception:
+                    pass
 
     print("[完成] 从金蝶拉取数据")
 
@@ -7112,7 +7484,9 @@ def generate_outstock_excel(lang: str = "EN") -> None:
             if not text or text.lower() in ("nan", "none"):
                 continue
 
-            if data_col == "FDocumentStatus":
+            if data_col == "FSalesManID.FName":
+                output_row[tpl_idx] = _seller_abbr(text)
+            elif data_col == "FDocumentStatus":
                 output_row[tpl_idx] = status_map.get(text, text)
             elif data_col == "FDate":
                 output_row[tpl_idx] = _clean_string(_format_date(text))
@@ -7239,6 +7613,225 @@ def generate_supplier_excel(lang: str = "CN") -> None:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# 客户列表（BD_Customer）
+# ══════════════════════════════════════════════════════════════════════════════
+
+def generate_customer_excel(lang: str = "EN") -> None:
+    """生成客户列表 Excel。
+
+    与供应商列表一致：直接查询「点号字段」由金蝶翻译基础资料，无需维护 map/ 缓存。
+    """
+    lang_label = "中文" if lang == "CN" else "英文"
+    print(f"[开始] 生成客户列表 Excel ({lang_label})")
+    OUTPUT_DIR.mkdir(exist_ok=True)
+
+    # ── 1. 找模板 ────────────────────────────────────────────────────────────
+    template_suffix = "中文模板.xlsx" if lang == "CN" else "英文模板.xlsx"
+    template_files = sorted(TEMPLATE_DIR.glob(f"{BD_CUSTOMER_FORM_ID}*{template_suffix}"))
+    if not template_files:
+        print(f"  [错误] 找不到{lang_label}模板：{TEMPLATE_DIR / (BD_CUSTOMER_FORM_ID + '*' + template_suffix)}")
+        print(f"         如需{lang_label}版，请把模板放进 template/ 目录，文件名需以 {BD_CUSTOMER_FORM_ID} 开头、以 {template_suffix} 结尾")
+        return
+    template_path = template_files[0]
+    print(f"  [模板] {template_path.name}")
+
+    # ── 2. 读模板表头 ────────────────────────────────────────────────────────
+    try:
+        wb_tpl = openpyxl.load_workbook(template_path, data_only=True)
+        ws_tpl = wb_tpl[wb_tpl.sheetnames[0]]
+        h0 = [
+            str(ws_tpl.cell(row=1, column=col).value).strip()
+            if ws_tpl.cell(row=1, column=col).value is not None else ""
+            for col in range(1, ws_tpl.max_column + 1)
+        ]
+        wb_tpl.close()
+    except Exception as e:
+        print(f"  [错误] 读取模板失败: {e}")
+        return
+    print(f"  [表头] {len(h0)} 列")
+
+    # ── 3. 读数据 ────────────────────────────────────────────────────────────
+    data_path = _resolve_local_csv(BD_CUSTOMER_FORM_ID)
+    if not data_path:
+        print("  [错误] 找不到客户数据文件")
+        print("         请先运行一次不带 --skip-fetch 的同步以生成 data/BD_Customer_*.csv")
+        return
+    print(f"  [数据] {data_path.name}")
+    df = pd.read_csv(data_path, encoding="utf-8-sig", dtype=str).fillna("")
+    data_cols = df.columns.tolist()
+    print(f"  [数据] {len(df)} 行, {len(data_cols)} 列")
+
+    # ── 4. 模板列 → 数据列 ──────────────────────────────────────────────────
+    field_mapping: dict[int, str] = {}
+    for tpl_idx, tpl_field in enumerate(h0):
+        if not tpl_field:
+            continue
+        data_col = CUSTOMER_HEADER_MAP.get(tpl_field)
+        if data_col and data_col in data_cols:
+            field_mapping[tpl_idx] = data_col
+    mapped_headers = sum(1 for h in h0 if h)
+    print(f"  [映射] 命中 {len(field_mapping)}/{mapped_headers} 个模板列")
+    unmatched = [h for i, h in enumerate(h0) if h and i not in field_mapping]
+    if unmatched:
+        print(f"  [提醒] 以下模板列未匹配到数据字段: {', '.join(unmatched)}")
+
+    # ── 5. 输出文件 ─────────────────────────────────────────────────────────
+    output_name = "客户列表.xlsx" if lang == "CN" else "K3_Customer_Master.xlsx"
+    output_path = OUTPUT_DIR / output_name
+    for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
+        try:
+            old_file.unlink()
+        except PermissionError:
+            print(f"  [警告] 文件被占用，跳过: {old_file.name}")
+    print(f"  [输出] {output_path.name}")
+
+    # ── 6. 写入 ─────────────────────────────────────────────────────────────
+    workbook = openpyxl.Workbook()
+    ws = workbook.active
+    ws.title = "Sheet1"
+    ws.append(h0)
+
+    written = 0
+    for _, row in df.iterrows():
+        output_row: list[object] = [""] * len(h0)
+        for tpl_idx, data_col in field_mapping.items():
+            val = row[data_col]
+            if pd.isna(val):
+                continue
+            text = str(val).strip()
+            if not text or text.lower() in ("nan", "none"):
+                continue
+
+            if data_col in CUSTOMER_STATUS_MAP:
+                output_row[tpl_idx] = CUSTOMER_STATUS_MAP[data_col].get(text, text)
+            elif data_col == "FApproveDate":
+                # 模板中该列为纯文本日期（如 2025/6/5），不带前导零、不带时间
+                dt = _format_date(text)
+                if isinstance(dt, datetime):
+                    output_row[tpl_idx] = f"{dt.year}/{dt.month}/{dt.day}"
+                else:
+                    output_row[tpl_idx] = _clean_string(text)
+            else:
+                output_row[tpl_idx] = _clean_string(text).replace("\r\n", "\n").replace("\r", "\n")
+        ws.append(output_row)
+        written += 1
+
+    _save_workbook(workbook, output_path)
+    print(f"  [完成] 共写入 {written} 行")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 采购入库单（STK_InStock）
+# ══════════════════════════════════════════════════════════════════════════════
+
+def generate_purchase_instock_excel(lang: str = "EN") -> None:
+    """生成采购入库单 Excel（模板：SCP_InStock_采购入库单_英文模板.xlsx）。"""
+    lang_label = "中文" if lang == "CN" else "英文"
+    print(f"[开始] 生成采购入库单 Excel ({lang_label})")
+    OUTPUT_DIR.mkdir(exist_ok=True)
+
+    # ── 1. 找模板 ────────────────────────────────────────────────────────────
+    template_suffix = "中文模板.xlsx" if lang == "CN" else "英文模板.xlsx"
+    template_files = sorted(TEMPLATE_DIR.glob(f"SCP_InStock*{template_suffix}"))
+    if not template_files:
+        print(f"  [错误] 找不到{lang_label}模板：{TEMPLATE_DIR / ('SCP_InStock*' + template_suffix)}")
+        return
+    template_path = template_files[0]
+    print(f"  [模板] {template_path.name}")
+
+    # ── 2. 读模板表头 ────────────────────────────────────────────────────────
+    try:
+        wb_tpl = openpyxl.load_workbook(template_path, data_only=True)
+        ws_tpl = wb_tpl[wb_tpl.sheetnames[0]]
+        h0 = [
+            str(ws_tpl.cell(row=1, column=col).value).strip()
+            if ws_tpl.cell(row=1, column=col).value is not None else ""
+            for col in range(1, ws_tpl.max_column + 1)
+        ]
+        wb_tpl.close()
+    except Exception as e:
+        print(f"  [错误] 读取模板失败: {e}")
+        return
+    print(f"  [表头] {len(h0)} 列")
+
+    # ── 3. 读数据 ────────────────────────────────────────────────────────────
+    data_path = _resolve_local_csv(PURCHASE_INSTOCK_FORM_ID)
+    if not data_path:
+        print("  [错误] 找不到采购入库单数据文件")
+        print("         请先运行一次不带 --skip-fetch 的同步以生成 data/STK_InStock_*.csv")
+        return
+    print(f"  [数据] {data_path.name}")
+    df = pd.read_csv(data_path, encoding="utf-8-sig", dtype=str).fillna("")
+    data_cols = df.columns.tolist()
+    print(f"  [数据] {len(df)} 行, {len(data_cols)} 列")
+
+    # ── 4. 模板列 → 数据列 ──────────────────────────────────────────────────
+    field_mapping: dict[int, str] = {}
+    for tpl_idx, tpl_field in enumerate(h0):
+        if not tpl_field:
+            continue
+        data_col = PURCHASE_INSTOCK_HEADER_MAP.get(tpl_field)
+        if data_col and data_col in data_cols:
+            field_mapping[tpl_idx] = data_col
+    mapped_headers = sum(1 for h in h0 if h)
+    print(f"  [映射] 命中 {len(field_mapping)}/{mapped_headers} 个模板列")
+    unmatched = [h for i, h in enumerate(h0) if h and i not in field_mapping]
+    if unmatched:
+        print(f"  [提醒] 以下模板列未匹配到数据字段: {', '.join(unmatched)}")
+
+    # ── 5. 输出文件 ─────────────────────────────────────────────────────────
+    output_name = "采购入库单列表.xlsx" if lang == "CN" else "K3_PurchaseReceipt_2026.xlsx"
+    output_path = OUTPUT_DIR / output_name
+    for old_file in OUTPUT_DIR.glob(f"{output_name.split('.')[0]}*.xlsx"):
+        try:
+            old_file.unlink()
+        except PermissionError:
+            print(f"  [警告] 文件被占用，跳过: {old_file.name}")
+    print(f"  [输出] {output_path.name}")
+
+    # ── 6. 写入 ─────────────────────────────────────────────────────────────
+    workbook = openpyxl.Workbook()
+    ws = workbook.active
+    ws.title = "Sheet1"
+    ws.append(h0)
+
+    written = 0
+    for _, row in df.iterrows():
+        output_row: list[object] = [""] * len(h0)
+        for tpl_idx, data_col in field_mapping.items():
+            val = row[data_col]
+            if pd.isna(val):
+                continue
+            text = str(val).strip()
+            if not text or text.lower() in ("nan", "none"):
+                continue
+
+            if data_col in PURCHASE_INSTOCK_STATUS_MAP:
+                output_row[tpl_idx] = PURCHASE_INSTOCK_STATUS_MAP[data_col].get(text, text)
+            elif data_col == "FDate":
+                output_row[tpl_idx] = _format_date(text)
+            elif data_col in PURCHASE_INSTOCK_NUMBER_FORMATS:
+                try:
+                    output_row[tpl_idx] = float(text)
+                except (TypeError, ValueError):
+                    output_row[tpl_idx] = _clean_string(text)
+            else:
+                output_row[tpl_idx] = _clean_string(text).replace("\r\n", "\n").replace("\r", "\n")
+        ws.append(output_row)
+
+        # 按模板样式设置数值/日期格式
+        for tpl_idx, data_col in field_mapping.items():
+            if data_col == "FDate":
+                ws.cell(row=ws.max_row, column=tpl_idx + 1).number_format = "yyyy/M/d"
+            elif data_col in PURCHASE_INSTOCK_NUMBER_FORMATS:
+                ws.cell(row=ws.max_row, column=tpl_idx + 1).number_format = PURCHASE_INSTOCK_NUMBER_FORMATS[data_col]
+        written += 1
+
+    _save_workbook(workbook, output_path)
+    print(f"  [完成] 共写入 {written} 行")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # 主函数
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -7277,6 +7870,10 @@ def _sync_to_network(network_root: str) -> None:
         "K3_Sales_Deliveries.xlsx": "K3_Sales_Deliveries",
         "供应商列表.xlsx": "K3_Supplier_Master",
         "K3_Supplier_Master.xlsx": "K3_Supplier_Master",
+        "客户列表.xlsx": "K3_Customer_Master",
+        "K3_Customer_Master.xlsx": "K3_Customer_Master",
+        "采购入库单列表.xlsx": "K3_PurchaseReceipt_2026",
+        "K3_PurchaseReceipt_2026.xlsx": "K3_PurchaseReceipt_2026",
     }
 
     xlsx_files = list(OUTPUT_DIR.glob("*.xlsx"))
@@ -7410,8 +8007,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="ENG_BOM & PLN_FORECAST & PLN_PLANORDER & PRD_MO & PUR_PurchaseOrder 数据同步与导入 Excel 生成")
     parser.add_argument("--skip-fetch", action="store_true", help="跳过金蝶拉取")
     parser.add_argument("--form", type=str, default="all",
-                        choices=["all", "BD_MATERIAL", "ENG_BOM", "PLN_FORECAST", "PLN_PLANORDER", "PRD_MO", "PUR_PurchaseOrder", "PRD_INSTOCK", "STK_Inventory", "PRD_PickMtrl", "SAL_OUTSTOCK", "BD_Supplier"],
-                        help="指定要处理的表单，支持: all(全部), BD_MATERIAL(物料基础资料), ENG_BOM(物料清单), PLN_FORECAST(预测单), PLN_PLANORDER(计划订单), PRD_MO(生产订单), PUR_PurchaseOrder(采购订单), PRD_INSTOCK(生产入库单), STK_Inventory(即时库存), PRD_PickMtrl(生产领料单), SAL_OUTSTOCK(销售出库单), BD_Supplier(供应商)")
+                        choices=["all", "BD_MATERIAL", "ENG_BOM", "PLN_FORECAST", "PLN_PLANORDER", "PRD_MO", "PUR_PurchaseOrder", "PRD_INSTOCK", "STK_Inventory", "PRD_PickMtrl", "SAL_OUTSTOCK", "BD_Supplier", "BD_Customer", "STK_InStock"],
+                        help="指定要处理的表单，支持: all(全部), BD_MATERIAL(物料基础资料), ENG_BOM(物料清单), PLN_FORECAST(预测单), PLN_PLANORDER(计划订单), PRD_MO(生产订单), PUR_PurchaseOrder(采购订单), PRD_INSTOCK(生产入库单), STK_Inventory(即时库存), PRD_PickMtrl(生产领料单), SAL_OUTSTOCK(销售出库单), BD_Supplier(供应商), BD_Customer(客户), STK_InStock(采购入库单)")
     parser.add_argument("--lang", type=str, default="EN",
                         choices=["ALL", "CN", "EN"],
                         help="输出语言版本: ALL(中英文都输出), CN(仅中文), EN(仅英文，默认)")
@@ -7490,7 +8087,17 @@ def main() -> None:
         for lang in langs:
             generate_supplier_excel(lang)
 
-    # 13. 同步到网络地址
+    # 13. 生成客户列表 Excel
+    if args.form == "all" or args.form == BD_CUSTOMER_FORM_ID:
+        for lang in langs:
+            generate_customer_excel(lang)
+
+    # 14. 生成采购入库单 Excel
+    if args.form == "all" or args.form == PURCHASE_INSTOCK_FORM_ID:
+        for lang in langs:
+            generate_purchase_instock_excel(lang)
+
+    # 15. 同步到网络地址
     if args.netaddr:
         _sync_to_network(args.netaddr)
 

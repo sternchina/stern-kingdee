@@ -54,6 +54,10 @@ FILE_NET_MAP = {
     "K3_Sales_Deliveries.xlsx": "K3_Sales_Deliveries",
     "供应商列表.xlsx": "K3_Supplier_Master",
     "K3_Supplier_Master.xlsx": "K3_Supplier_Master",
+    "客户列表.xlsx": "K3_Customer_Master",
+    "K3_Customer_Master.xlsx": "K3_Customer_Master",
+    "采购入库单列表.xlsx": "K3_PurchaseReceipt_2026",
+    "K3_PurchaseReceipt_2026.xlsx": "K3_PurchaseReceipt_2026",
 }
 PROGRESS_FILE = WORKSPACE / ".progress.json"
 
@@ -79,6 +83,8 @@ FORM_DEFS = [
     {"id": "PRD_PickMtrl", "name": "生产领料单", "desc": "生产领料（需单独选择）"},
     {"id": "SAL_OUTSTOCK", "name": "销售出库单", "desc": "销售出库明细"},
     {"id": "BD_Supplier", "name": "供应商列表", "desc": "供应商主数据"},
+    {"id": "BD_Customer", "name": "客户列表", "desc": "客户主数据"},
+    {"id": "STK_InStock", "name": "采购入库单", "desc": "采购入库明细（2026）"},
 ]
 
 LANG_DEFS = [
